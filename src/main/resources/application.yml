@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Homefeeder
+server:
+  port: 8080
