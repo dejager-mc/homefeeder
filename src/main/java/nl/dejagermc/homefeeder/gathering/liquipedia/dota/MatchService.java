@@ -20,7 +20,7 @@ public class MatchService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MatchService.class);
 
-    @Cacheable
+    @Cacheable(cacheNames = "getMatches", cacheManager = "cacheManagerCaffeine")
     public List<Match> getMatches() {
         Elements elements = getAllMatchElements();
         return convertElementsToMatches(elements);
