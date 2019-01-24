@@ -1,13 +1,17 @@
 package nl.dejagermc.homefeeder.web.dev;
 
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.postnl.PostNLUtil;
 import nl.dejagermc.homefeeder.reporting.telegram.Telegram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 public class DevWeb {
@@ -24,8 +28,8 @@ public class DevWeb {
         this.matchService = matchService;
     }
 
-    @GetMapping("/telegram")
-    public String greeting(@RequestParam(value="text") String text) {
+    @GetMapping("/telegram/{text}")
+    public String greeting(@PathVariable("text") String text) {
         telegram.sendMessage(text);
         return "Sending " + text;
     }
@@ -34,7 +38,27 @@ public class DevWeb {
     public String dota() {
         StringBuilder sb = new StringBuilder();
 
-        matchService.getMatches().forEach(match -> sb.append(match.toString()).append("<br/>"));
+        sb.append("Live matches: <br/>");
+        matchService.getLiveMatches().forEach(match -> sb.append(match.toString()).append("<br/>"));
+
+        sb.append("<br/><br/>Next OG match: <br/>");
+        Optional<Match> nextOGMatch = matchService.getNextMatchForTeam("OG");
+        if (nextOGMatch.isPresent()) {
+            sb.append(nextOGMatch.toString()).append("<br/>");
+        } else {
+            sb.append("No matches scheduled.").append("<br/>");
+        }
+
+        sb.append("<br/><br/>Next VP match: <br/>");
+        Optional<Match> nextVPMatch = matchService.getNextMatchForTeam("VP");
+        if (nextVPMatch.isPresent()) {
+            sb.append(nextVPMatch.toString()).append("<br/>");
+        } else {
+            sb.append("No matches scheduled.").append("<br/>");
+        }
+
+        sb.append("<br/><br/>All matches: <br/>");
+        matchService.getAllMatches().forEach(match -> sb.append(match.toString()).append("<br/>"));
 
         return sb.toString();
     }

@@ -1,16 +1,11 @@
 package nl.dejagermc.homefeeder.reporting.telegram;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 
 @Service
 public class Telegram {
@@ -35,21 +30,9 @@ public class Telegram {
     }
 
     private void doSendMessage(String message) {
-        String uri = createUrl(botName, channelName, message);
-
         try {
-            URL url = new URL(uri);
-            URLConnection conn = url.openConnection();
-
-            StringBuilder sb = new StringBuilder();
-            InputStream is = new BufferedInputStream(conn.getInputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String inputLine = "";
-            while ((inputLine = br.readLine()) != null) {
-                sb.append(inputLine);
-            }
-            String response = sb.toString();
-            handleTelegramResponse(response);
+            Document doc = Jsoup.connect(createUrl(botName, channelName, message)).ignoreContentType(true).get();
+            handleTelegramResponse(doc.body().text());
         } catch (Exception e) {
             LOG.error("Error sending message to telegram: {}", e);
         }

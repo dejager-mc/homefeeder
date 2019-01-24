@@ -16,10 +16,10 @@ public class CacheManagerConfig {
 
     @Bean
     public CacheManager cacheManagerCaffeine(Ticker ticker) {
-        CaffeineCache getMatches = buildCache("getMatches", ticker, 60*24, 1);
+        CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 60*24, 1);
 
         SimpleCacheManager manager = new SimpleCacheManager();
-        manager.setCaches(Arrays.asList(getMatches));
+        manager.setCaches(Arrays.asList(getAllMatches));
         return manager;
     }
 

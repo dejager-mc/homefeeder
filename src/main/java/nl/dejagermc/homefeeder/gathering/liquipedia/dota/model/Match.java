@@ -33,6 +33,13 @@ public class Match {
         return getMatchTime().isBefore(LocalDateTime.now()) ? true : false;
     }
 
+    public boolean matchEitherTeam(String team) {
+        if (getLeftTeam().equals(team) || getRightTeam().equals(team)) {
+            return true;
+        }
+        return false;
+    }
+
     public String getYoutubeChannel() {
         return youtubeChannel;
     }
