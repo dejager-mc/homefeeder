@@ -17,9 +17,11 @@ public class CacheManagerConfig {
     @Bean
     public CacheManager cacheManagerCaffeine(Ticker ticker) {
         CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 60*24, 1);
+        CaffeineCache getAllPremierEvents = buildCache("getAllPremierEvents", ticker, 60*24, 1);
+        CaffeineCache getAllMajorEvents = buildCache("getAllMajorEvents", ticker, 60*24, 1);
 
         SimpleCacheManager manager = new SimpleCacheManager();
-        manager.setCaches(Arrays.asList(getAllMatches));
+        manager.setCaches(Arrays.asList(getAllMatches, getAllPremierEvents, getAllMajorEvents));
         return manager;
     }
 

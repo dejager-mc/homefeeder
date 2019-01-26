@@ -1,14 +1,15 @@
 package nl.dejagermc.homefeeder.web.dev;
 
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.postnl.PostNLUtil;
+import nl.dejagermc.homefeeder.reporting.google.home.HomeBroadcaster;
 import nl.dejagermc.homefeeder.reporting.telegram.Telegram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -18,14 +19,21 @@ public class DevWeb {
 
     private Telegram telegram;
     private MatchService matchService;
+    private TournamentService tournamentService;
+
+    private HomeBroadcaster homeBroadcaster;
 
     @Autowired
-    public DevWeb(Telegram telegram, MatchService matchService) {
+    public DevWeb(Telegram telegram, MatchService matchService, TournamentService tournamentService, HomeBroadcaster homeBroadcaster) {
         Assert.notNull(telegram, "telegram must not be null");
         Assert.notNull(matchService, "matchService must not be null");
+        Assert.notNull(tournamentService, "tournamentService must not be null");
+        Assert.notNull(homeBroadcaster, "homeBroadcaster must not be null");
 
         this.telegram = telegram;
         this.matchService = matchService;
+        this.tournamentService = tournamentService;
+        this.homeBroadcaster = homeBroadcaster;
     }
 
     @GetMapping("/telegram/{text}")
@@ -63,11 +71,31 @@ public class DevWeb {
         return sb.toString();
     }
 
+    @GetMapping("/dota/tournaments")
+    public String tournaments() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("All tournaments: <br/>");
+        sb.append("Premier tournaments: <br/>");
+        tournamentService.getAllTournaments().forEach(t -> sb.append(t.toString()).append("<br/>"));
+
+        sb.append("Major tournaments: <br/>");
+        tournamentService.getAllTournaments().forEach(t -> sb.append(t.toString()).append("<br/>"));
+
+        return sb.toString();
+    }
+
     @GetMapping("/postnl")
     public String postnl() {
         PostNLUtil util = new PostNLUtil();
         util.test();
 
         return "postnl";
+    }
+
+    @GetMapping("relay/{text}")
+    public String googleRelay(@PathVariable("text") String text) {
+        homeBroadcaster.broadcastMessage(text);
+        return "Broadcasting message: " + text;
     }
 }

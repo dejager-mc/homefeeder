@@ -35,17 +35,15 @@ public class UpcomingAndOngoingMatches {
     }
 
     private Match createMatch(Element element) {
-        Match match = new Match();
-
-        match.setLeftTeam(getLeftTeam(element));
-        match.setRightTeam(getRightTeam(element));
-        match.setGameType(getGameType(element));
-        match.setEventName(getEventName(element));
-        match.setTwitchChannel(getTwitchChannel(element));
-        match.setYoutubeChannel(getYoutubeChannel(element));
-        match.setMatchTime(getMatchTime(element));
-
-        return match;
+        return Match.builder()
+                .leftTeam(getLeftTeam(element))
+                .rightTeam(getRightTeam(element))
+                .gameType(getGameType(element))
+                .eventName(getEventName(element))
+                .twitchChannel(getTwitchChannel(element))
+                .youtubeChannel(getYoutubeChannel(element))
+                .matchTime(getMatchTime(element))
+                .build();
     }
 
     private Elements getAllMatchElements() {

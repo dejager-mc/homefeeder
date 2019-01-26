@@ -13,8 +13,11 @@ public class HomeBroadcaster {
 
     private static final String BROADCAST_JSON_MESSAGE = "{\"command\":\"%s\", \"user\":\"GoogleAssistantRelay\", \"broadcast\":\"true\"}";
 
-    @Value("google.assistant.relay.uri")
+    @Value("${google.assistant.relay.uri}")
     private String uri;
+
+    public HomeBroadcaster() {
+    }
 
     public void broadcastMessage(String message) {
         String json = String.format(BROADCAST_JSON_MESSAGE, message);

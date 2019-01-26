@@ -1,8 +1,18 @@
 package nl.dejagermc.homefeeder.gathering.liquipedia.dota.model;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Accessors(fluent = true)
+@Getter
+@Builder
+@ToString
 public class Match {
     private String leftTeam;
     private String rightTeam;
@@ -12,88 +22,15 @@ public class Match {
     private String twitchChannel;
     private String youtubeChannel;
 
-    public Match() {
-    }
-
-    @Override
-    public String toString() {
-        return "Match{" +
-                "leftTeam='" + leftTeam + '\'' +
-                ", rightTeam='" + rightTeam + '\'' +
-                ", gameType='" + gameType + '\'' +
-                ", matchTime=" + matchTime +
-                ", eventName='" + eventName + '\'' +
-                ", twitchChannel='" + twitchChannel + '\'' +
-                ", youtubeChannel='" + youtubeChannel + '\'' +
-                ", isLive=" + isLive() +
-                '}';
-    }
-
     public boolean isLive() {
-        return getMatchTime().isBefore(LocalDateTime.now()) ? true : false;
+        return matchTime().isBefore(LocalDateTime.now()) ? true : false;
     }
 
     public boolean matchEitherTeam(String team) {
-        if (getLeftTeam().equals(team) || getRightTeam().equals(team)) {
+        if (leftTeam().equals(team) || rightTeam().equals(team)) {
             return true;
         }
         return false;
-    }
-
-    public String getYoutubeChannel() {
-        return youtubeChannel;
-    }
-
-    public void setYoutubeChannel(String youtubeChannel) {
-        this.youtubeChannel = youtubeChannel;
-    }
-
-    public String getTwitchChannel() {
-        return twitchChannel;
-    }
-
-    public void setTwitchChannel(String twitchChannel) {
-        this.twitchChannel = twitchChannel;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public String getLeftTeam() {
-        return leftTeam;
-    }
-
-    public void setLeftTeam(String leftTeam) {
-        this.leftTeam = leftTeam;
-    }
-
-    public String getRightTeam() {
-        return rightTeam;
-    }
-
-    public void setRightTeam(String rightTeam) {
-        this.rightTeam = rightTeam;
-    }
-
-    public String getGameType() {
-        return gameType;
-    }
-
-    public void setGameType(String gameType) {
-        this.gameType = gameType;
-    }
-
-    public LocalDateTime getMatchTime() {
-        return matchTime;
-    }
-
-    public void setMatchTime(LocalDateTime matchTime) {
-        this.matchTime = matchTime;
     }
 
     @Override

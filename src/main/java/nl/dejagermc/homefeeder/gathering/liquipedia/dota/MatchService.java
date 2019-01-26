@@ -38,7 +38,7 @@ public class MatchService {
     public Optional<Match> getNextMatchForTeam(String team) {
         List<Match> allMatches = repository.getAllMatches();
         return allMatches.stream()
-                .sorted(Comparator.comparing(Match::getMatchTime))
+                .sorted(Comparator.comparing(Match::matchTime))
                 .filter(match -> match.matchEitherTeam(team))
                 .findFirst();
     }
