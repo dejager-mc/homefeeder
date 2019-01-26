@@ -2,7 +2,8 @@ package nl.dejagermc.homefeeder.reporting.google.home;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,8 @@ import java.io.IOException;
 @Service
 public class HomeBroadcaster {
 
-    private static final String BROADCAST_JSON_MESSAGE = "{\"command\":\"%s\", \"user\":\"GoogleAssistantRelay\", \"broadcast\":\"true\"}";
+    private static final Logger LOG = LoggerFactory.getLogger(HomeBroadcaster.class);
+    private static final String BROADCAST_JSON_MESSAGE = "{\"command\":\"%s\", \"user\":\"GoogleAssistantRelay\", \"broadcast\":\"false\"}";
 
     @Value("${google.assistant.relay.uri}")
     private String uri;
@@ -30,6 +32,7 @@ public class HomeBroadcaster {
                     .requestBody(json)
                     .execute()
                     .body();
+            LOG.info("response: {}", response);
         } catch (IOException e) {
             e.printStackTrace();
         }
