@@ -3,8 +3,6 @@ package nl.dejagermc.homefeeder.reporting.google.home;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +18,7 @@ public class HomeBroadcaster {
     private String uri;
 
     public HomeBroadcaster() {
+        // empty constructor, for now
     }
 
     public void broadcastMessage(String message) {
@@ -35,7 +34,7 @@ public class HomeBroadcaster {
                     .body();
             log.info("response: {}", response);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error bij broadcaste: {}", e);
         }
     }
 }

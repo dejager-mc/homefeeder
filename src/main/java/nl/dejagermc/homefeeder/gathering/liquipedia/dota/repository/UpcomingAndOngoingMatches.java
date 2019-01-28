@@ -6,14 +6,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,7 +28,7 @@ public class UpcomingAndOngoingMatches {
 
     private List<Match> convertElementsToMatches(Elements elements) {
         return elements.stream()
-                .filter(e -> null != e)
+                .filter(Objects::nonNull)
                 .map(e -> createMatch(e))
                 .collect(Collectors.toList());
     }
@@ -52,7 +51,7 @@ public class UpcomingAndOngoingMatches {
             return doc.select("div > table");
         } catch (Exception e) {
             log.error("Liquipedia get request error: " + e);
-            return null;
+            return new Elements();
         }
     }
 

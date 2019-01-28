@@ -6,8 +6,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import nl.dejagermc.homefeeder.domain.generated.Episode;
 import nl.dejagermc.homefeeder.domain.generated.Movie;
-import nl.dejagermc.homefeeder.domain.generated.RadarrWebhookSchema;
-import nl.dejagermc.homefeeder.domain.generated.SonarrWebhookSchema;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

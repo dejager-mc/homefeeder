@@ -3,8 +3,6 @@ package nl.dejagermc.homefeeder.reporting.telegram;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +20,7 @@ public class Telegram {
     private String channelName;
 
     public Telegram() {
+        // empty constructor
     }
 
     public void sendMessage(String message) {

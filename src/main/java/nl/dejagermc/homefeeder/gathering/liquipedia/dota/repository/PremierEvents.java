@@ -6,8 +6,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -42,7 +40,7 @@ public class PremierEvents {
             return doc.select("div.divRow");
         } catch (Exception e) {
             log.error("Liquipedia get request error: " + e);
-            return null;
+            return new Elements();
         }
     }
 
@@ -146,8 +144,7 @@ public class PremierEvents {
     private LocalDate parseDate(String month, String day, String year) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy");
         String parseString = String.format("%s %s %s", month, day, year);
-        LocalDate start = LocalDate.parse(parseString, formatter);
-        return start;
+        return LocalDate.parse(parseString, formatter);
     }
 
     private String getTournamentDetail(Element element, String detail) {
