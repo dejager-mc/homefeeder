@@ -1,17 +1,19 @@
 package nl.dejagermc.homefeeder.gathering.postnl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Slf4j
+@Service
 public class PostNLUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(PostNLUtil.class);
-
     @Value("${postnl.login.email}")
     private String email;
     @Value("${postnl.login.password}")
@@ -32,9 +34,9 @@ public class PostNLUtil {
             Document doc = Jsoup.connect("https://jouw.postnl.nl/?pst=k-pnl_f-f_p-pnl_u-txt_s-pwb_r-pnlinlogopties_v-jouwpost#!/overzicht")
                     .cookies(loginCookies)
                     .get();
-            LOG.info(doc.toString());
+            log.info(doc.toString());
         } catch (Exception e) {
-            LOG.error("Exception postnl: ", e);
+            log.error("Exception postnl: ", e);
         }
     }
 }

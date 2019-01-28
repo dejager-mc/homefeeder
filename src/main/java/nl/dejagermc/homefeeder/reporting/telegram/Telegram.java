@@ -1,5 +1,6 @@
 package nl.dejagermc.homefeeder.reporting.telegram;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -8,10 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class Telegram {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Telegram.class);
-
     private static final String BASE = "https://api.telegram.org";
     private static final String BOT = "/bot";
     private static final String CHANNEL = "/sendMessage?chat_id=";
@@ -34,15 +33,15 @@ public class Telegram {
             Document doc = Jsoup.connect(createUrl(botName, channelName, message)).ignoreContentType(true).get();
             handleTelegramResponse(doc.body().text());
         } catch (Exception e) {
-            LOG.error("Error sending message to telegram: {}", e);
+            log.error("Error sending message to telegram: {}", e);
         }
     }
 
     private void handleTelegramResponse(String response) {
         if (response.matches(".*\"ok\":true.*")) {
-            LOG.info("Telegram message: ok");
+            log.info("Telegram message: ok");
         } else {
-            LOG.warn("Telegram message: not ok: {}", response);
+            log.warn("Telegram message: not ok: {}", response);
         }
     }
 

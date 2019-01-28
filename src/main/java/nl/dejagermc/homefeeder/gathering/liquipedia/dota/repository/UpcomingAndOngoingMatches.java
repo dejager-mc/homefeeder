@@ -1,5 +1,6 @@
 package nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,9 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class UpcomingAndOngoingMatches {
-
-    private static final Logger LOG = LoggerFactory.getLogger(UpcomingAndOngoingMatches.class);
     private static final String UPCOMING_AND_ONGOING_MATCHES_URI = "https://liquipedia.net/dota2/Liquipedia:Upcoming_and_ongoing_matches";
 
     @Cacheable(cacheNames = "getAllMatches", cacheManager = "cacheManagerCaffeine")
@@ -51,7 +51,7 @@ public class UpcomingAndOngoingMatches {
             Document doc = Jsoup.connect(UPCOMING_AND_ONGOING_MATCHES_URI).get();
             return doc.select("div > table");
         } catch (Exception e) {
-            LOG.error("Liquipedia get request error: " + e);
+            log.error("Liquipedia get request error: " + e);
             return null;
         }
     }
@@ -62,7 +62,7 @@ public class UpcomingAndOngoingMatches {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy - H:mm z");
             return LocalDateTime.parse(timeTillStart, formatter);
         } catch (Exception e) {
-            LOG.warn("Error parsing match time {}. Returning with year 2100.", timeTillStart);
+            log.warn("Error parsing match time {}. Returning with year 2100.", timeTillStart);
         }
 
         return LocalDateTime.of(2100,1,1,0,0,0);

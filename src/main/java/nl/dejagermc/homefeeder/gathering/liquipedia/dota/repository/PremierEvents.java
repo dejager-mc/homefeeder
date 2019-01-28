@@ -1,5 +1,6 @@
 package nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,9 +21,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class PremierEvents {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PremierEvents.class);
     private static final String URI_PREMIER = "https://liquipedia.net/dota2/Premier_Tournaments";
     private static final String URI_MAJOR = "https://liquipedia.net/dota2/Major_Tournaments";
 
@@ -41,13 +41,12 @@ public class PremierEvents {
             Document doc = Jsoup.connect(uri).get();
             return doc.select("div.divRow");
         } catch (Exception e) {
-            LOG.error("Liquipedia get request error: " + e);
+            log.error("Liquipedia get request error: " + e);
             return null;
         }
     }
 
     private Tournament convertElementToTournament(Element element) {
-//        Elements tournamentDetails = element.select("div.divCell");
         String date = getTournamentDetail(element, "Date");
         List<LocalDate> dates = dateStringToPeriod(date);
 

@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "RadarrEvent",
+  "description": "Radarr Webhook Event",
+  "type": "object",
+  "anyOf": [
+    {
+      "properties": {
+        "eventType": { "enum": ["Grab"] }
+      },
+      "required": ["eventType", "movie", "remoteMovie", "release"]
+    },
+    {
+      "properties": {
+        "eventType": { "enum": ["Download"] }
+      },
+      "required": ["eventType", "movie", "remoteMovie", "movieFile", "isUpgrade"]
+    },
+    {
+      "properties": {
+        "eventType": { "enum": ["Rename"] }
+      },
+      "required": ["eventType", "movie"]
+    },
+    {
+      "properties": {
+        "eventType": { "enum": ["Test"] }
+      },
+      "required": ["eventType", "movie", "remoteMovie", "release"]
+    }
+  ],
+  "properties":{
+    "eventType": { "enum": ["Download", "Grab", "Rename", "Test"] },
+    "movie": {
+      "type": "object",
+      "required": ["id", "title", "releaseDate"],
+      "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string" },
+        "releaseDate": { "type": "string", "format": "date" }
+      }
+    },
+    "remoteMovie": {
+      "type": "object",
+      "required": ["title", "year"],
+      "properties": {
+        "title": { "type": "string" },
+        "year": { "type": "integer", "minimum": 1800 },
+        "tmdbId": { "type": "integer" },
+        "imdbId": {"type": "string" }
+      }
+    },
+    "release": {
+      "type": "object",
+      "properties": {
+        "quality": { "type": "string"},
+        "qualityVersion": { "type": "integer", "minimum": 1 },
+        "releaseGroup": { "type": "string" },
+        "releaseTitle": { "type": "string" },
+        "indexer": { "type": "string" },
+        "size": { "type": "integer", "minimum": 0}
+      }
+    },
+    "movieFile": {
+      "type": "object",
+      "required": ["id", "relativePath", "path"],
+      "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "relativePath": { "type": "string" },
+        "path": { "type": "string" },
+        "quality": { "type": "string" },
+        "qualityVersion": { "type": "integer", "minimum": 1 },
+        "releaseGroup": { "type": "string" },
+        "sceneName": { "type": "string" }
+      }
+    },
+    "isUpgrade": { "type": "boolean" }
+  }
+}

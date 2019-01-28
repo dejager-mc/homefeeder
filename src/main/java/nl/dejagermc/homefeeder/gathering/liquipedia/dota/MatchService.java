@@ -1,5 +1,6 @@
 package nl.dejagermc.homefeeder.gathering.liquipedia.dota;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.UpcomingAndOngoingMatches;
 import org.jsoup.Jsoup;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MatchService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MatchService.class);
