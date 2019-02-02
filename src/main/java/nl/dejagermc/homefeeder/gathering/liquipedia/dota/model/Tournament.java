@@ -22,4 +22,5 @@ public class Tournament {
     private String winner;
     private String location;
     private boolean byValve;
+    private boolean isQualifier;
 }

@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class PremierEvents {
     private static final String URI_PREMIER = "https://liquipedia.net/dota2/Premier_Tournaments";
     private static final String URI_MAJOR = "https://liquipedia.net/dota2/Major_Tournaments";
+    private static final String URI_QUALIFIERS = "https://liquipedia.net/dota2/Qualifier_Tournaments";
 
     @Cacheable(cacheNames = "getAllPremierEvents", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllPremierEvents() {
@@ -32,6 +33,11 @@ public class PremierEvents {
     @Cacheable(cacheNames = "getAllMajorEvents", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllMajorEvents() {
         return getAllEvents(URI_MAJOR).stream().map(e -> convertElementToTournament(e)).collect(Collectors.toList());
+    }
+
+    @Cacheable(cacheNames = "getAllQualifierEvents", cacheManager = "cacheManagerCaffeine")
+    public List<Tournament> getAllQualifierEvents() {
+        return getAllEvents(URI_QUALIFIERS).stream().map(e -> convertElementToTournament(e, true)).collect(Collectors.toList());
     }
 
     private Elements getAllEvents(String uri) {
@@ -45,6 +51,10 @@ public class PremierEvents {
     }
 
     private Tournament convertElementToTournament(Element element) {
+        return convertElementToTournament(element, false);
+    }
+
+    private Tournament convertElementToTournament(Element element, boolean isQualifier) {
         String date = getTournamentDetail(element, "Date");
         List<LocalDate> dates = dateStringToPeriod(date);
 
@@ -57,6 +67,7 @@ public class PremierEvents {
                 .winner(getTournamentDetail(element, "FirstPlace"))
                 .location(getTournamentDetail(element, "Location"))
                 .byValve(isTournamentByValve(element))
+                .isQualifier(isQualifier)
                 .build();
     }
 
@@ -106,33 +117,28 @@ public class PremierEvents {
             month2 = month1;
             day1 = matcherSameDay.group(2);
             day2 = day1;
-        }
-        else if (matcherSameMonth.matches()) {
+        } else if (matcherSameMonth.matches()) {
             year1 = matcherSameMonth.group(4);
             year2 = year1;
             month1 = matcherSameMonth.group(1);
             month2 = month1;
             day1 = matcherSameMonth.group(2);
             day2 = matcherSameMonth.group(3);
-        }
-        else if (matcherDifferentMonth.matches()) {
+        } else if (matcherDifferentMonth.matches()) {
             year1 = matcherDifferentMonth.group(5);
             year2 = year1;
             month1 = matcherDifferentMonth.group(1);
             month2 = matcherDifferentMonth.group(3);
             day1 = matcherDifferentMonth.group(2);
             day2 = matcherDifferentMonth.group(4);
-        }
-
-        else if (matcherDifferentYear.matches()) {
+        } else if (matcherDifferentYear.matches()) {
             year1 = matcherDifferentYear.group(3);
             year2 = matcherDifferentYear.group(6);
             month1 = matcherDifferentYear.group(1);
             month2 = matcherDifferentYear.group(4);
             day1 = matcherDifferentYear.group(2);
             day2 = matcherDifferentYear.group(5);
-        }
-        else {
+        } else {
             Assert.notNull(null, "Geen formatter gevonden voor date: " + date);
         }
 

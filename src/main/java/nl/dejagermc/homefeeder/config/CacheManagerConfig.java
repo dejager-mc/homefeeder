@@ -19,9 +19,10 @@ public class CacheManagerConfig {
         CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 60*24, 1);
         CaffeineCache getAllPremierEvents = buildCache("getAllPremierEvents", ticker, 60*24, 1);
         CaffeineCache getAllMajorEvents = buildCache("getAllMajorEvents", ticker, 60*24, 1);
+        CaffeineCache getAllQualifierEvents = buildCache("getAllQualifierEvents", ticker, 60*24, 1);
 
         SimpleCacheManager manager = new SimpleCacheManager();
-        manager.setCaches(Arrays.asList(getAllMatches, getAllPremierEvents, getAllMajorEvents));
+        manager.setCaches(Arrays.asList(getAllMatches, getAllPremierEvents, getAllMajorEvents, getAllQualifierEvents));
         return manager;
     }
 
