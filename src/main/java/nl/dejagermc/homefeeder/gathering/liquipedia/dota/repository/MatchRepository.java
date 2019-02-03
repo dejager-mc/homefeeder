@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class UpcomingAndOngoingMatches {
+public class MatchRepository {
     private static final String UPCOMING_AND_ONGOING_MATCHES_URI = "https://liquipedia.net/dota2/Liquipedia:Upcoming_and_ongoing_matches";
 
     @Cacheable(cacheNames = "getAllMatches", cacheManager = "cacheManagerCaffeine")

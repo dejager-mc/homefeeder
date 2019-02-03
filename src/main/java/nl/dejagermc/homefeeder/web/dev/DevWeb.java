@@ -79,10 +79,13 @@ public class DevWeb {
 
         sb.append("All tournaments: <br/>");
         sb.append("Premier tournaments: <br/>");
-        tournamentService.getAllTournaments().forEach(t -> sb.append(t.toString()).append("<br/>"));
-
+        tournamentService.getAllTournaments().stream().filter(t -> t.isPremier()).forEach(t -> sb.append(t.toString()).append("<br/>"));
+        sb.append("<br/><br/>");
         sb.append("Major tournaments: <br/>");
-        tournamentService.getAllTournaments().forEach(t -> sb.append(t.toString()).append("<br/>"));
+        tournamentService.getAllTournaments().stream().filter(t -> t.isMajor()).forEach(t -> sb.append(t.toString()).append("<br/>"));
+        sb.append("<br/><br/>");
+        sb.append("Qualifiers: <br/>");
+        tournamentService.getAllTournaments().stream().filter(t -> t.isQualifier()).forEach(t -> sb.append(t.toString()).append("<br/>"));
 
         return sb.toString();
     }

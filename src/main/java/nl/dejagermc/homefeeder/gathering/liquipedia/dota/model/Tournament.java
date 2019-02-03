@@ -21,6 +21,34 @@ public class Tournament {
     private int teams;
     private String winner;
     private String location;
-    private boolean byValve;
-    private boolean isQualifier;
+    private boolean isByValve;
+    private TournamentType tournamentType;
+
+    public boolean isActive() {
+        if (start.isBefore(LocalDate.now()) && end.isAfter(LocalDate.now())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isPremier() {
+        if (tournamentType.equals(TournamentType.PREMIER)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isMajor() {
+        if (tournamentType.equals(TournamentType.MAJOR)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isQualifier() {
+        if (tournamentType.equals(TournamentType.QUALIFIER)) {
+            return true;
+        }
+        return false;
+    }
 }

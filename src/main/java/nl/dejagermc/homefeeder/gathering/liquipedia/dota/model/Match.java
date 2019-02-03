@@ -7,6 +7,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Accessors(fluent = true)
@@ -24,6 +25,15 @@ public class Match {
 
     public boolean isLive() {
         return matchTime().isBefore(LocalDateTime.now()) ? true : false;
+    }
+
+    public boolean matchEitherTeam(List<String> teams) {
+        for (String team : teams) {
+            if (matchEitherTeam(team)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean matchEitherTeam(String team) {

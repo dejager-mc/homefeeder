@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder;
+package nl.dejagermc.homefeeder.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

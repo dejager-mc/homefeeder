@@ -2,7 +2,7 @@ package nl.dejagermc.homefeeder.gathering.liquipedia.dota;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.UpcomingAndOngoingMatches;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MatchService {
 
-    private UpcomingAndOngoingMatches repository;
+    private MatchRepository repository;
 
     @Autowired
-    public MatchService(UpcomingAndOngoingMatches repository) {
+    public MatchService(MatchRepository repository) {
         this.repository = repository;
     }
 
@@ -38,5 +38,9 @@ public class MatchService {
         return repository.getAllMatches().stream()
                 .filter(Match::isLive)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Match> getLiveMatchForTeam(String team) {
+        return getLiveMatches().stream().filter(m -> m.matchEitherTeam(team)).findFirst();
     }
 }

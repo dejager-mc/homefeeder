@@ -2,6 +2,7 @@ package nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,24 +21,25 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class PremierEvents {
+public class TournamentRepository {
+
     private static final String URI_PREMIER = "https://liquipedia.net/dota2/Premier_Tournaments";
     private static final String URI_MAJOR = "https://liquipedia.net/dota2/Major_Tournaments";
     private static final String URI_QUALIFIERS = "https://liquipedia.net/dota2/Qualifier_Tournaments";
 
     @Cacheable(cacheNames = "getAllPremierEvents", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllPremierEvents() {
-        return getAllEvents(URI_PREMIER).stream().map(e -> convertElementToTournament(e)).collect(Collectors.toList());
+        return getAllEvents(URI_PREMIER).stream().map(e -> convertElementToTournament(e, TournamentType.PREMIER)).collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = "getAllMajorEvents", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllMajorEvents() {
-        return getAllEvents(URI_MAJOR).stream().map(e -> convertElementToTournament(e)).collect(Collectors.toList());
+        return getAllEvents(URI_MAJOR).stream().map(e -> convertElementToTournament(e, TournamentType.MAJOR)).collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = "getAllQualifierEvents", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllQualifierEvents() {
-        return getAllEvents(URI_QUALIFIERS).stream().map(e -> convertElementToTournament(e, true)).collect(Collectors.toList());
+        return getAllEvents(URI_QUALIFIERS).stream().map(e -> convertElementToTournament(e, TournamentType.QUALIFIER)).collect(Collectors.toList());
     }
 
     private Elements getAllEvents(String uri) {
@@ -50,11 +52,7 @@ public class PremierEvents {
         }
     }
 
-    private Tournament convertElementToTournament(Element element) {
-        return convertElementToTournament(element, false);
-    }
-
-    private Tournament convertElementToTournament(Element element, boolean isQualifier) {
+    private Tournament convertElementToTournament(Element element, TournamentType tournamentType) {
         String date = getTournamentDetail(element, "Date");
         List<LocalDate> dates = dateStringToPeriod(date);
 
@@ -66,8 +64,8 @@ public class PremierEvents {
                 .teams(teamsToInt(getTournamentDetail(element, "PlayerNumber")))
                 .winner(getTournamentDetail(element, "FirstPlace"))
                 .location(getTournamentDetail(element, "Location"))
-                .byValve(isTournamentByValve(element))
-                .isQualifier(isQualifier)
+                .isByValve(isTournamentByValve(element))
+                .tournamentType(tournamentType)
                 .build();
     }
 
@@ -79,6 +77,9 @@ public class PremierEvents {
     }
 
     private int teamsToInt(String teams) {
+        if (teams.isBlank()) {
+            return 0;
+        }
         return Integer.parseInt(teams.split(" ")[0]);
     }
 
@@ -142,8 +143,8 @@ public class PremierEvents {
             Assert.notNull(null, "Geen formatter gevonden voor date: " + date);
         }
 
-        LocalDate start = parseDate(month1, day1, year1);
-        LocalDate end = parseDate(month2, day2, year2);
+        LocalDate start = parseDate(month1, day1, year1).atStartOfDay().toLocalDate();
+        LocalDate end = parseDate(month2, day2, year2).plusDays(1L).atStartOfDay().toLocalDate();
         return Arrays.asList(start, end);
     }
 

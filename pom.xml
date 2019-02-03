@@ -14,6 +14,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>homefeeder</name>
     <description>Generates different feeds of information for openhab and google home | domotics</description>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>11</java.version>

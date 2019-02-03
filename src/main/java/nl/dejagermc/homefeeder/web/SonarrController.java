@@ -2,6 +2,7 @@ package nl.dejagermc.homefeeder.web;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.domain.generated.SonarrWebhookSchema;
+import nl.dejagermc.homefeeder.gathering.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,14 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class SonarrController extends AbstractController {
 
+    private SonarrService sonarrService;
+
     @Autowired
-    public SonarrController(UserState userState) {
+    public SonarrController(UserState userState, SonarrService sonarrService) {
         super(userState);
+        this.sonarrService = sonarrService;
     }
 
     @PostMapping("add")
     public ResponseEntity addSonarr(@RequestBody SonarrWebhookSchema schema) {
-        userState.sonarrDownloads().addAll(schema.getEpisodes());
+        sonarrService.addEpisodes(schema.getEpisodes());
         return new ResponseEntity(HttpStatus.OK);
     }
 }
