@@ -1,12 +1,15 @@
 package nl.dejagermc.homefeeder.web.dev;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.business.MatchReportService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.util.TournamentUtil;
 import nl.dejagermc.homefeeder.gathering.postnl.PostNLUtil;
-import nl.dejagermc.homefeeder.reporting.google.home.HomeBroadcaster;
-import nl.dejagermc.homefeeder.reporting.telegram.Telegram;
+import nl.dejagermc.homefeeder.reporting.google.home.GoogleHomeReporter;
+import nl.dejagermc.homefeeder.reporting.telegram.TelegramReporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,29 +22,37 @@ import java.util.Optional;
 @Slf4j
 public class DevWeb {
 
-    private Telegram telegram;
+    private TelegramReporter telegramReporter;
     private MatchService matchService;
     private TournamentService tournamentService;
-
-    private HomeBroadcaster homeBroadcaster;
+    private MatchReportService matchReportService;
+    private GoogleHomeReporter googleHomeReporter;
 
     @Autowired
-    public DevWeb(Telegram telegram, MatchService matchService, TournamentService tournamentService, HomeBroadcaster homeBroadcaster) {
-        Assert.notNull(telegram, "telegram must not be null");
+    public DevWeb(MatchReportService matchReportService, TelegramReporter telegramReporter, MatchService matchService, TournamentService tournamentService, GoogleHomeReporter googleHomeReporter) {
+        Assert.notNull(telegramReporter, "telegram must not be null");
         Assert.notNull(matchService, "matchService must not be null");
         Assert.notNull(tournamentService, "tournamentService must not be null");
-        Assert.notNull(homeBroadcaster, "homeBroadcaster must not be null");
+        Assert.notNull(googleHomeReporter, "homeBroadcaster must not be null");
+        Assert.notNull(matchReportService, "reportService must not be null");
 
-        this.telegram = telegram;
+        this.telegramReporter = telegramReporter;
         this.matchService = matchService;
         this.tournamentService = tournamentService;
-        this.homeBroadcaster = homeBroadcaster;
+        this.googleHomeReporter = googleHomeReporter;
+        this.matchReportService = matchReportService;
     }
 
     @GetMapping("/telegram/{text}")
     public String greeting(@PathVariable("text") String text) {
-        telegram.sendMessage(text);
+        telegramReporter.sendMessage(text);
         return "Sending " + text;
+    }
+
+    @GetMapping("/telegram/live")
+    public String telegramLive() {
+        matchReportService.reportImportantDotaTeamPlayingNow();
+        return "Telegram live";
     }
 
     @GetMapping("/dota")
@@ -77,6 +88,19 @@ public class DevWeb {
     public String tournaments() {
         StringBuilder sb = new StringBuilder();
 
+        sb.append("All active tournament: ");
+        TournamentUtil.getActiveTournaments(tournamentService.getAllTournaments()).stream().forEach(t -> sb.append(t.toString()).append("<br/>"));
+        sb.append("<br/><br/>");
+
+        sb.append("Current tournament: ");
+        Optional<Tournament> mostImp = TournamentUtil.getMostImportantActiveTournament(tournamentService.getAllTournaments());
+        if (mostImp.isPresent()) {
+            sb.append(sb.toString() + "<br/>");
+        } else {
+            sb.append("No tournament active.<br/>");
+        }
+        sb.append("<br/><br/>");
+
         sb.append("All tournaments: <br/>");
         sb.append("Premier tournaments: <br/>");
         tournamentService.getAllTournaments().stream().filter(t -> t.isPremier()).forEach(t -> sb.append(t.toString()).append("<br/>"));
@@ -100,7 +124,7 @@ public class DevWeb {
 
     @GetMapping("relay/{text}")
     public String googleRelay(@PathVariable("text") String text) {
-        homeBroadcaster.broadcastMessage(text);
+        googleHomeReporter.broadcast(text);
         return "Broadcasting message: " + text;
     }
 }

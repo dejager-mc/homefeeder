@@ -59,7 +59,7 @@ public class MatchRepository {
         String timeTillStart = getTimeTillStart(element);
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy - H:mm z");
-            return LocalDateTime.parse(timeTillStart, formatter);
+            return LocalDateTime.parse(timeTillStart, formatter).plusHours(1L);
         } catch (Exception e) {
             log.warn("Error parsing match time {}. Returning with year 2100.", timeTillStart);
         }

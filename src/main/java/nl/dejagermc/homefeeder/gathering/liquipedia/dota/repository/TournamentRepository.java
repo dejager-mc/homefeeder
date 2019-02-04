@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,7 @@ public class TournamentRepository {
 
     private Tournament convertElementToTournament(Element element, TournamentType tournamentType) {
         String date = getTournamentDetail(element, "Date");
-        List<LocalDate> dates = dateStringToPeriod(date);
+        List<LocalDateTime> dates = dateStringToPeriod(date);
 
         return Tournament.builder()
                 .start(dates.get(0))
@@ -88,7 +89,7 @@ public class TournamentRepository {
         return !list.isEmpty();
     }
 
-    private List<LocalDate> dateStringToPeriod(String date) {
+    private List<LocalDateTime> dateStringToPeriod(String date) {
         String year1 = "";
         String year2 = "";
         String month1 = "";
@@ -143,8 +144,8 @@ public class TournamentRepository {
             Assert.notNull(null, "Geen formatter gevonden voor date: " + date);
         }
 
-        LocalDate start = parseDate(month1, day1, year1).atStartOfDay().toLocalDate();
-        LocalDate end = parseDate(month2, day2, year2).plusDays(1L).atStartOfDay().toLocalDate();
+        LocalDateTime start = parseDate(month1, day1, year1).atStartOfDay();
+        LocalDateTime end = parseDate(month2, day2, year2).plusDays(1L).atStartOfDay();
         return Arrays.asList(start, end);
     }
 

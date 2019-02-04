@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Accessors(fluent = true)
@@ -16,11 +17,11 @@ import java.util.List;
 @NoArgsConstructor
 public class UserState {
     // openhab
-    private boolean isHome;
-    private boolean isAwake;
+    private boolean isHome = true;
+    private boolean isAwake = true;
 
     // settings
-    private boolean useGoogleHome;
-    private boolean useTelegram;
-    private List<String> dotaTeamsNotify = new ArrayList<>();
+    private boolean useGoogleHome = true;
+    private boolean useTelegram = true;
+    private List<String> dotaTeamsNotify = Arrays.asList("OG", "Secret", "VP");
 }

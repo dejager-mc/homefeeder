@@ -1,8 +1,10 @@
 package nl.dejagermc.homefeeder.reporting.google.home;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.user.UserState;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -10,19 +12,27 @@ import java.io.IOException;
 
 @Service
 @Slf4j
-public class HomeBroadcaster {
+public class GoogleHomeReporter {
 
     private static final String BROADCAST_JSON_MESSAGE = "{\"command\":\"%s\", \"user\":\"GoogleAssistantRelay\", \"broadcast\":\"false\"}";
+    private UserState userState;
 
     @Value("${google.assistant.relay.uri}")
     private String uri;
 
-    public HomeBroadcaster() {
-        // empty constructor, for now
+    @Autowired
+    public GoogleHomeReporter(UserState userState) {
+        this.userState = userState;
     }
 
-    public void broadcastMessage(String message) {
-        String json = String.format(BROADCAST_JSON_MESSAGE, message);
+    public void broadcast(String message) {
+        if (userState.useGoogleHome()) {
+            String json = String.format(BROADCAST_JSON_MESSAGE, message);
+            broadcastToGoogleHome(json);
+        }
+    }
+
+    private void broadcastToGoogleHome(String json) {
         try {
             String response = Jsoup.connect(uri)
                     .timeout(60000)
@@ -32,9 +42,17 @@ public class HomeBroadcaster {
                     .requestBody(json)
                     .execute()
                     .body();
-            log.info("response: {}", response);
+            handleResponse(response);
         } catch (IOException e) {
-            log.error("Error bij broadcaste: {}", e);
+            log.error("Error sending broadcast: {}", e);
+        }
+    }
+
+    private void handleResponse(String response) {
+        if (response.matches(".*\"ok\":true.*")) {
+            log.info("Google home broadcast: ok");
+        } else {
+            log.error("Google home broadcast: not ok: {}", response);
         }
     }
 }

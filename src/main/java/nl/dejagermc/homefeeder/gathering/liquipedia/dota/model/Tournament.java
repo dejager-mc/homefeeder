@@ -7,6 +7,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Accessors(fluent = true)
 @Getter
@@ -15,8 +16,8 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class Tournament {
     private String name;
-    private LocalDate start;
-    private LocalDate end;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private int prize;
     private int teams;
     private String winner;
@@ -25,7 +26,7 @@ public class Tournament {
     private TournamentType tournamentType;
 
     public boolean isActive() {
-        if (start.isBefore(LocalDate.now()) && end.isAfter(LocalDate.now())) {
+        if (start.isBefore(LocalDateTime.now()) && end.isAfter(LocalDateTime.now())) {
             return true;
         }
         return false;

@@ -6,6 +6,7 @@ import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.MatchReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -42,5 +43,12 @@ public class MatchService {
 
     public Optional<Match> getLiveMatchForTeam(String team) {
         return getLiveMatches().stream().filter(m -> m.matchEitherTeam(team)).findFirst();
+    }
+
+    public List<Match> getTodaysMatches() {
+        return repository.getAllMatches().stream()
+                .filter(m -> m.matchTime().isAfter(LocalDateTime.now().toLocalDate().atStartOfDay()))
+                .filter(m -> m.matchTime().isBefore(LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay()))
+                .collect(Collectors.toList());
     }
 }

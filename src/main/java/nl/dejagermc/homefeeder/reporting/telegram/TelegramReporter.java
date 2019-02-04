@@ -1,14 +1,18 @@
 package nl.dejagermc.homefeeder.reporting.telegram;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.user.UserState;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+
 @Service
 @Slf4j
-public class Telegram {
+public class TelegramReporter {
     private static final String BASE = "https://api.telegram.org";
     private static final String BOT = "/bot";
     private static final String CHANNEL = "/sendMessage?chat_id=";
@@ -19,17 +23,23 @@ public class Telegram {
     @Value("${telegram.channel.name}")
     private String channelName;
 
-    public Telegram() {
-        // empty constructor
+    private UserState userState;
+
+    @Autowired
+    public TelegramReporter(UserState userState) {
+        this.userState = userState;
     }
 
     public void sendMessage(String message) {
-        doSendMessage(message);
+        if (userState.useTelegram()) {
+            doSendMessage(message);
+        }
     }
 
     private void doSendMessage(String message) {
         try {
-            Document doc = Jsoup.connect(createUrl(botName, channelName, message)).ignoreContentType(true).get();
+            String encodedMessage = URLEncoder.encode(message, "UTF-8");
+            Document doc = Jsoup.connect(createUrl(botName, channelName, encodedMessage)).ignoreContentType(true).get();
             handleTelegramResponse(doc.body().text());
         } catch (Exception e) {
             log.error("Error sending message to telegram: {}", e);
@@ -40,7 +50,7 @@ public class Telegram {
         if (response.matches(".*\"ok\":true.*")) {
             log.info("Telegram message: ok");
         } else {
-            log.warn("Telegram message: not ok: {}", response);
+            log.error("Telegram message: not ok: {}", response);
         }
     }
 

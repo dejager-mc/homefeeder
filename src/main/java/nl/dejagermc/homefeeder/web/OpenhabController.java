@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.web;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.ReportService;
+import nl.dejagermc.homefeeder.business.MatchReportService;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class OpenhabController extends AbstractController {
 
-    private ReportService reportService;
+    private MatchReportService matchReportService;
 
     @Autowired
-    public OpenhabController(UserState userState, ReportService reportService) {
+    public OpenhabController(UserState userState, MatchReportService matchReportService) {
         super(userState);
-        this.reportService = reportService;
+        this.matchReportService = matchReportService;
     }
 
     @GetMapping("/userIsHome/{value}")
@@ -35,7 +35,13 @@ public class OpenhabController extends AbstractController {
 
     @GetMapping("/giveReport")
     public ResponseEntity voiceReport() {
-        reportService.reportWhenArrivingAtHome();
+        matchReportService.reportWhenArrivingAtHome();
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/giveDailyDotaReport")
+    public ResponseEntity telegramDailyDota() {
+        matchReportService.reportTodaysMatches();
         return new ResponseEntity(HttpStatus.OK);
     }
 }
