@@ -11,6 +11,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isEenMatchDieVandaagIs;
 
 @Service
 @Slf4j
@@ -47,8 +50,14 @@ public class MatchService {
 
     public List<Match> getTodaysMatches() {
         return repository.getAllMatches().stream()
-                .filter(m -> m.matchTime().isAfter(LocalDateTime.now().toLocalDate().atStartOfDay()))
-                .filter(m -> m.matchTime().isBefore(LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay()))
+                .filter(isEenMatchDieVandaagIs())
+                .collect(Collectors.toList());
+    }
+
+    public List<Match> getTodaysMatchesForTournament(String tournament) {
+        return repository.getAllMatches().stream()
+                .filter(isEenMatchDieVandaagIs())
+                .filter(m -> m.tournamentName().equals(tournament))
                 .collect(Collectors.toList());
     }
 }

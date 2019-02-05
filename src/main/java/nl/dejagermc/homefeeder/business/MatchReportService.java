@@ -6,6 +6,7 @@ import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchTournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.reporting.google.home.GoogleHomeReporter;
 import nl.dejagermc.homefeeder.reporting.reported.ReportedService;
 import nl.dejagermc.homefeeder.reporting.reported.model.ReportedTo;
@@ -17,7 +18,8 @@ import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType.*;
 
 @Service
 @Slf4j
@@ -47,41 +49,36 @@ public class MatchReportService extends AbstractReportService {
     }
 
     public void reportTodaysMatches() {
-        StringBuilder sb = new StringBuilder();
-
-        List<Tournament> allTournaments = tournamentService.getAllTournaments();
-        sb.append("Premier tournament matches:\n");
-        for (Tournament tournament : allTournaments.stream().filter(Tournament::isPremier).collect(Collectors.toList())) {
-            addMatch(tournament, sb);
-        }
-        sb.append("\n");
-        sb.append("Major tournament matches:\n");
-        for (Tournament tournament : allTournaments.stream().filter(Tournament::isMajor).collect(Collectors.toList())) {
-            addMatch(tournament, sb);
-        }
-        sb.append("\n");
-        sb.append("Qualifier tournament matches:\n");
-        for (Tournament tournament : allTournaments.stream().filter(Tournament::isQualifier).collect(Collectors.toList())) {
-            log.info("qualifier: {}", tournament.name());
-            addMatch(tournament, sb);
-        }
-
-        for (Match match : matchService.getTodaysMatches()) {
-            log.info("match: {}", match.eventName());
-        }
-
-        telegramReporter.sendMessage(sb.toString());
+        reportTodaysMatchsForTournaments(PREMIER);
+        reportTodaysMatchsForTournaments(MAJOR);
+        reportTodaysMatchsForTournaments(QUALIFIER);
     }
 
-    private void addMatch(Tournament tournament, StringBuilder sb) {
-        for (Match match : matchService.getTodaysMatches().stream().filter(m -> m.eventName().toLowerCase().matches(".*" + tournament.name().toLowerCase() + ".*")).collect(Collectors.toList())) {
-            sb.append(String.format("%S: %S versus %S - %S.\n", match.matchTime().format(DateTimeFormatter.ofPattern("H:mm")), match.leftTeam(), match.rightTeam(), match.eventName()));
+    private void reportTodaysMatchsForTournaments(TournamentType tournamentType) {
+        StringBuilder sb = new StringBuilder();
+        List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
+
+        for (Tournament tournament : tournaments) {
+            matchService.getTodaysMatchesForTournament(tournament.name()).stream()
+                    .forEach(match -> sb.append(formatMatchForTelegram(match)));
         }
+
+        if (!sb.toString().isBlank()) {
+            telegramReporter.sendMessage(tournamentType.getName() + " matches:\n" + sb.toString());
+        }
+    }
+
+    private String formatMatchForTelegram(Match match) {
+        return String.format("%6.6S: %S versus %S\n%47.33s\n",
+                match.matchTime().format(DateTimeFormatter.ofPattern("H:mm")),
+                match.leftTeam(),
+                match.rightTeam(),
+                match.tournamentName());
     }
 
     private void reportNewToTelegram(Match match) {
         if (!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM)) {
-            String message = String.format("Playing live is %S versus %S.\nTournament: %S", match.leftTeam(), match.rightTeam(), match.eventName());
+            String message = formatMatchForTelegram(match);
             telegramReporter.sendMessage(message);
             reportedService.reportThisToThat(match, ReportedTo.TELEGRAM);
         }

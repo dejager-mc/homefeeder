@@ -1,7 +1,6 @@
 package nl.dejagermc.homefeeder.gathering.liquipedia.dota.model;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -19,7 +18,7 @@ public class Match {
     private String rightTeam;
     private String gameType;
     private LocalDateTime matchTime;
-    private String eventName;
+    private String tournamentName;
     private String twitchChannel;
     private String youtubeChannel;
 
@@ -53,7 +52,7 @@ public class Match {
                     (Objects.equals(rightTeam, match.rightTeam) || Objects.equals(rightTeam, match.leftTeam))
                 ) &&
                 Objects.equals(gameType, match.gameType) &&
-                Objects.equals(eventName, match.eventName) &&
+                Objects.equals(tournamentName, match.tournamentName) &&
                 Objects.equals(twitchChannel, match.twitchChannel) &&
                 Objects.equals(youtubeChannel, match.youtubeChannel) &&
                 Objects.equals(matchTime, match.matchTime);
@@ -61,6 +60,6 @@ public class Match {
 
     @Override
     public int hashCode() {
-        return Objects.hash(leftTeam, rightTeam, gameType, matchTime, eventName, twitchChannel, youtubeChannel);
+        return Objects.hash(leftTeam, rightTeam, gameType, matchTime, tournamentName, twitchChannel, youtubeChannel);
     }
 }

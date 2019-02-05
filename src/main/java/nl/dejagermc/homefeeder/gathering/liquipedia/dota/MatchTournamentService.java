@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -25,15 +24,15 @@ public class MatchTournamentService {
     }
 
     public Optional<Tournament> getTournamentForMatch(Match match) {
-        Optional<Tournament> gevonden = tournamentRepository.getAllPremierEvents().stream().filter(t -> t.name().equals(match.eventName())).findAny();
+        Optional<Tournament> gevonden = tournamentRepository.getAllPremierTournaments().stream().filter(t -> t.name().equals(match.tournamentName())).findAny();
         if (gevonden.isPresent()) {
             return gevonden;
         }
-        gevonden = tournamentRepository.getAllMajorEvents().stream().filter(t -> t.name().equals(match.eventName())).findAny();
+        gevonden = tournamentRepository.getAllMajorTournaments().stream().filter(t -> t.name().equals(match.tournamentName())).findAny();
         if (gevonden.isPresent()) {
             return gevonden;
         }
-        gevonden = tournamentRepository.getAllQualifierEvents().stream().filter(t -> t.name().equals(match.eventName())).findAny();
+        gevonden = tournamentRepository.getAllQualifierTournaments().stream().filter(t -> t.name().equals(match.tournamentName())).findAny();
         if (gevonden.isPresent()) {
             return gevonden;
         }

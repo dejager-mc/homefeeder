@@ -19,11 +19,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MatchRepository {
     private static final String UPCOMING_AND_ONGOING_MATCHES_URI = "https://liquipedia.net/dota2/Liquipedia:Upcoming_and_ongoing_matches";
+    private static final String BASE_URI = "https://liquipedia.net";
 
     @Cacheable(cacheNames = "getAllMatches", cacheManager = "cacheManagerCaffeine")
     public List<Match> getAllMatches() {
         Elements elements = getAllMatchElements();
         return convertElementsToMatches(elements);
+    }
+
+    @Cacheable(cacheNames = "getFullTournamentName", cacheManager = "cacheManagerCaffeine")
+    public String getFullTournamentName(Element element) {
+        String url = BASE_URI + element.select("td.match-filler").select("div").select("div").select("a").attr("href");
+        try {
+            Document doc = Jsoup.connect(url).get();
+            return doc.select("h1.firstHeading").select("span").text();
+        } catch (Exception e) {
+            log.error("Liquipedia get request error: ", e);
+        }
+        return "";
     }
 
     private List<Match> convertElementsToMatches(Elements elements) {
@@ -38,7 +51,7 @@ public class MatchRepository {
                 .leftTeam(getLeftTeam(element))
                 .rightTeam(getRightTeam(element))
                 .gameType(getGameType(element))
-                .eventName(getEventName(element))
+                .tournamentName(getFullTournamentName(element))
                 .twitchChannel(getTwitchChannel(element))
                 .youtubeChannel(getYoutubeChannel(element))
                 .matchTime(getMatchTime(element))
@@ -50,7 +63,7 @@ public class MatchRepository {
             Document doc = Jsoup.connect(UPCOMING_AND_ONGOING_MATCHES_URI).get();
             return doc.select("div > table");
         } catch (Exception e) {
-            log.error("Liquipedia get request error: " + e);
+            log.error("Liquipedia get request error: ", e);
             return new Elements();
         }
     }
@@ -81,10 +94,6 @@ public class MatchRepository {
 
     private String getTimeTillStart(Element element) {
         return element.select("span.timer-object-countdown-only").text();
-    }
-
-    private String getEventName(Element element) {
-        return element.select("td.match-filler").select("div").select("div").select("a").text();
     }
 
     private String getTwitchChannel(Element element) {

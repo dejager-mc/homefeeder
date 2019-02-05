@@ -28,18 +28,18 @@ public class TournamentRepository {
     private static final String URI_MAJOR = "https://liquipedia.net/dota2/Major_Tournaments";
     private static final String URI_QUALIFIERS = "https://liquipedia.net/dota2/Qualifier_Tournaments";
 
-    @Cacheable(cacheNames = "getAllPremierEvents", cacheManager = "cacheManagerCaffeine")
-    public List<Tournament> getAllPremierEvents() {
+    @Cacheable(cacheNames = "getAllPremierTournaments", cacheManager = "cacheManagerCaffeine")
+    public List<Tournament> getAllPremierTournaments() {
         return getAllEvents(URI_PREMIER).stream().map(e -> convertElementToTournament(e, TournamentType.PREMIER)).collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "getAllMajorEvents", cacheManager = "cacheManagerCaffeine")
-    public List<Tournament> getAllMajorEvents() {
+    @Cacheable(cacheNames = "getAllMajorTournaments", cacheManager = "cacheManagerCaffeine")
+    public List<Tournament> getAllMajorTournaments() {
         return getAllEvents(URI_MAJOR).stream().map(e -> convertElementToTournament(e, TournamentType.MAJOR)).collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "getAllQualifierEvents", cacheManager = "cacheManagerCaffeine")
-    public List<Tournament> getAllQualifierEvents() {
+    @Cacheable(cacheNames = "getAllQualifierTournaments", cacheManager = "cacheManagerCaffeine")
+    public List<Tournament> getAllQualifierTournaments() {
         return getAllEvents(URI_QUALIFIERS).stream().map(e -> convertElementToTournament(e, TournamentType.QUALIFIER)).collect(Collectors.toList());
     }
 

@@ -27,9 +27,18 @@ public class GoogleHomeReporter {
 
     public void broadcast(String message) {
         if (userState.useGoogleHome()) {
-            String json = String.format(BROADCAST_JSON_MESSAGE, message);
+            String optimisedMessage = optimiseNamesForSpeech(message);
+            String json = String.format(BROADCAST_JSON_MESSAGE, optimisedMessage);
             broadcastToGoogleHome(json);
         }
+    }
+
+    private String optimiseNamesForSpeech(String message) {
+        message = message.replaceAll("OG", "O G ");
+        message = message.replaceAll("VP", "V P ");
+        message = message.replaceAll("NIP", "N I P ");
+        message = message.replaceAll("EG", "E G ");
+        return message;
     }
 
     private void broadcastToGoogleHome(String json) {
