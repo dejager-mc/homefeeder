@@ -1,6 +1,6 @@
 package nl.dejagermc.homefeeder.gathering.sonarr.repository;
 
-import nl.dejagermc.homefeeder.domain.generated.Episode;
+import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

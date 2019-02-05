@@ -36,10 +36,7 @@ public class Match {
     }
 
     public boolean matchEitherTeam(String team) {
-        if (leftTeam().equals(team) || rightTeam().equals(team)) {
-            return true;
-        }
-        return false;
+        return (leftTeam().equals(team) || rightTeam().equals(team));
     }
 
     @Override

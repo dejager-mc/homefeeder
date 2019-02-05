@@ -42,7 +42,7 @@ public class MatchRepository {
     private List<Match> convertElementsToMatches(Elements elements) {
         return elements.stream()
                 .filter(Objects::nonNull)
-                .map(e -> createMatch(e))
+                .map(this::createMatch)
                 .collect(Collectors.toList());
     }
 

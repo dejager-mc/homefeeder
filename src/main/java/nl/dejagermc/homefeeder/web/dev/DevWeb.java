@@ -22,6 +22,8 @@ import java.util.Optional;
 @Slf4j
 public class DevWeb {
 
+    private final static String HTML_BR = "<br/>";
+
     private TelegramReporter telegramReporter;
     private MatchService matchService;
     private TournamentService tournamentService;
@@ -59,15 +61,15 @@ public class DevWeb {
     public String dota() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Live matches: <br/>");
-        matchService.getLiveMatches().forEach(match -> sb.append(match.toString()).append("<br/>"));
+        sb.append("Live matches: ").append(HTML_BR);
+        matchService.getLiveMatches().forEach(match -> sb.append(match.toString()).append(HTML_BR));
 
-        sb.append("<br/><br/>Next OG match: <br/>");
+        sb.append(HTML_BR).append(HTML_BR).append("Next OG match:").append(HTML_BR);
         Optional<Match> nextOGMatch = matchService.getNextMatchForTeam("OG");
         if (nextOGMatch.isPresent()) {
-            sb.append(nextOGMatch.toString()).append("<br/>");
+            sb.append(nextOGMatch.toString()).append(HTML_BR);
         } else {
-            sb.append("No matches scheduled.").append("<br/>");
+            sb.append("No matches scheduled.").append(HTML_BR);
         }
 
         sb.append("<br/><br/>Next VP match: <br/>");
@@ -90,7 +92,7 @@ public class DevWeb {
 
         sb.append("All active tournament: ");
         TournamentUtil.getActiveTournaments(tournamentService.getAllTournaments()).stream().forEach(t -> sb.append(t.toString()).append("<br/>"));
-        sb.append("<br/><br/>");
+        sb.append(HTML_BR).append(HTML_BR);
 
         sb.append("Current tournament: ");
         Optional<Tournament> mostImp = TournamentUtil.getMostImportantActiveTournament(tournamentService.getAllTournaments());

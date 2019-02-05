@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.reporting.reported;
 
-import nl.dejagermc.homefeeder.domain.generated.Episode;
-import nl.dejagermc.homefeeder.domain.generated.Movie;
+import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
+import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.reporting.reported.model.ReportedTo;

@@ -1,6 +1,6 @@
 package nl.dejagermc.homefeeder.gathering.radarr;
 
-import nl.dejagermc.homefeeder.domain.generated.Movie;
+import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
 import nl.dejagermc.homefeeder.gathering.radarr.repository.RadarrRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

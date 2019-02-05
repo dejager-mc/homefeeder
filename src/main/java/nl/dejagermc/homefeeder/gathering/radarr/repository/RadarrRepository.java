@@ -1,6 +1,6 @@
 package nl.dejagermc.homefeeder.gathering.radarr.repository;
 
-import nl.dejagermc.homefeeder.domain.generated.Movie;
+import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

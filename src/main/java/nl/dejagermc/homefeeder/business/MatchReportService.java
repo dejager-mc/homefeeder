@@ -2,7 +2,6 @@ package nl.dejagermc.homefeeder.business;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchTournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
@@ -27,13 +26,11 @@ public class MatchReportService extends AbstractReportService {
 
     private MatchService matchService;
     private TournamentService tournamentService;
-    private MatchTournamentService matchTournamentService;
 
     @Autowired
-    public MatchReportService(TournamentService tournamentService, MatchTournamentService matchTournamentService, UserState userState, ReportedService reportedService, TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter, MatchService matchService) {
+    public MatchReportService(TournamentService tournamentService, UserState userState, ReportedService reportedService, TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter, MatchService matchService) {
         super(userState, reportedService, telegramReporter, googleHomeReporter);
         this.matchService = matchService;
-        this.matchTournamentService = matchTournamentService;
         this.tournamentService = tournamentService;
     }
 
@@ -69,7 +66,7 @@ public class MatchReportService extends AbstractReportService {
     }
 
     private String formatMatchForTelegram(Match match) {
-        return String.format("%6.6S: %S versus %S\n%47.33s\n",
+        return String.format("%6.6S: %S versus %S%n%47.33s%n",
                 match.matchTime().format(DateTimeFormatter.ofPattern("H:mm")),
                 match.leftTeam(),
                 match.rightTeam(),
@@ -101,18 +98,15 @@ public class MatchReportService extends AbstractReportService {
         // dota teams die ik volg hebben vandaag al gespeeld
         // dota teams die ik volg spelen vandaag nog
         StringBuilder sb = new StringBuilder();
-//        reportUtil.addDownloadedMoviesToReport(sb);
-//        reportUtil.addDownloadedSeriesToReport(sb);
-//        reportUtil.addActiveTournamentToReport(sb);
 
         googleHomeReporter.broadcast(sb.toString());
     }
 
     public void reportWhenWakingUp() {
-
+    //  dummy
     }
 
     public void reportImportantDotaTeamPlayingNow() {
-
+// dummy
     }
 }

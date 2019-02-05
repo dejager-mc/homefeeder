@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MatchUtil {
+public abstract class MatchUtil {
 
     public static List<Match> getLiveMatches(List<Match> matches) {
         return matches.stream().filter(Match::isLive).collect(Collectors.toList());
