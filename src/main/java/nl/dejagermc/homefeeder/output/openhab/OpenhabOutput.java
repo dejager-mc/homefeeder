@@ -11,7 +11,7 @@ import java.io.IOException;
 @Slf4j
 public class OpenhabOutput {
 
-    private static final String OPENHAB_API_URI = "192.168.1.12:8080/classicui/CMD?woonkamer_tradfri_lampen_switch=ON";
+    private static final String OPENHAB_API_URI = "http://192.168.1.12:8080/classicui/CMD?woonkamer_tradfri_lampen_switch=ON";
 
     public void turnOnTv() {
         turnOnOpenhabItem("");
