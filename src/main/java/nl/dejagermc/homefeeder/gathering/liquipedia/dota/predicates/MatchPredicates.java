@@ -15,4 +15,8 @@ public class MatchPredicates {
         return match -> match.matchTime().isAfter(LocalDateTime.now().toLocalDate().atStartOfDay()) &&
                 match.matchTime().isBefore(LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay());
     }
+
+    public static Predicate<Match> isMatchMetStream() {
+        return match -> !match.twitchChannel().isBlank() || !match.youtubeChannel().isBlank();
+    }
 }

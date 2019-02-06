@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.isTournamentActief;
@@ -58,5 +59,9 @@ public class TournamentService {
             default:
                 return Collections.emptyList();
         }
+    }
+
+    public Optional<Tournament> getTournamentByName(String name) {
+        return getAllTournaments().stream().filter(t -> t.name().equals(name)).findFirst();
     }
 }
