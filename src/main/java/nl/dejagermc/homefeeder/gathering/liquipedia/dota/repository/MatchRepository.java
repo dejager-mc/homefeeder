@@ -83,11 +83,13 @@ public class MatchRepository {
     }
 
     private String getLeftTeam(Element element) {
-        return element.select("td.team-left").select("span").select("span").select("a").text().trim();
+        String team = element.select("td.team-left").select("span").select("span").select("a").text().trim();
+        return team.isBlank() ? "T.B.D." : team;
     }
 
     private String getRightTeam(Element element) {
-        return element.select("td.team-right").select("span").select("span").select("a").text().trim();
+        String team = element.select("td.team-right").select("span").select("span").select("a").text().trim();
+        return team.isBlank() ? "T.B.D." : team;
     }
 
     private String getGameType(Element element) {

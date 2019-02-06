@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.reporting.google.home;
+package nl.dejagermc.homefeeder.output.google.home;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.user.UserState;

@@ -1,10 +1,10 @@
-package nl.dejagermc.homefeeder.reporting.reported;
+package nl.dejagermc.homefeeder.output.reported;
 
 import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
-import nl.dejagermc.homefeeder.reporting.reported.model.ReportedTo;
+import nl.dejagermc.homefeeder.output.reported.model.ReportedTo;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 

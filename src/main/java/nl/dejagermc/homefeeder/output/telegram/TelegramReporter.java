@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.reporting.telegram;
+package nl.dejagermc.homefeeder.output.telegram;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.user.UserState;

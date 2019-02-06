@@ -1,8 +1,8 @@
 package nl.dejagermc.homefeeder.business;
 
-import nl.dejagermc.homefeeder.reporting.google.home.GoogleHomeReporter;
-import nl.dejagermc.homefeeder.reporting.reported.ReportedService;
-import nl.dejagermc.homefeeder.reporting.telegram.TelegramReporter;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
+import nl.dejagermc.homefeeder.output.reported.ReportedService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramReporter;
 import nl.dejagermc.homefeeder.user.UserState;
 
 public class AbstractReportService {
