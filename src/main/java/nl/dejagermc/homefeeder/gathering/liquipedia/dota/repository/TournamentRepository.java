@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -150,7 +151,8 @@ public class TournamentRepository {
     }
 
     private LocalDate parseDate(String month, String day, String year) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy");
+        Locale us = Locale.US;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy", us);
         String parseString = String.format("%s %s %s", month, day, year);
         return LocalDate.parse(parseString, formatter);
     }

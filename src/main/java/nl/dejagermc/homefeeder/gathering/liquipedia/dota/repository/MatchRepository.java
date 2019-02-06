@@ -72,7 +72,6 @@ public class MatchRepository {
     private LocalDateTime getMatchTime(Element element) {
         String timeTillStart = getTimeTillStart(element);
         try {
-            log.info("Parsing match time: {}", timeTillStart);
             Locale us = Locale.US;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy - H:mm z", us);
             return LocalDateTime.parse(timeTillStart, formatter).plusHours(1L);
