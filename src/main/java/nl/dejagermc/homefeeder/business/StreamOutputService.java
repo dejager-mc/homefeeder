@@ -19,7 +19,7 @@ public class StreamOutputService {
     }
 
     public void watchStream() {
-        openhabOutput.turnOnTv();
-        streamOutput.openStream("");
+//        openhabOutput.turnOnTv();
+        openhabOutput.streamToTv("https://www.twitch.tv/dreamleague");
     }
 }

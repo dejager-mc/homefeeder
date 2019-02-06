@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.output.stream;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -9,25 +10,28 @@ import java.io.IOException;
 @Slf4j
 public class StreamOutput {
 
+//    @Value("${pstools.psexec}")
+    private String uri;
+
     public void openStream(String uri) {
-        String psexec = "";
-        String user = "";
-        String pass = "";
-        String streamlink = "streamlink";
-        String pc = "";
-
-        String params = String.format("\\\\%s -u %s -p %s -h -i -d %s %s",
-                psexec,
-                pc,
-                user,
-                pass,
-                streamlink,
-                uri);
-
-        try {
-            Process process = new ProcessBuilder(psexec, params).start();
-        } catch (IOException e) {
-            log.error("Error opening stream.", e);
-        }
+//        String psexec = "";
+//        String user = "";
+//        String pass = "";
+//        String streamlink = "streamlink";
+//        String pc = "";
+//
+//        String params = String.format("\\\\%s -u %s -p %s -h -i -d %s %s",
+//                psexec,
+//                pc,
+//                user,
+//                pass,
+//                streamlink,
+//                uri);
+//
+//        try {
+//            Process process = new ProcessBuilder(psexec, params).start();
+//        } catch (IOException e) {
+//            log.error("Error opening stream.", e);
+//        }
     }
 }
