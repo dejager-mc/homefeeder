@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,9 @@ public class MatchRepository {
     private LocalDateTime getMatchTime(Element element) {
         String timeTillStart = getTimeTillStart(element);
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy - H:mm z");
+            log.info("Parsing match time: {}", timeTillStart);
+            Locale us = Locale.US;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy - H:mm z", us);
             return LocalDateTime.parse(timeTillStart, formatter).plusHours(1L);
         } catch (Exception e) {
             log.warn("Error parsing match time {}. Returning with year 2100.", timeTillStart);
