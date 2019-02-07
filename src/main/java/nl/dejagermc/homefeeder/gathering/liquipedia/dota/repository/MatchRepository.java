@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,10 +20,32 @@ public class MatchRepository {
     private static final String UPCOMING_AND_ONGOING_MATCHES_URI = "https://liquipedia.net/dota2/Liquipedia:Upcoming_and_ongoing_matches";
     private static final String BASE_URI = "https://liquipedia.net";
 
+    private List<Match> oldMatches = new ArrayList<>();
+
     @Cacheable(cacheNames = "getAllMatches", cacheManager = "cacheManagerCaffeine")
     public List<Match> getAllMatches() {
         Elements elements = getAllMatchElements();
-        return convertElementsToMatches(elements);
+        List<Match> newMatches = convertElementsToMatches(elements);
+        return mergeNewMatchesWithExcistingMatches(newMatches);
+    }
+
+    private List<Match> mergeNewMatchesWithExcistingMatches(List<Match> newMatches) {
+        // remove TBD matches
+        // remove old matches not in new matches
+        List<Match> oldMatchesExpiredMatchesRemoved = oldMatches.stream()
+                .filter(m -> !m.matchEitherTeam("T.B.D."))
+                .filter(m -> newMatches.contains(m))
+                .collect(Collectors.toList());
+        // add new matches not in old matches
+        List<Match> actualNewMatches = newMatches.stream()
+                .filter(m -> !oldMatchesExpiredMatchesRemoved.contains(m))
+                .collect(Collectors.toList());
+
+        oldMatches = new ArrayList<>();
+        oldMatches.addAll(oldMatchesExpiredMatchesRemoved);
+        oldMatches.addAll(actualNewMatches);
+
+        return oldMatches;
     }
 
     @Cacheable(cacheNames = "getFullTournamentName", cacheManager = "cacheManagerCaffeine")

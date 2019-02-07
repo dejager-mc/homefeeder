@@ -30,9 +30,8 @@ public class TaskerController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("dotaOnTv/{value}")
-    public ResponseEntity dotaOnDevice(@PathVariable final String value) {
-        log.info(value);
+    @GetMapping("dotaOnCinema")
+    public ResponseEntity dotaOnCinema() {
         return new ResponseEntity(HttpStatus.OK);
     }
 }

@@ -1,7 +1,8 @@
 ​[X] Openhab via rest interface
-[ ] Tasker connected
+[X] Tasker connected
 [ ] Daily reports dota, matches and tournaments
 [ ] Download report
 [X] Stream to tv
 [ ] Stream to chosen device
 [ ] Postnl integration
+[X] Update matches without losing reported information

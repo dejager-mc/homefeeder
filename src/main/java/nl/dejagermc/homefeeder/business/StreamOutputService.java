@@ -6,6 +6,7 @@ import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.util.MatchUtil;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,22 @@ import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.Match
 @Service
 @Slf4j
 public class StreamOutputService {
-    private OpenhabOutput openhabOutput;
 
+    private static final String NO_MATCH_FOUND_MESSAGE = "There is no match that can be streamed.";
+
+    private OpenhabOutput openhabOutput;
     private UserState userState;
     private MatchService matchService;
     private TournamentService tournamentService;
+    private GoogleHomeReporter googleHomeReporter;
 
     @Autowired
-    public StreamOutputService(OpenhabOutput openhabOutput, UserState userState, MatchService matchService, TournamentService tournamentService) {
+    public StreamOutputService(OpenhabOutput openhabOutput, UserState userState, MatchService matchService, TournamentService tournamentService, GoogleHomeReporter googleHomeReporter) {
         this.openhabOutput = openhabOutput;
         this.userState = userState;
         this.matchService = matchService;
         this.tournamentService = tournamentService;
+        this.googleHomeReporter = googleHomeReporter;
     }
 
     public void watchStream() {
@@ -43,6 +48,8 @@ public class StreamOutputService {
             log.info("match found");
             openhabOutput.turnOnTv();
             openhabOutput.streamToTv(MatchUtil.getStreamUri(match.get()));
+        } else {
+            googleHomeReporter.broadcast(NO_MATCH_FOUND_MESSAGE);
         }
     }
 

@@ -17,7 +17,8 @@ import java.util.List;
 public class UserState {
     // openhab
     private boolean isHome = true;
-    private boolean isAwake = true;
+    private boolean isSleeping = false;
+    private boolean isMute = false;
 
     // settings
     private boolean useGoogleHome = true;

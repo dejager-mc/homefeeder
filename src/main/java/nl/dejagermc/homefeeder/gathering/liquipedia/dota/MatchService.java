@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,8 @@ import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.Match
 public class MatchService {
 
     private MatchRepository repository;
+
+    private List<Match> matchesNotReported = new ArrayList<>();
 
     @Autowired
     public MatchService(MatchRepository repository) {
@@ -36,6 +39,18 @@ public class MatchService {
                 .sorted(Comparator.comparing(Match::matchTime))
                 .filter(match -> match.matchEitherTeam(team))
                 .findFirst();
+    }
+
+    public void addMatchNotReported(Match match) {
+        matchesNotReported.add(match);
+    }
+
+    public List<Match> getMatchesNotReported() {
+        return matchesNotReported;
+    }
+
+    public void resetMatchesNotReported() {
+        matchesNotReported = new ArrayList<>();
     }
 
     public List<Match> getLiveMatches() {
