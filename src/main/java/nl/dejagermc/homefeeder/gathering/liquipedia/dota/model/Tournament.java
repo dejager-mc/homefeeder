@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Accessors(fluent = true)
@@ -26,30 +25,18 @@ public class Tournament {
     private TournamentType tournamentType;
 
     public boolean isActive() {
-        if (start.isBefore(LocalDateTime.now()) && end.isAfter(LocalDateTime.now())) {
-            return true;
-        }
-        return false;
+        return (start.isBefore(LocalDateTime.now()) && end.isAfter(LocalDateTime.now()));
     }
 
     public boolean isPremier() {
-        if (tournamentType.equals(TournamentType.PREMIER)) {
-            return true;
-        }
-        return false;
+        return (tournamentType.equals(TournamentType.PREMIER));
     }
 
     public boolean isMajor() {
-        if (tournamentType.equals(TournamentType.MAJOR)) {
-            return true;
-        }
-        return false;
+        return (tournamentType.equals(TournamentType.MAJOR));
     }
 
     public boolean isQualifier() {
-        if (tournamentType.equals(TournamentType.QUALIFIER)) {
-            return true;
-        }
-        return false;
+        return (tournamentType.equals(TournamentType.QUALIFIER));
     }
 }

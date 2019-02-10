@@ -21,16 +21,16 @@ public class ReportedService {
 
     public boolean hasThisBeenReported(Object object, ReportedTo reportedTo) {
         if (object instanceof Match) {
-            return matches.stream().filter(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo)).findAny().isPresent();
+            return matches.stream().anyMatch(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo));
         }
         else if (object instanceof Tournament) {
-            return tournaments.stream().filter(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo)).findAny().isPresent();
+            return tournaments.stream().anyMatch(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo));
         }
         else if (object instanceof Episode) {
-            return episodes.stream().filter(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo)).findAny().isPresent();
+            return episodes.stream().anyMatch(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo));
         }
         else if (object instanceof Movie) {
-            return movies.stream().filter(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo)).findAny().isPresent();
+            return movies.stream().anyMatch(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo));
         }
         return false;
     }

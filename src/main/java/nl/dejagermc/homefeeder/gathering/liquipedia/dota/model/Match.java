@@ -23,7 +23,7 @@ public class Match {
     private String youtubeChannel;
 
     public boolean isLive() {
-        return matchTime().isBefore(LocalDateTime.now()) ? true : false;
+        return matchTime().isBefore(LocalDateTime.now());
     }
 
     public boolean matchEitherTeam(List<String> teams) {

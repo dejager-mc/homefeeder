@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MatchRepository {
     private static final String UPCOMING_AND_ONGOING_MATCHES_URI = "https://liquipedia.net/dota2/Liquipedia:Upcoming_and_ongoing_matches";
+    private static final String UNKNOWN_TEAM = "T.B.D.";
     private static final String BASE_URI = "https://liquipedia.net";
 
     private List<Match> oldMatches = new ArrayList<>();
@@ -33,8 +34,8 @@ public class MatchRepository {
         // remove TBD matches
         // remove old matches not in new matches
         List<Match> oldMatchesExpiredMatchesRemoved = oldMatches.stream()
-                .filter(m -> !m.matchEitherTeam("T.B.D."))
-                .filter(m -> newMatches.contains(m))
+                .filter(m -> !m.matchEitherTeam(UNKNOWN_TEAM))
+                .filter(newMatches::contains)
                 .collect(Collectors.toList());
         // add new matches not in old matches
         List<Match> actualNewMatches = newMatches.stream()
@@ -104,12 +105,12 @@ public class MatchRepository {
 
     private String getLeftTeam(Element element) {
         String team = element.select("td.team-left").select("span").select("span").select("a").text().trim();
-        return team.isBlank() ? "T.B.D." : team;
+        return team.isBlank() ? UNKNOWN_TEAM : team;
     }
 
     private String getRightTeam(Element element) {
         String team = element.select("td.team-right").select("span").select("span").select("a").text().trim();
-        return team.isBlank() ? "T.B.D." : team;
+        return team.isBlank() ? UNKNOWN_TEAM : team;
     }
 
     private String getGameType(Element element) {

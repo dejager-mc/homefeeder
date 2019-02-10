@@ -60,6 +60,7 @@ public class StatusReportService {
         addMatchesToUpdate(sb);
 
         googleHomeReporter.broadcast(sb.toString());
+        markEverythingAsReported();
     }
 
     private void addSonarrToUpdate(StringBuilder sb) {

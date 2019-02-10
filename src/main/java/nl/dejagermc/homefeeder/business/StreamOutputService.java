@@ -61,7 +61,11 @@ public class StreamOutputService {
         }
 
         List<String> teams = userState.favoriteTeams();
-        List<Tournament> matchTournaments = liveMatches.stream().map(match -> tournamentService.getTournamentByName(match.tournamentName())).filter(t -> t.isPresent()).map(t -> t.get()).collect(Collectors.toList());
+        List<Tournament> matchTournaments = liveMatches.stream()
+                .map(match -> tournamentService.getTournamentByName(match.tournamentName()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
         matchTournaments.sort(sortTournamentsByImportance());
 
