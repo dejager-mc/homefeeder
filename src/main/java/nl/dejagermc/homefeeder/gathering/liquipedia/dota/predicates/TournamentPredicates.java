@@ -3,6 +3,7 @@ package nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 public class TournamentPredicates {
@@ -13,5 +14,14 @@ public class TournamentPredicates {
     public static Predicate<Tournament> isTournamentActief() {
         return t -> t.start().isBefore(LocalDateTime.now()) &&
                 t.end().isAfter(LocalDateTime.now());
+    }
+
+    public static Comparator<Tournament> sortTournamentsByImportance() {
+        return Comparator
+                .comparing(Tournament::isByValve)
+                .thenComparing(Tournament::isPremier)
+                .thenComparing(Tournament::isMajor)
+                .thenComparing(Tournament::isQualifier)
+                .thenComparing(t -> t.name().toLowerCase().matches(".*europe.*"));
     }
 }

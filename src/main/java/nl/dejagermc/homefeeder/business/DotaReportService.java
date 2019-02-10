@@ -22,20 +22,20 @@ import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament
 
 @Service
 @Slf4j
-public class MatchReportService extends AbstractReportService {
+public class DotaReportService extends AbstractReportService {
 
     private MatchService matchService;
     private TournamentService tournamentService;
 
     @Autowired
-    public MatchReportService(TournamentService tournamentService, UserState userState, ReportedService reportedService, TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter, MatchService matchService) {
+    public DotaReportService(TournamentService tournamentService, UserState userState, ReportedService reportedService, TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter, MatchService matchService) {
         super(userState, reportedService, telegramReporter, googleHomeReporter);
         this.matchService = matchService;
         this.tournamentService = tournamentService;
     }
 
     public void reportLiveMatch() {
-        for (String team : userState.dotaTeamsNotify()) {
+        for (String team : userState.favoriteTeams()) {
             Optional<Match> optionalMatch = matchService.getLiveMatchForTeam(team);
             if (optionalMatch.isPresent()) {
                 Match match = optionalMatch.get();
@@ -83,32 +83,13 @@ public class MatchReportService extends AbstractReportService {
 
     private void reportNewToGoogleHome(Match match) {
         if (!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME)) {
-            String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
-            googleHomeReporter.broadcast(message);
-            reportedService.reportThisToThat(match, ReportedTo.GOOGLE_HOME);
+            if (userState.isSleeping() || !userState.isHome() || userState.isMute()) {
+                matchService.addMatchNotReported(match);
+            } else {
+                String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
+                googleHomeReporter.broadcast(message);
+                reportedService.reportThisToThat(match, ReportedTo.GOOGLE_HOME);
+            }
         }
-
-    }
-
-
-
-    public void reportWhenArrivingAtHome() {
-        // films gedownload?
-        // series gedownload?
-        // actieve dota tournaments die zijn begonnen?
-        // actieve dota tournaments die vandaag eindigen
-        // dota teams die ik volg hebben vandaag al gespeeld
-        // dota teams die ik volg spelen vandaag nog
-        StringBuilder sb = new StringBuilder();
-
-        googleHomeReporter.broadcast(sb.toString());
-    }
-
-    public void reportWhenWakingUp() {
-    //  dummy
-    }
-
-    public void reportImportantDotaTeamPlayingNow() {
-// dummy
     }
 }

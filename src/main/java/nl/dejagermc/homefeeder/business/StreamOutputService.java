@@ -12,18 +12,19 @@ import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchMetStream;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportance;
 
 @Service
 @Slf4j
 public class StreamOutputService {
 
     private static final String NO_MATCH_FOUND_MESSAGE = "There is no match that can be streamed.";
+    private static final String MATCH_FOUND_MESSAGE = "Streaming %s versus %s.";
 
     private OpenhabOutput openhabOutput;
     private UserState userState;
@@ -41,11 +42,11 @@ public class StreamOutputService {
     }
 
     public void watchStream() {
-        log.info("watchStream");
         Optional<Match> match = getMostImportantLiveMatch();
 
         if (match.isPresent()) {
-            log.info("match found");
+            Match liveMatch = match.get();
+            googleHomeReporter.broadcast(String.format(MATCH_FOUND_MESSAGE, liveMatch.leftTeam(), liveMatch.rightTeam()));
             openhabOutput.turnOnTv();
             openhabOutput.streamToTv(MatchUtil.getStreamUri(match.get()));
         } else {
@@ -56,28 +57,15 @@ public class StreamOutputService {
     private Optional<Match> getMostImportantLiveMatch() {
         List<Match> liveMatches = matchService.getLiveMatches().stream().filter(isMatchMetStream()).collect(Collectors.toList());
         if (liveMatches.isEmpty()) {
-            log.info("No live match with stream found.");
             return Optional.empty();
         }
-        liveMatches.forEach(m -> log.info("Live match: {}", m));
 
-        List<String> teams = userState.dotaTeamsNotify();
-        teams.forEach(m -> log.info("team: {}", m));
-
+        List<String> teams = userState.favoriteTeams();
         List<Tournament> matchTournaments = liveMatches.stream().map(match -> tournamentService.getTournamentByName(match.tournamentName())).filter(t -> t.isPresent()).map(t -> t.get()).collect(Collectors.toList());
-        Optional<Match> possibleMatch;
 
-        matchTournaments
-                .sort(Comparator
-                        .comparing(Tournament::isByValve)
-                        .thenComparing(Tournament::isPremier)
-                        .thenComparing(Tournament::isMajor)
-                        .thenComparing(Tournament::isQualifier)
-                );
+        matchTournaments.sort(sortTournamentsByImportance());
 
-        matchTournaments.forEach(m -> log.info("tournament: {}", m));
-
-        possibleMatch = getFirstMatchForTournamentAndFavTeam(matchTournaments, teams, liveMatches);
+        Optional<Match> possibleMatch = getFirstMatchForTournamentAndFavTeam(matchTournaments, teams, liveMatches);
         if (possibleMatch.isPresent()) {
             return Optional.of(possibleMatch.get());
         }

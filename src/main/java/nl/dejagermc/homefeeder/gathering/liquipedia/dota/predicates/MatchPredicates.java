@@ -11,6 +11,11 @@ public class MatchPredicates {
         // private
     }
 
+    public static Predicate<Match> isEenMatchDieLaterVandaagIs() {
+        return match -> match.matchTime().isAfter(LocalDateTime.now()) &&
+                match.matchTime().isBefore(LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay());
+    }
+
     public static Predicate<Match> isEenMatchDieVandaagIs() {
         return match -> match.matchTime().isAfter(LocalDateTime.now().toLocalDate().atStartOfDay()) &&
                 match.matchTime().isBefore(LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay());

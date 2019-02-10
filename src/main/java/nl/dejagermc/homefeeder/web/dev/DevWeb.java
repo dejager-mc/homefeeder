@@ -1,12 +1,10 @@
 package nl.dejagermc.homefeeder.web.dev;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.MatchReportService;
+import nl.dejagermc.homefeeder.business.DotaReportService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.util.TournamentUtil;
 import nl.dejagermc.homefeeder.gathering.postnl.PostNLUtil;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
 import nl.dejagermc.homefeeder.output.telegram.TelegramReporter;
@@ -27,22 +25,22 @@ public class DevWeb {
     private TelegramReporter telegramReporter;
     private MatchService matchService;
     private TournamentService tournamentService;
-    private MatchReportService matchReportService;
+    private DotaReportService dotaReportService;
     private GoogleHomeReporter googleHomeReporter;
 
     @Autowired
-    public DevWeb(MatchReportService matchReportService, TelegramReporter telegramReporter, MatchService matchService, TournamentService tournamentService, GoogleHomeReporter googleHomeReporter) {
+    public DevWeb(DotaReportService dotaReportService, TelegramReporter telegramReporter, MatchService matchService, TournamentService tournamentService, GoogleHomeReporter googleHomeReporter) {
         Assert.notNull(telegramReporter, "telegram must not be null");
         Assert.notNull(matchService, "matchService must not be null");
         Assert.notNull(tournamentService, "tournamentService must not be null");
         Assert.notNull(googleHomeReporter, "homeBroadcaster must not be null");
-        Assert.notNull(matchReportService, "reportService must not be null");
+        Assert.notNull(dotaReportService, "reportService must not be null");
 
         this.telegramReporter = telegramReporter;
         this.matchService = matchService;
         this.tournamentService = tournamentService;
         this.googleHomeReporter = googleHomeReporter;
-        this.matchReportService = matchReportService;
+        this.dotaReportService = dotaReportService;
     }
 
     @GetMapping("/telegram/{text}")
@@ -51,11 +49,11 @@ public class DevWeb {
         return "Sending " + text;
     }
 
-    @GetMapping("/telegram/live")
-    public String telegramLive() {
-        matchReportService.reportImportantDotaTeamPlayingNow();
-        return "Telegram live";
-    }
+//    @GetMapping("/telegram/live")
+//    public String telegramLive() {
+//        matchReportService.reportImportantDotaTeamPlayingNow();
+//        return "Telegram live";
+//    }
 
     @GetMapping("/dota")
     public String dota() {
@@ -86,35 +84,35 @@ public class DevWeb {
         return sb.toString();
     }
 
-    @GetMapping("/dota/tournaments")
-    public String tournaments() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("All active tournament: ");
-        TournamentUtil.getActiveTournaments(tournamentService.getAllTournaments()).stream().forEach(t -> sb.append(t.toString()).append("<br/>"));
-        sb.append(HTML_BR).append(HTML_BR);
-
-        sb.append("Current tournament: ");
-        Optional<Tournament> mostImp = TournamentUtil.getMostImportantActiveTournament(tournamentService.getAllTournaments());
-        if (mostImp.isPresent()) {
-            sb.append(sb.toString() + "<br/>");
-        } else {
-            sb.append("No tournament active.<br/>");
-        }
-        sb.append("<br/><br/>");
-
-        sb.append("All tournaments: <br/>");
-        sb.append("Premier tournaments: <br/>");
-        tournamentService.getAllTournaments().stream().filter(t -> t.isPremier()).forEach(t -> sb.append(t.toString()).append("<br/>"));
-        sb.append("<br/><br/>");
-        sb.append("Major tournaments: <br/>");
-        tournamentService.getAllTournaments().stream().filter(t -> t.isMajor()).forEach(t -> sb.append(t.toString()).append("<br/>"));
-        sb.append("<br/><br/>");
-        sb.append("Qualifiers: <br/>");
-        tournamentService.getAllTournaments().stream().filter(t -> t.isQualifier()).forEach(t -> sb.append(t.toString()).append("<br/>"));
-
-        return sb.toString();
-    }
+//    @GetMapping("/dota/tournaments")
+//    public String tournaments() {
+//        StringBuilder sb = new StringBuilder();
+//
+//        sb.append("All active tournament: ");
+//        TournamentUtil.getActiveTournaments(tournamentService.getAllTournaments()).stream().forEach(t -> sb.append(t.toString()).append("<br/>"));
+//        sb.append(HTML_BR).append(HTML_BR);
+//
+//        sb.append("Current tournament: ");
+//        Optional<Tournament> mostImp = TournamentUtil.getMostImportantActiveTournament(tournamentService.getAllTournaments());
+//        if (mostImp.isPresent()) {
+//            sb.append(sb.toString() + "<br/>");
+//        } else {
+//            sb.append("No tournament active.<br/>");
+//        }
+//        sb.append("<br/><br/>");
+//
+//        sb.append("All tournaments: <br/>");
+//        sb.append("Premier tournaments: <br/>");
+//        tournamentService.getAllTournaments().stream().filter(t -> t.isPremier()).forEach(t -> sb.append(t.toString()).append("<br/>"));
+//        sb.append("<br/><br/>");
+//        sb.append("Major tournaments: <br/>");
+//        tournamentService.getAllTournaments().stream().filter(t -> t.isMajor()).forEach(t -> sb.append(t.toString()).append("<br/>"));
+//        sb.append("<br/><br/>");
+//        sb.append("Qualifiers: <br/>");
+//        tournamentService.getAllTournaments().stream().filter(t -> t.isQualifier()).forEach(t -> sb.append(t.toString()).append("<br/>"));
+//
+//        return sb.toString();
+//    }
 
     @GetMapping("/postnl")
     public String postnl() {

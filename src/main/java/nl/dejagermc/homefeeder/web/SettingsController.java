@@ -36,7 +36,7 @@ public class SettingsController extends AbstractController {
 
     @GetMapping("/dotaTeamNotify/{value}")
     public ResponseEntity dotaTeamNotify(@PathVariable final List<String> value) {
-        userState.dotaTeamsNotify(value);
+        userState.favoriteTeams(value);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

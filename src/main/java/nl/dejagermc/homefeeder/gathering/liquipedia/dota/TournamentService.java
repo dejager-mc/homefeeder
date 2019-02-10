@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.isTournamentActief;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportance;
 
 @Service
 @Slf4j
@@ -44,10 +45,6 @@ public class TournamentService {
         return tournamentRepository.getAllQualifierTournaments();
     }
 
-    public List<Tournament> getAllTournamentsForType(TournamentType tournamentType) {
-        return getAllTournaments().stream().filter(t -> t.tournamentType().equals(tournamentType)).collect(Collectors.toList());
-    }
-
     public List<Tournament> getAllActiveTournamentsForType(TournamentType tournamentType) {
         switch (tournamentType) {
             case PREMIER:
@@ -63,5 +60,13 @@ public class TournamentService {
 
     public Optional<Tournament> getTournamentByName(String name) {
         return getAllTournaments().stream().filter(t -> t.name().equals(name)).findFirst();
+    }
+
+    public Optional<Tournament> getMostImportantActiveTournament() {
+        return getAllTournaments().stream()
+                .filter(isTournamentActief())
+                .sorted(sortTournamentsByImportance())
+                .findFirst();
+
     }
 }

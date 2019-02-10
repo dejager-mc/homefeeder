@@ -23,5 +23,5 @@ public class UserState {
     // settings
     private boolean useGoogleHome = true;
     private boolean useTelegram = true;
-    private List<String> dotaTeamsNotify = Arrays.asList("OG", "Secret", "VP");
+    private List<String> favoriteTeams = Arrays.asList("OG", "Secret", "VP");
 }

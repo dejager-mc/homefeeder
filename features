@@ -1,8 +1,11 @@
 ​[X] Openhab via rest interface
 [X] Tasker connected
-[ ] Daily reports dota, matches and tournaments
+[X] Daily reports dota, matches and tournaments
 [ ] Download report
 [X] Stream to tv
 [ ] Stream to chosen device
 [ ] Postnl integration
 [X] Update matches without losing reported information
+[ ] Tradfri coap connectivity
+[ ] Access Google Home directly instead of through a third party relay
+[ ] Persist settings
