@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.web;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.business.DownloadReportService;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.gathering.radarr.RadarrService;
 import nl.dejagermc.homefeeder.user.UserState;
@@ -18,16 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class RadarrController extends AbstractController {
 
     private RadarrService radarrService;
+    private DownloadReportService downloadReportService;
 
     @Autowired
-    public RadarrController(UserState userState, RadarrService radarrService) {
+    public RadarrController(UserState userState, RadarrService radarrService, DownloadReportService downloadReportService) {
         super(userState);
         this.radarrService = radarrService;
+        this.downloadReportService = downloadReportService;
     }
 
     @PostMapping("add")
     public ResponseEntity addRadarr(@RequestBody RadarrWebhookSchema schema) {
-        radarrService.addMovie(schema.getMovie());
+        downloadReportService.reportRadarr(schema);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

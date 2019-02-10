@@ -1,8 +1,8 @@
 package nl.dejagermc.homefeeder.business;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
-import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
+import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
+import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
@@ -64,26 +64,26 @@ public class StatusReportService {
     }
 
     private void addSonarrToUpdate(StringBuilder sb) {
-        List<Episode> episodes = sonarrService.getEpisodes();
+        List<SonarrWebhookSchema> schemas = sonarrService.getDelayedReportedSeries();
 
-        if (episodes.isEmpty()) {
+        if (schemas.isEmpty()) {
             return;
         }
 
-        sb.append(episodes.size() + " series were downloaded: ");
-        episodes.stream().forEach(serie -> sb.append(serie.getTitle() + " "));
+        sb.append(schemas.size() + " series were downloaded: ");
+        schemas.stream().forEach(episodes -> episodes.getEpisodes().stream().forEach(serie -> sb.append(serie.getTitle() + " ")));
         sb.append("%n");
     }
 
     private void addRadarrToUpdate(StringBuilder sb) {
-        List<Movie> movies = radarrService.getMovies();
+        List<RadarrWebhookSchema> movies = radarrService.getDelayedReportedMovies();
 
         if (movies.isEmpty()) {
             return;
         }
 
         sb.append(movies.size() + " movies were downloaded: ");
-        movies.stream().forEach(serie -> sb.append(serie.getTitle() + " "));
+        movies.stream().forEach(movieSchema -> sb.append(movieSchema.getMovie().getTitle() + " "));
         sb.append("%n");
     }
 
@@ -129,8 +129,8 @@ public class StatusReportService {
     }
 
     private void markEverythingAsReported() {
-        sonarrService.resetEpisodes();
-        radarrService.resetMovies();
+        sonarrService.resetDelayedReportedSeries();
+        radarrService.resetDelayedReportedMovies();
         matchService.resetMatchesNotReported();
     }
 }

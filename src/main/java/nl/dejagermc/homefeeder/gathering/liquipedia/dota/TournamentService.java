@@ -27,7 +27,7 @@ public class TournamentService {
     }
 
     public List<Tournament> getAllTournaments() {
-        List allTournaments = tournamentRepository.getAllPremierTournaments();
+        List<Tournament> allTournaments = tournamentRepository.getAllPremierTournaments();
         allTournaments.addAll(tournamentRepository.getAllMajorTournaments());
         allTournaments.addAll(tournamentRepository.getAllQualifierTournaments());
         return allTournaments;

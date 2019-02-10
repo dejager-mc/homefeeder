@@ -58,7 +58,7 @@ public class GoogleHomeReporter {
     }
 
     private void handleResponse(String response) {
-        if (response.matches(".*\"ok\":true.*")) {
+        if (response.matches(".*\"success\":true.*")) {
             log.info("Google home broadcast: ok");
         } else {
             log.error("Google home broadcast: not ok: {}", response);

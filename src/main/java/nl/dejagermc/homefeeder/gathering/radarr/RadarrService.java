@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.gathering.radarr;
 
 import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
+import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.gathering.radarr.repository.RadarrRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,15 +18,15 @@ public class RadarrService {
         this.radarrRepository = radarrRepository;
     }
 
-    public void addMovie(Movie movies) {
-        radarrRepository.addMovie(movies);
+    public void delayReportForMovie(RadarrWebhookSchema movie) {
+        radarrRepository.addMovie(movie);
     }
 
-    public List<Movie> getMovies() {
+    public List<RadarrWebhookSchema> getDelayedReportedMovies() {
         return radarrRepository.getMovies();
     }
 
-    public void resetMovies() {
+    public void resetDelayedReportedMovies() {
         radarrRepository.resetMovies();
     }
 }

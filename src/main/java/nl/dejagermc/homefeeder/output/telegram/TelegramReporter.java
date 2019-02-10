@@ -17,6 +17,7 @@ public class TelegramReporter {
     private static final String BOT = "/bot";
     private static final String CHANNEL = "/sendMessage?chat_id=";
     private static final String MESSAGE = "&text=";
+    private static final String PARSE_MODE = "&parse_mode=html";
 
     @Value("${telegram.bot.name}")
     private String botName;
@@ -61,6 +62,7 @@ public class TelegramReporter {
                 .append(botName)
                 .append(CHANNEL)
                 .append(channelName)
+                .append(PARSE_MODE)
                 .append(MESSAGE)
                 .append(message)
                 .toString();

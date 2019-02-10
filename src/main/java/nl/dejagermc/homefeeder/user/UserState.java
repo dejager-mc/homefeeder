@@ -24,4 +24,11 @@ public class UserState {
     private boolean useGoogleHome = true;
     private boolean useTelegram = true;
     private List<String> favoriteTeams = Arrays.asList("OG", "Secret", "VP");
+
+    public boolean reportNow() {
+        if (isSleeping || isMute || !isHome) {
+            return false;
+        }
+        return true;
+    }
 }
