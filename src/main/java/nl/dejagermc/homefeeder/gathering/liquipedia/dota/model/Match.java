@@ -44,10 +44,8 @@ public class Match {
         if (this == o) return true;
         if (!(o instanceof Match)) return false;
         Match match = (Match) o;
-        return  (
-                    (Objects.equals(leftTeam, match.leftTeam) || Objects.equals(leftTeam, match.rightTeam)) &&
-                    (Objects.equals(rightTeam, match.rightTeam) || Objects.equals(rightTeam, match.leftTeam))
-                ) &&
+        return  Objects.equals(leftTeam, match.leftTeam) &&
+                Objects.equals(rightTeam, match.rightTeam) &&
                 Objects.equals(gameType, match.gameType) &&
                 Objects.equals(tournamentName, match.tournamentName) &&
                 Objects.equals(twitchChannel, match.twitchChannel) &&

@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,17 +32,29 @@ public class TournamentRepository {
 
     @Cacheable(cacheNames = "getAllPremierTournaments", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllPremierTournaments() {
-        return getAllEvents(URI_PREMIER).stream().map(e -> convertElementToTournament(e, TournamentType.PREMIER)).collect(Collectors.toList());
+        return getAllEvents(URI_PREMIER).stream()
+                .map(e -> convertElementToTournament(e, TournamentType.PREMIER))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = "getAllMajorTournaments", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllMajorTournaments() {
-        return getAllEvents(URI_MAJOR).stream().map(e -> convertElementToTournament(e, TournamentType.MAJOR)).collect(Collectors.toList());
+        return getAllEvents(URI_MAJOR).stream()
+                .map(e -> convertElementToTournament(e, TournamentType.MAJOR))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = "getAllQualifierTournaments", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllQualifierTournaments() {
-        return getAllEvents(URI_QUALIFIERS).stream().map(e -> convertElementToTournament(e, TournamentType.QUALIFIER)).collect(Collectors.toList());
+        return getAllEvents(URI_QUALIFIERS).stream()
+                .map(e -> convertElementToTournament(e, TournamentType.QUALIFIER))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     private Elements getAllEvents(String uri) {
@@ -54,11 +67,15 @@ public class TournamentRepository {
         }
     }
 
-    private Tournament convertElementToTournament(Element element, TournamentType tournamentType) {
+    private Optional<Tournament> convertElementToTournament(Element element, TournamentType tournamentType) {
         String date = getTournamentDetail(element, "Date");
         List<LocalDateTime> dates = dateStringToPeriod(date);
 
-        return Tournament.builder()
+        if (dates.get(1).isBefore(LocalDateTime.now())) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Tournament.builder()
                 .start(dates.get(0))
                 .end(dates.get(1))
                 .name(getTournamentDetail(element, "Tournament"))
@@ -68,7 +85,7 @@ public class TournamentRepository {
                 .location(getTournamentDetail(element, "Location"))
                 .isByValve(isTournamentByValve(element))
                 .tournamentType(tournamentType)
-                .build();
+                .build());
     }
 
     private int prizeToInt(String prize) {

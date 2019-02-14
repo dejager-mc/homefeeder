@@ -38,6 +38,7 @@ public class DotaReportService extends AbstractReportService {
         for (String team : userState.favoriteTeams()) {
             Optional<Match> optionalMatch = matchService.getLiveMatchForTeam(team);
             if (optionalMatch.isPresent()) {
+                log.info("Found match for team {}", team);
                 Match match = optionalMatch.get();
                 reportNewToTelegram(match);
                 reportNewToGoogleHome(match);
@@ -52,17 +53,24 @@ public class DotaReportService extends AbstractReportService {
     }
 
     private void reportTodaysMatchsForTournaments(TournamentType tournamentType) {
+        log.info("Start report for {} tournaments", tournamentType.getName());
         StringBuilder sb = new StringBuilder();
         List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
 
         for (Tournament tournament : tournaments) {
+            log.info("Adding matches for tournament: {}", tournament);
             matchService.getTodaysMatchesForTournament(tournament.name()).stream()
-                    .forEach(match -> sb.append(formatMatchForTelegram(match)));
+                    .forEach(match -> test(sb, match));
         }
 
         if (!sb.toString().isBlank()) {
             telegramReporter.sendMessage(tournamentType.getName() + " matches:\n" + sb.toString());
         }
+    }
+
+    private void test(StringBuilder sb, Match match) {
+        sb.append(formatMatchForTelegram(match));
+        log.info("Found match: {}", match);
     }
 
     private String formatMatchForTelegram(Match match) {
@@ -74,7 +82,9 @@ public class DotaReportService extends AbstractReportService {
     }
 
     private void reportNewToTelegram(Match match) {
+        log.info("Reporting match to telegram: {}", match);
         if (!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM)) {
+            log.info("Match has not been reported yet.");
             String message = formatMatchForTelegram(match);
             telegramReporter.sendMessage(message);
             reportedService.reportThisToThat(match, ReportedTo.TELEGRAM);
@@ -82,10 +92,14 @@ public class DotaReportService extends AbstractReportService {
     }
 
     private void reportNewToGoogleHome(Match match) {
+        log.info("Report match to google: {}", match);
         if (!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME)) {
+            log.info("Match has not been reported yet.");
             if (userState.isSleeping() || !userState.isHome() || userState.isMute()) {
+                log.info("Silence mode enabled, surpressing message");
                 matchService.addMatchNotReported(match);
             } else {
+                log.info("Broadcasting.");
                 String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
                 googleHomeReporter.broadcast(message);
                 reportedService.reportThisToThat(match, ReportedTo.GOOGLE_HOME);

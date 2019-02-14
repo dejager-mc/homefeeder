@@ -19,6 +19,7 @@ public class DotaScheduler {
 
     @Scheduled(fixedDelay = 60000, initialDelay = 60000)
     public void liveMatches() {
+        log.info("Report live matches");
         dotaReportService.reportLiveMatch();
     }
 
