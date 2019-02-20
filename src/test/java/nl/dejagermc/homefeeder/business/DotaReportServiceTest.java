@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
 import nl.dejagermc.homefeeder.output.reported.ReportedService;
 import nl.dejagermc.homefeeder.output.reported.model.ReportedTo;
@@ -13,6 +15,8 @@ import nl.dejagermc.homefeeder.user.UserState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +25,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -47,6 +53,9 @@ public class DotaReportServiceTest {
 
     @Autowired
     private DotaReportService dotaReportService;
+
+    @Captor
+    private ArgumentCaptor<String> telegramCaptor;
 
     @Before
     public void resetTestSetup() {
@@ -167,9 +176,27 @@ public class DotaReportServiceTest {
         assertTrue(reportedService.hasThisBeenReported(match2, ReportedTo.GOOGLE_HOME));
         assertTrue(reportedService.hasThisBeenReported(match2, ReportedTo.TELEGRAM));
     }
+    @Test
+    public void testReportTodaysMatchesPremierOnly() {
+        // 1 match is aanwezig
+        // 1 premier tournament is aanwezig
+        String tournamentName = "DREAMLEAGUE";
+        Match match = getMatchForTeam("OG", "EG");
+        Tournament tournament = getPremierTournament(tournamentName, TournamentType.PREMIER);
+
+        when(tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER)).thenReturn(Arrays.asList(tournament));
+        when(matchService.getTodaysMatchesForTournament(tournamentName)).thenReturn(Arrays.asList(match));
+        validateMockitoUsage();
+
+        dotaReportService.reportTodaysMatches();
+        verify(telegramReporter, times(1)).sendMessage(telegramCaptor.capture());
+
+        List<String> telegramLines = Arrays.asList(telegramCaptor.getValue().split("\n"));
+        assertTrue(telegramLines.size()==3);
+    }
 
     private Match getMatchForTeam(String leftTeam, String rightTeam) {
-        Match match = Match.builder()
+        return Match.builder()
                 .matchTime(LocalDateTime.now())
                 .gameType("")
                 .leftTeam(leftTeam)
@@ -178,6 +205,20 @@ public class DotaReportServiceTest {
                 .twitchChannel("dreamleauge")
                 .youtubeChannel("")
                 .build();
-        return match;
     }
+
+    private Tournament getPremierTournament(String name, TournamentType tournamentType) {
+        return Tournament.builder()
+                .isByValve(true)
+                .start(LocalDateTime.now().minusDays(5))
+                .end(LocalDateTime.now().plusDays(5))
+                .name(name)
+                .teams(2)
+                .location("London")
+                .prize(5)
+                .tournamentType(tournamentType)
+                .winner("")
+                .build();
+    }
+
 }

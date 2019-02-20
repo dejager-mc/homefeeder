@@ -28,14 +28,18 @@ public class DotaReportService extends AbstractReportService {
     private TournamentService tournamentService;
 
     @Autowired
-    public DotaReportService(TournamentService tournamentService, UserState userState, ReportedService reportedService, TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter, MatchService matchService) {
+    public DotaReportService(TournamentService tournamentService, UserState userState, ReportedService reportedService,
+                             TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter,
+                             MatchService matchService) {
         super(userState, reportedService, telegramReporter, googleHomeReporter);
         this.matchService = matchService;
         this.tournamentService = tournamentService;
     }
 
     public void reportLiveMatch() {
+        log.info("reportLiveMatch");
         for (String team : userState.favoriteTeams()) {
+            log.info("reportLiveMatch for team {}", team);
             Optional<Match> optionalMatch = matchService.getLiveMatchForTeam(team);
             if (optionalMatch.isPresent()) {
                 log.info("Found match for team {}", team);
@@ -47,12 +51,12 @@ public class DotaReportService extends AbstractReportService {
     }
 
     public void reportTodaysMatches() {
-        reportTodaysMatchsForTournaments(PREMIER);
-        reportTodaysMatchsForTournaments(MAJOR);
-        reportTodaysMatchsForTournaments(QUALIFIER);
+        reportTodaysMatchsForTournamentType(PREMIER);
+        reportTodaysMatchsForTournamentType(MAJOR);
+        reportTodaysMatchsForTournamentType(QUALIFIER);
     }
 
-    private void reportTodaysMatchsForTournaments(TournamentType tournamentType) {
+    private void reportTodaysMatchsForTournamentType(TournamentType tournamentType) {
         log.info("Start report for {} tournaments", tournamentType.getName());
         StringBuilder sb = new StringBuilder();
         List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);

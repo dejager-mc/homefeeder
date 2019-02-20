@@ -18,7 +18,6 @@ public class ReportedService {
     }
 
     public boolean hasThisBeenReported(Object object, ReportedTo reportedTo) {
-        log.info("hasThisBeenReported: {}, {}", object, reportedTo);
         return reportedObjects.stream().anyMatch(m -> m.getFirst().equals(object) && m.getSecond().equals(reportedTo));
     }
 

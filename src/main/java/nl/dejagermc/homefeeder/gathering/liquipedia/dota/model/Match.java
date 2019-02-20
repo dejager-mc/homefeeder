@@ -23,7 +23,7 @@ public class Match {
     private String youtubeChannel;
 
     public boolean isLive() {
-        return matchTime().isBefore(LocalDateTime.now());
+        return !matchTime().isAfter(LocalDateTime.now());
     }
 
     public boolean matchEitherTeam(List<String> teams) {
@@ -50,11 +50,11 @@ public class Match {
                 Objects.equals(tournamentName, match.tournamentName) &&
                 Objects.equals(twitchChannel, match.twitchChannel) &&
                 Objects.equals(youtubeChannel, match.youtubeChannel) &&
-                Objects.equals(matchTime, match.matchTime);
+                Objects.equals(isLive(), match.isLive());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(leftTeam, rightTeam, gameType, matchTime, tournamentName, twitchChannel, youtubeChannel);
+        return Objects.hash(leftTeam, rightTeam, gameType, isLive(), tournamentName, twitchChannel, youtubeChannel);
     }
 }
