@@ -3,10 +3,11 @@ package nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
-import org.jsoup.Jsoup;
+import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -30,9 +31,16 @@ public class TournamentRepository {
     private static final String URI_MAJOR = "https://liquipedia.net/dota2/Major_Tournaments";
     private static final String URI_QUALIFIERS = "https://liquipedia.net/dota2/Qualifier_Tournaments";
 
+    private JsoupUtil jsoupUtil;
+
+    @Autowired
+    public TournamentRepository(JsoupUtil jsoupUtil) {
+        this.jsoupUtil = jsoupUtil;
+    }
+
     @Cacheable(cacheNames = "getAllPremierTournaments", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllPremierTournaments() {
-        return getAllEvents(URI_PREMIER).stream()
+        return getAllTournamentElements(URI_PREMIER).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.PREMIER))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -41,7 +49,7 @@ public class TournamentRepository {
 
     @Cacheable(cacheNames = "getAllMajorTournaments", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllMajorTournaments() {
-        return getAllEvents(URI_MAJOR).stream()
+        return getAllTournamentElements(URI_MAJOR).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.MAJOR))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -50,21 +58,19 @@ public class TournamentRepository {
 
     @Cacheable(cacheNames = "getAllQualifierTournaments", cacheManager = "cacheManagerCaffeine")
     public List<Tournament> getAllQualifierTournaments() {
-        return getAllEvents(URI_QUALIFIERS).stream()
+        return getAllTournamentElements(URI_QUALIFIERS).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.QUALIFIER))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
     }
 
-    private Elements getAllEvents(String uri) {
-        try {
-            Document doc = Jsoup.connect(uri).get();
-            return doc.select("div.divRow");
-        } catch (Exception e) {
-            log.error("Liquipedia get request error: " + e);
-            return new Elements();
+    private Elements getAllTournamentElements(String uri) {
+        Optional<Document> optionalDoc = jsoupUtil.getDocument(uri);
+        if (optionalDoc.isPresent()) {
+            return optionalDoc.get().select("div.divRow");
         }
+        return new Elements();
     }
 
     private Optional<Tournament> convertElementToTournament(Element element, TournamentType tournamentType) {

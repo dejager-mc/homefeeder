@@ -10,16 +10,18 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
 public class ReportedService {
-    private List<Pair<Match, ReportedTo>> matches = new ArrayList<>();
-    private List<Pair<Tournament, ReportedTo>> tournaments = new ArrayList<>();
+    private Set<Pair<Match, ReportedTo>> matches = new HashSet<>();
+    private Set<Pair<Tournament, ReportedTo>> tournaments = new HashSet<>();
 
-    private List<Pair<Episode, ReportedTo>> episodes = new ArrayList<>();
-    private List<Pair<Movie, ReportedTo>> movies = new ArrayList<>();
+    private Set<Pair<Episode, ReportedTo>> episodes = new HashSet<>();
+    private Set<Pair<Movie, ReportedTo>> movies = new HashSet<>();
 
     public boolean hasThisBeenReported(Object object, ReportedTo reportedTo) {
         log.info("hasThisBeenReported: checking");

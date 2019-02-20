@@ -19,4 +19,12 @@ public class JsoupUtil {
             return Optional.empty();
         }
     }
+    public Optional<Document> getDocumentIgnoreContentType(String uri) {
+        try {
+            return Optional.of(Jsoup.connect(uri).ignoreContentType(true).get());
+        } catch (Exception e) {
+            log.error("Error connecting to uri: {}", uri, e);
+            return Optional.empty();
+        }
+    }
 }

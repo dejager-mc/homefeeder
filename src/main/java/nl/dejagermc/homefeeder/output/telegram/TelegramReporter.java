@@ -2,6 +2,7 @@ package nl.dejagermc.homefeeder.output.telegram;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -25,10 +27,12 @@ public class TelegramReporter {
     private String channelName;
 
     private UserState userState;
+    private JsoupUtil jsoupUtil;
 
     @Autowired
-    public TelegramReporter(UserState userState) {
+    public TelegramReporter(UserState userState, JsoupUtil jsoupUtil) {
         this.userState = userState;
+        this.jsoupUtil = jsoupUtil;
     }
 
     public void sendMessage(String message) {
@@ -40,8 +44,10 @@ public class TelegramReporter {
     private void doSendMessage(String message) {
         try {
             String encodedMessage = URLEncoder.encode(message, "UTF-8");
-            Document doc = Jsoup.connect(createUrl(botName, channelName, encodedMessage)).ignoreContentType(true).get();
-            handleTelegramResponse(doc.body().text());
+            Optional<Document> doc = jsoupUtil.getDocumentIgnoreContentType(createUrl(botName, channelName, encodedMessage));
+            if (doc.isPresent()) {
+                handleTelegramResponse(doc.get().body().text());
+            }
         } catch (Exception e) {
             log.error("Error sending message to telegram: {}", e);
         }

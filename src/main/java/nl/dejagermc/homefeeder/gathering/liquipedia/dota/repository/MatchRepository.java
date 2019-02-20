@@ -70,11 +70,9 @@ public class MatchRepository {
     @Cacheable(cacheNames = "getFullTournamentName", cacheManager = "cacheManagerCaffeine")
     public String getFullTournamentName(Element element) {
         String url = BASE_URI + element.select("td.match-filler").select("div").select("div").select("a").attr("href");
-        try {
-            Document doc = Jsoup.connect(url).get();
-            return doc.select("h1.firstHeading").select("span").text();
-        } catch (Exception e) {
-            log.error("Liquipedia get request error: ", e);
+        Optional<Document> optionalDoc = jsoupUtil.getDocument(url);
+        if (optionalDoc.isPresent()) {
+            return optionalDoc.get().select("h1.firstHeading").select("span").text();
         }
         return "";
     }
@@ -116,7 +114,7 @@ public class MatchRepository {
             log.warn("Error parsing match time {}. Returning with year 2100.", timeTillStart);
         }
 
-        return LocalDateTime.of(2100,1,1,0,0,0);
+        return LocalDateTime.of(2100, 1, 1, 0, 0, 0);
     }
 
     private String getLeftTeam(Element element) {
