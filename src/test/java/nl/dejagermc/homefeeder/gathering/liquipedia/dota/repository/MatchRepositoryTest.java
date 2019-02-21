@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MatchRepository.class)
@@ -55,18 +56,18 @@ public class MatchRepositoryTest {
         Document docMatches3 = Jsoup.parseBodyFragment(matches3);
 
         Mockito.when(jsoupUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches1));
-        List<Match> matches1Result = matchRepository.getAllMatches();
+        Set<Match> matches1Result = matchRepository.getAllMatches();
         assert (matches1Result.size() == 4);
         assert (matches1Result.stream().filter(Match::isLive).count() == 1L);
         assert (matches1Result.stream().anyMatch(m -> m.matchEitherTeam("WG.U")));
 
         Mockito.when(jsoupUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches2));
-        List<Match> matches2Result = matchRepository.getAllMatches();
+        Set<Match> matches2Result = matchRepository.getAllMatches();
         assert (matches2Result.size() == 4);
         assert (matches2Result.stream().filter(Match::isLive).count() == 2L);
 
         Mockito.when(jsoupUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches3));
-        List<Match> matches3Result = matchRepository.getAllMatches();
+        Set<Match> matches3Result = matchRepository.getAllMatches();
         assert (matches3Result.size() == 3);
         assert (matches3Result.stream().filter(Match::isLive).count() == 1L);
         assert (matches3Result.stream().noneMatch(m -> m.matchEitherTeam("WG.U")));

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isEenMatchDieLaterVandaagIs;
@@ -99,26 +100,27 @@ public class StatusReportService {
 
     private void addMatchesToUpdate(StringBuilder sb) {
         // matches earlier
-        List<Match> favTeamMissedMatches = matchService.getMatchesNotReported();
+        Set<Match> favTeamMissedMatches = matchService.getMatchesNotReported();
         if (!favTeamMissedMatches.isEmpty()) {
             sb.append("You've missed the following games:%n");
             addAllMatchesToReport(sb, favTeamMissedMatches);
         }
         // matches live
-        List<Match> liveMatches = matchService.getLiveMatches();
+        Set<Match> liveMatches = matchService.getLiveMatches();
         if (!liveMatches.isEmpty()) {
             sb.append("Playing live are:%n");
             addAllMatchesToReport(sb, liveMatches);
         }
         // matchers later today
-        List<Match> futureMatches = matchService.getTodaysMatches().stream().filter(isEenMatchDieLaterVandaagIs()).collect(Collectors.toList());
+        Set<Match> futureMatches =
+                matchService.getTodaysMatches().stream().filter(isEenMatchDieLaterVandaagIs()).collect(Collectors.toSet());
         if (!futureMatches.isEmpty()) {
             sb.append("Games played later today are:%n");
             addAllMatchesToReport(sb, futureMatches);
         }
     }
 
-    private void addAllMatchesToReport(StringBuilder sb, List<Match> matches) {
+    private void addAllMatchesToReport(StringBuilder sb, Set<Match> matches) {
         for (Match match : matches) {
             String report = String.format("At %s: %s versus %s%n",
                     match.matchTime().format(DateTimeFormatter.ofPattern("H:mm")),

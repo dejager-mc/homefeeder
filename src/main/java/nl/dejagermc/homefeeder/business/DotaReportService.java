@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType.*;
 
@@ -59,7 +59,7 @@ public class DotaReportService extends AbstractReportService {
     private void reportTodaysMatchsForTournamentType(TournamentType tournamentType) {
         log.info("Start report for {} tournaments", tournamentType.getName());
         StringBuilder sb = new StringBuilder();
-        List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
+        Set<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
 
         for (Tournament tournament : tournaments) {
             log.info("Adding matches for tournament: {}", tournament);

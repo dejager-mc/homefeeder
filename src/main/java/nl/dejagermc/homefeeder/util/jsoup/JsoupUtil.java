@@ -11,7 +11,7 @@ import java.util.Optional;
 @Slf4j
 public class JsoupUtil {
 
-    public Optional<Document> getDocument(String uri) {
+    public Optional<Document> getDocument(final String uri) {
         try {
             return Optional.of(Jsoup.connect(uri).get());
         } catch (Exception e) {
@@ -19,7 +19,7 @@ public class JsoupUtil {
             return Optional.empty();
         }
     }
-    public Optional<Document> getDocumentIgnoreContentType(String uri) {
+    public Optional<Document> getDocumentIgnoreContentType(final String uri) {
         try {
             return Optional.of(Jsoup.connect(uri).ignoreContentType(true).get());
         } catch (Exception e) {

@@ -11,7 +11,7 @@ public class TournamentPredicates {
         // private
     }
 
-    public static Predicate<Tournament> isTournamentActief() {
+    public static Predicate<Tournament> isTournamentActive() {
         return t -> t.start().isBefore(LocalDateTime.now()) &&
                 t.end().isAfter(LocalDateTime.now());
     }

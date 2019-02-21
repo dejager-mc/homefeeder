@@ -15,10 +15,7 @@ import org.springframework.util.Assert;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,33 +36,33 @@ public class TournamentRepository {
     }
 
     @Cacheable(cacheNames = "getAllPremierTournaments", cacheManager = "cacheManagerCaffeine")
-    public List<Tournament> getAllPremierTournaments() {
+    public Set<Tournament> getAllPremierTournaments() {
         return getAllTournamentElements(URI_PREMIER).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.PREMIER))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Cacheable(cacheNames = "getAllMajorTournaments", cacheManager = "cacheManagerCaffeine")
-    public List<Tournament> getAllMajorTournaments() {
+    public Set<Tournament> getAllMajorTournaments() {
         return getAllTournamentElements(URI_MAJOR).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.MAJOR))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Cacheable(cacheNames = "getAllQualifierTournaments", cacheManager = "cacheManagerCaffeine")
-    public List<Tournament> getAllQualifierTournaments() {
+    public Set<Tournament> getAllQualifierTournaments() {
         return getAllTournamentElements(URI_QUALIFIERS).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.QUALIFIER))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-    private Elements getAllTournamentElements(String uri) {
+    private Elements getAllTournamentElements(final String uri) {
         Optional<Document> optionalDoc = jsoupUtil.getDocument(uri);
         if (optionalDoc.isPresent()) {
             return optionalDoc.get().select("div.divRow");
@@ -73,7 +70,7 @@ public class TournamentRepository {
         return new Elements();
     }
 
-    private Optional<Tournament> convertElementToTournament(Element element, TournamentType tournamentType) {
+    private Optional<Tournament> convertElementToTournament(final Element element, final TournamentType tournamentType) {
         String date = getTournamentDetail(element, "Date");
         List<LocalDateTime> dates = dateStringToPeriod(date);
 
@@ -94,26 +91,26 @@ public class TournamentRepository {
                 .build());
     }
 
-    private int prizeToInt(String prize) {
+    private int prizeToInt(final String prize) {
         if (prize.isBlank()) {
             return 0;
         }
         return Integer.parseInt(prize.substring(1).replaceAll(",", ""));
     }
 
-    private int teamsToInt(String teams) {
+    private int teamsToInt(final String teams) {
         if (teams.isBlank()) {
             return 0;
         }
         return Integer.parseInt(teams.split(" ")[0]);
     }
 
-    private boolean isTournamentByValve(Element element) {
+    private boolean isTournamentByValve(final Element element) {
         Elements list = element.select("div.Header-Premier");
         return !list.isEmpty();
     }
 
-    private List<LocalDateTime> dateStringToPeriod(String date) {
+    private List<LocalDateTime> dateStringToPeriod(final String date) {
         String year1 = "";
         String year2 = "";
         String month1 = "";
@@ -173,14 +170,14 @@ public class TournamentRepository {
         return Arrays.asList(start, end);
     }
 
-    private LocalDate parseDate(String month, String day, String year) {
+    private LocalDate parseDate(final String month, final String day, final String year) {
         Locale us = Locale.US;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy", us);
         String parseString = String.format("%s %s %s", month, day, year);
         return LocalDate.parse(parseString, formatter);
     }
 
-    private String getTournamentDetail(Element element, String detail) {
+    private String getTournamentDetail(final Element element, final String detail) {
         return element.select("div." + detail).text().trim();
     }
 }

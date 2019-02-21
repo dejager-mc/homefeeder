@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.isTournamentActief;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.isTournamentActive;
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportance;
 
 @Service
@@ -26,47 +27,54 @@ public class TournamentService {
         this.tournamentRepository = tournamentRepository;
     }
 
-    public List<Tournament> getAllTournaments() {
-        List<Tournament> allTournaments = tournamentRepository.getAllPremierTournaments();
-        allTournaments.addAll(tournamentRepository.getAllMajorTournaments());
-        allTournaments.addAll(tournamentRepository.getAllQualifierTournaments());
+    public Set<Tournament> getAllTournaments() {
+        Set<Tournament> allTournaments = new HashSet<>();
+
+        final Set<Tournament> premiumTournaments = tournamentRepository.getAllPremierTournaments();
+        final Set<Tournament> majorTournaments = tournamentRepository.getAllMajorTournaments();
+        final Set<Tournament> qualifierTournaments = tournamentRepository.getAllQualifierTournaments();
+
+        allTournaments.addAll(premiumTournaments);
+        allTournaments.addAll(majorTournaments);
+        allTournaments.addAll(qualifierTournaments);
+
         return allTournaments;
     }
 
-    public List<Tournament> getAllPremierTournaments() {
+    public Set<Tournament> getAllPremierTournaments() {
         return tournamentRepository.getAllPremierTournaments();
     }
 
-    public List<Tournament> getAllMajorTournaments() {
+    public Set<Tournament> getAllMajorTournaments() {
         return tournamentRepository.getAllMajorTournaments();
     }
 
-    public List<Tournament> getAllQualifierTournaments() {
+    public Set<Tournament> getAllQualifierTournaments() {
         return tournamentRepository.getAllQualifierTournaments();
     }
 
-    public List<Tournament> getAllActiveTournamentsForType(TournamentType tournamentType) {
+    public Set<Tournament> getAllActiveTournamentsForType(final TournamentType tournamentType) {
         switch (tournamentType) {
             case PREMIER:
-                return getAllPremierTournaments().stream().filter(isTournamentActief()).collect(Collectors.toList());
+                return getAllPremierTournaments().stream().filter(isTournamentActive()).collect(Collectors.toSet());
             case MAJOR:
-                return getAllMajorTournaments().stream().filter(isTournamentActief()).collect(Collectors.toList());
+                return getAllMajorTournaments().stream().filter(isTournamentActive()).collect(Collectors.toSet());
             case QUALIFIER:
-                return getAllQualifierTournaments().stream().filter(isTournamentActief()).collect(Collectors.toList());
+                return getAllQualifierTournaments().stream().filter(isTournamentActive()).collect(Collectors.toSet());
             default:
-                return Collections.emptyList();
+                return Collections.emptySet();
         }
     }
 
-    public Optional<Tournament> getTournamentByName(String name) {
-        return getAllTournaments().stream().filter(t -> t.name().equals(name)).findFirst();
+    public Optional<Tournament> getTournamentByName(final String name) {
+        return getAllTournaments().stream()
+                .filter(t -> t.name().equals(name))
+                .findFirst();
     }
 
     public Optional<Tournament> getMostImportantActiveTournament() {
         return getAllTournaments().stream()
-                .filter(isTournamentActief())
-                .sorted(sortTournamentsByImportance())
-                .findFirst();
-
+                .filter(isTournamentActive())
+                .max(sortTournamentsByImportance());
     }
 }

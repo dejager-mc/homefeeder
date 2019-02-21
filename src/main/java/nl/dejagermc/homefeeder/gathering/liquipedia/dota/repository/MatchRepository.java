@@ -3,7 +3,6 @@ package nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,8 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.sortMatchesOpTijd;
-
 @Component
 @Slf4j
 public class MatchRepository {
@@ -25,7 +22,7 @@ public class MatchRepository {
     private static final String UNKNOWN_TEAM = "T.B.D.";
     private static final String BASE_URI = "https://liquipedia.net";
 
-    private List<Match> oldMatches = new ArrayList<>();
+    private Set<Match> oldMatches = new HashSet<>();
 
     private JsoupUtil jsoupUtil;
 
@@ -35,29 +32,29 @@ public class MatchRepository {
     }
 
     @Cacheable(cacheNames = "getAllMatches", cacheManager = "cacheManagerCaffeine")
-    public List<Match> getAllMatches() {
+    public Set<Match> getAllMatches() {
         Elements elements = getAllMatchElements();
-        List<Match> newMatches = convertElementsToMatches(elements);
+        Set<Match> newMatches = convertElementsToMatches(elements);
         return mergeNewMatchesWithExcistingMatches(newMatches);
     }
 
-    private List<Match> mergeNewMatchesWithExcistingMatches(List<Match> newMatches) {
+    private Set<Match> mergeNewMatchesWithExcistingMatches(Set<Match> newMatches) {
         log.info("Old matches: {}", oldMatches.size());
 //        oldMatches.stream().sorted(sortMatchesOpTijd()).forEach(m -> log.info(m.toString()));
         log.info("new matches: {}", newMatches.size());
 //        newMatches.stream().sorted(sortMatchesOpTijd()).forEach(m -> log.info(m.toString()));
         // remove TBD matches
         // remove old matches not in new matches
-        List<Match> oldMatchesExpiredMatchesRemoved = oldMatches.stream()
+        Set<Match> oldMatchesExpiredMatchesRemoved = oldMatches.stream()
                 .filter(m -> !m.matchEitherTeam(UNKNOWN_TEAM))
                 .filter(newMatches::contains)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         // add new matches not in old matches
-        List<Match> actualNewMatches = newMatches.stream()
+        Set<Match> actualNewMatches = newMatches.stream()
                 .filter(m -> !oldMatchesExpiredMatchesRemoved.contains(m))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        oldMatches = new ArrayList<>();
+        oldMatches = new HashSet<>();
         oldMatches.addAll(oldMatchesExpiredMatchesRemoved);
         oldMatches.addAll(actualNewMatches);
 
@@ -77,11 +74,11 @@ public class MatchRepository {
         return "";
     }
 
-    private List<Match> convertElementsToMatches(Elements elements) {
+    private Set<Match> convertElementsToMatches(Elements elements) {
         return elements.stream()
                 .filter(Objects::nonNull)
                 .map(this::createMatch)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private Match createMatch(Element element) {

@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -184,8 +185,8 @@ public class DotaReportServiceTest {
         Match match = getMatchForTeam("OG", "EG");
         Tournament tournament = getPremierTournament(tournamentName, TournamentType.PREMIER);
 
-        when(tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER)).thenReturn(Arrays.asList(tournament));
-        when(matchService.getTodaysMatchesForTournament(tournamentName)).thenReturn(Arrays.asList(match));
+        when(tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER)).thenReturn(Set.of(tournament));
+        when(matchService.getTodaysMatchesForTournament(tournamentName)).thenReturn(Set.of(match));
         validateMockitoUsage();
 
         dotaReportService.reportTodaysMatches();

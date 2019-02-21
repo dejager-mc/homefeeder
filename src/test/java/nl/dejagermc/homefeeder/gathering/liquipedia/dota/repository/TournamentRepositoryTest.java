@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TournamentRepository.class)
@@ -39,7 +40,7 @@ public class TournamentRepositoryTest {
         Document docPremierTournaments = Jsoup.parseBodyFragment(premierTournaments);
 
         Mockito.when(jsoupUtil.getDocument(URI_PREMIER)).thenReturn(Optional.of(docPremierTournaments));
-        List<Tournament> premierTournamentsList = tournamentRepository.getAllPremierTournaments();
+        Set<Tournament> premierTournamentsList = tournamentRepository.getAllPremierTournaments();
     }
 
     private String readFileToString(String path) {
