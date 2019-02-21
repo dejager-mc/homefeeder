@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchMetStream;
@@ -55,7 +56,8 @@ public class StreamOutputService {
     }
 
     private Optional<Match> getMostImportantLiveMatch() {
-        List<Match> liveMatches = matchService.getLiveMatches().stream().filter(isMatchMetStream()).collect(Collectors.toList());
+        Set<Match> liveMatches =
+                matchService.getLiveMatches().stream().filter(isMatchMetStream()).collect(Collectors.toSet());
         if (liveMatches.isEmpty()) {
             return Optional.empty();
         }
@@ -63,28 +65,33 @@ public class StreamOutputService {
         List<String> teams = userState.favoriteTeams();
         List<Tournament> matchTournaments = liveMatches.stream()
                 .map(match -> tournamentService.getTournamentByName(match.tournamentName()))
+                .distinct()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        matchTournaments.sort(sortTournamentsByImportance());
+        matchTournaments.sort(sortTournamentsByImportance().reversed());
 
-        Optional<Match> possibleMatch = getFirstMatchForTournamentAndFavTeam(matchTournaments, teams, liveMatches);
+        Optional<Match> possibleMatch = getFirstMatchForTournamentAndFavTeam(matchTournaments, liveMatches, teams);
         if (possibleMatch.isPresent()) {
-            return Optional.of(possibleMatch.get());
+            return possibleMatch;
         }
 
         possibleMatch = getFirstMatchForTournament(matchTournaments, liveMatches);
         if (possibleMatch.isPresent()) {
-            return Optional.of(possibleMatch.get());
+            return possibleMatch;
         }
 
         return Optional.empty();
     }
 
-    private Optional<Match> getFirstMatchForTournamentAndFavTeam(List<Tournament> tournaments, List<String> favTeams, List<Match> matches) {
-        for (Tournament tournament : tournaments) {
-            Optional<Match> optionalMatch = matches.stream().filter(m -> m.tournamentName().equals(tournament.name())).filter(m -> m.matchEitherTeam(favTeams)).findFirst();
+    private Optional<Match> getFirstMatchForTournamentAndFavTeam(final List<Tournament> sortedTournaments,
+                                                                 final Set<Match> matches, final List<String> favTeams) {
+        for (Tournament tournament : sortedTournaments) {
+            Optional<Match> optionalMatch = matches.stream()
+                    .filter(m -> m.isInTournament(tournament.name()))
+                    .filter(m -> m.matchEitherTeam(favTeams))
+                    .findFirst();
             if (optionalMatch.isPresent()) {
                 return optionalMatch;
             }
@@ -92,9 +99,12 @@ public class StreamOutputService {
         return Optional.empty();
     }
 
-    private Optional<Match> getFirstMatchForTournament(List<Tournament> tournaments, List<Match> matches) {
-        for (Tournament tournament : tournaments) {
-            Optional<Match> optionalMatch = matches.stream().filter(m -> m.tournamentName().equals(tournament.name())).findFirst();
+    private Optional<Match> getFirstMatchForTournament(final List<Tournament> sortedTournaments,
+                                                       final Set<Match> matches) {
+        for (Tournament tournament : sortedTournaments) {
+            Optional<Match> optionalMatch = matches.stream()
+                    .filter(m -> m.isInTournament(tournament.name()))
+                    .findFirst();
             if (optionalMatch.isPresent()) {
                 return optionalMatch;
             }

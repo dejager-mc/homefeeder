@@ -26,6 +26,10 @@ public class Match {
         return !matchTime().isAfter(LocalDateTime.now());
     }
 
+    public boolean isInTournament(String tournamentName) {
+        return this.tournamentName.equals(tournamentName);
+    }
+
     public boolean matchEitherTeam(List<String> teams) {
         for (String team : teams) {
             if (matchEitherTeam(team)) {
