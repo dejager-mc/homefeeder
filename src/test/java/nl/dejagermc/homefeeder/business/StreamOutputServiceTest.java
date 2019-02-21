@@ -119,7 +119,7 @@ public class StreamOutputServiceTest extends TestSetup {
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
         validateMockitoUsage();
 
-        streamOutputService.watchStream();
+        streamOutputService.streamLiveMatch();
 
         verify(googleHomeReporter, times(1)).broadcast(googleBroadcastCaptor.capture());
         validateMockitoUsage();
@@ -138,7 +138,7 @@ public class StreamOutputServiceTest extends TestSetup {
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
         validateMockitoUsage();
 
-        streamOutputService.watchStream();
+        streamOutputService.streamLiveMatch();
 
         verify(googleHomeReporter, times(1)).broadcast(googleBroadcastCaptor.capture());
         verify(openhabOutput, times(1)).turnOnTv();
@@ -157,7 +157,7 @@ public class StreamOutputServiceTest extends TestSetup {
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
         validateMockitoUsage();
 
-        streamOutputService.watchStream();
+        streamOutputService.streamLiveMatch();
 
         verify(googleHomeReporter, times(1)).broadcast(googleBroadcastCaptor.capture());
         verify(openhabOutput, times(1)).turnOnTv();

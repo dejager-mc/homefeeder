@@ -42,7 +42,7 @@ public class StreamOutputService {
         this.googleHomeReporter = googleHomeReporter;
     }
 
-    public void watchStream() {
+    public void streamLiveMatch() {
         Optional<Match> match = getMostImportantLiveMatch();
 
         if (match.isPresent()) {

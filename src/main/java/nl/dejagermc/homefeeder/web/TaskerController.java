@@ -25,7 +25,7 @@ public class TaskerController {
     @GetMapping("dotaOnTv")
     public ResponseEntity dotaOnTv() {
         log.info("start dota stream on tv");
-        streamOutputService.watchStream();
+        streamOutputService.streamLiveMatch();
         return new ResponseEntity(HttpStatus.OK);
     }
 
