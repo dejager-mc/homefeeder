@@ -75,7 +75,7 @@ public class TournamentServiceTest {
         Set<Tournament> results = tournamentService.getAllTournaments();
         validateMockitoUsage();
 
-        assertEquals(results.size(), 7);
+        assertEquals(7, results.size());
         assertThat(results, containsInAnyOrder(tournament1Active, tournament2Active, tournament5Active,
                 tournament6NotActive, tournament3NotActive, tournament4NotActive, mostImportantActiveTournament));
     }
@@ -86,7 +86,7 @@ public class TournamentServiceTest {
         Set<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER);
         validateMockitoUsage();
 
-        assertEquals(results.size(), 2);
+        assertEquals(2, results.size());
         assertThat(results, containsInAnyOrder(tournament1Active, mostImportantActiveTournament));
     }
 
@@ -96,7 +96,7 @@ public class TournamentServiceTest {
         Set<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.MAJOR);
         validateMockitoUsage();
 
-        assertEquals(results.size(), 1);
+        assertEquals(1, results.size());
         assertThat(results, containsInAnyOrder(tournament2Active));
     }
 
@@ -106,7 +106,7 @@ public class TournamentServiceTest {
         Set<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.QUALIFIER);
         validateMockitoUsage();
 
-        assertEquals(results.size(), 1);
+        assertEquals(1, results.size());
         assertThat(results, containsInAnyOrder(tournament5Active));
     }
 

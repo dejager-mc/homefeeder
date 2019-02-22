@@ -13,11 +13,13 @@ import java.util.Optional;
 @Slf4j
 public class JsoupUtil {
 
+    private static final String ERROR_MSG = "Error connecting to uri: {}";
+
     public Optional<Document> getDocument(final String uri) {
         try {
             return Optional.of(Jsoup.connect(uri).get());
         } catch (Exception e) {
-            log.error("Error connecting to uri: {}", uri, e);
+            log.error(ERROR_MSG, uri, e);
             return Optional.empty();
         }
     }
@@ -25,7 +27,7 @@ public class JsoupUtil {
         try {
             return Optional.of(Jsoup.connect(uri).ignoreContentType(true).get());
         } catch (Exception e) {
-            log.error("Error connecting to uri: {}", uri, e);
+            log.error(ERROR_MSG, uri, e);
             return Optional.empty();
         }
     }
@@ -43,7 +45,7 @@ public class JsoupUtil {
                             .execute()
                             .body();
         } catch (IOException e) {
-            log.error("Error connecting to uri: {}", uri, e);
+            log.error(ERROR_MSG, uri, e);
             return "ERROR";
         }
     }

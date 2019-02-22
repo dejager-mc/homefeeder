@@ -26,9 +26,6 @@ public class UserState {
     private List<String> favoriteTeams = Arrays.asList("OG", "Secret", "VP");
 
     public boolean reportNow() {
-        if (isSleeping || isMute || !isHome) {
-            return false;
-        }
-        return true;
+        return !isSleeping && !isMute && isHome;
     }
 }

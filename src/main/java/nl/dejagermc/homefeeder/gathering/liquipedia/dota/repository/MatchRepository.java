@@ -39,10 +39,6 @@ public class MatchRepository {
     }
 
     private Set<Match> mergeNewMatchesWithExcistingMatches(Set<Match> newMatches) {
-        log.info("Old matches: {}", oldMatches.size());
-//        oldMatches.stream().sorted(sortMatchesOpTijd()).forEach(m -> log.info(m.toString()));
-        log.info("new matches: {}", newMatches.size());
-//        newMatches.stream().sorted(sortMatchesOpTijd()).forEach(m -> log.info(m.toString()));
         // remove TBD matches
         // remove old matches not in new matches
         Set<Match> oldMatchesExpiredMatchesRemoved = oldMatches.stream()
@@ -57,9 +53,6 @@ public class MatchRepository {
         oldMatches = new HashSet<>();
         oldMatches.addAll(oldMatchesExpiredMatchesRemoved);
         oldMatches.addAll(actualNewMatches);
-
-        log.info("Merged matches: {}", oldMatches.size());
-//        oldMatches.stream().sorted(sortMatchesOpTijd()).forEach(m -> log.info(m.toString()));
 
         return oldMatches;
     }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 public class OpenhabOutput {
 
     private static final String ON = "ON";
-    private static final String OFF = "OFF";
 
     @Value("${openhab.rest}")
     private String openhabApiUri;

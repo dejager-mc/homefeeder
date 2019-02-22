@@ -3,7 +3,6 @@ package nl.dejagermc.homefeeder.output.telegram;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.user.UserState;
 import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

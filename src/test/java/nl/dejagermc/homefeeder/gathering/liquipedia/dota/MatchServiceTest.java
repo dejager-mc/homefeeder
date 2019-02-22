@@ -77,7 +77,7 @@ public class MatchServiceTest {
         Set<Match> results = matchService.getAllMatches();
         validateMockitoUsage();
 
-        assertEquals(results.size(), 13);
+        assertEquals(13, results.size());
         assertEquals(results, allMatches);
     }
 
@@ -87,7 +87,7 @@ public class MatchServiceTest {
         Set<Match> results = matchService.getTodaysMatches();
         validateMockitoUsage();
 
-        assertEquals(results.size(), 7);
+        assertEquals(7, results.size());
         assertThat(results, containsInAnyOrder(liveMatchFavTeamTourn1, liveMatchNotFavTeamTourn1,
                 liveMatchNotFavTeamTourn2,notLiveMatchFavTeamTourn1,notLiveMatchNotFavTeamTourn1,
                 notLiveMatchNotFavTeamTourn2,notLiveMatchFavTeamTourn2));
@@ -99,7 +99,7 @@ public class MatchServiceTest {
         Set<Match> results = matchService.getTodaysMatchesForTournament("tournament1");
         validateMockitoUsage();
 
-        assertEquals(results.size(),4);
+        assertEquals(4, results.size());
         assertThat(results, containsInAnyOrder(liveMatchFavTeamTourn1, liveMatchNotFavTeamTourn1,
                 notLiveMatchFavTeamTourn1,notLiveMatchNotFavTeamTourn1));
     }
@@ -110,7 +110,7 @@ public class MatchServiceTest {
         Set<Match> results = matchService.getTodaysMatchesForTournament("tournament2");
         validateMockitoUsage();
 
-        assertEquals(results.size(), 3);
+        assertEquals(3, results.size());
         assertThat(results, containsInAnyOrder(liveMatchNotFavTeamTourn2, notLiveMatchNotFavTeamTourn2,
                 notLiveMatchFavTeamTourn2));
     }
@@ -130,7 +130,7 @@ public class MatchServiceTest {
         Set<Match> results = matchService.getLiveMatches();
         validateMockitoUsage();
 
-        assertEquals(results.size(), 3);
+        assertEquals(3, results.size());
         assertThat(results, containsInAnyOrder(liveMatchFavTeamTourn1, liveMatchNotFavTeamTourn2,
                 liveMatchNotFavTeamTourn1));
     }

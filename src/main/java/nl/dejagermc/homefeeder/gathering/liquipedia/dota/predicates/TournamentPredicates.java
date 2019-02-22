@@ -16,12 +16,13 @@ public class TournamentPredicates {
                 t.end().isAfter(LocalDateTime.now());
     }
 
-    public static Comparator<Tournament> sortTournamentsByImportance() {
+    public static Comparator<Tournament> sortTournamentsByImportanceMostToLeast() {
         return Comparator
                 .comparing(Tournament::isByValve)
                 .thenComparing(Tournament::isPremier)
                 .thenComparing(Tournament::isMajor)
                 .thenComparing(Tournament::isQualifier)
-                .thenComparing(t -> t.name().toLowerCase().matches(".*europe.*"));
+                .thenComparing(t -> t.name().toLowerCase().matches(".*europe.*"))
+                .reversed();
     }
 }

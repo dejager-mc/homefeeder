@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchMetStream;
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportance;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportanceMostToLeast;
 
 @Service
 @Slf4j
@@ -69,7 +69,7 @@ public class StreamOutputService {
                 .distinct()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .sorted(sortTournamentsByImportance().reversed())
+                .sorted(sortTournamentsByImportanceMostToLeast())
                 .collect(Collectors.toList());
 
         List<String> teams = userState.favoriteTeams();

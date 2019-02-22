@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.isTournamentActive;
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportance;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportanceMostToLeast;
 
 @Service
 @Slf4j
@@ -27,7 +27,7 @@ public class TournamentService {
         this.tournamentRepository = tournamentRepository;
     }
 
-    public Set<Tournament> getAllTournaments() {
+    Set<Tournament> getAllTournaments() {
         Set<Tournament> allTournaments = new HashSet<>();
 
         final Set<Tournament> premiumTournaments = tournamentRepository.getAllPremierTournaments();
@@ -41,15 +41,15 @@ public class TournamentService {
         return allTournaments;
     }
 
-    public Set<Tournament> getAllPremierTournaments() {
+    private Set<Tournament> getAllPremierTournaments() {
         return tournamentRepository.getAllPremierTournaments();
     }
 
-    public Set<Tournament> getAllMajorTournaments() {
+    private Set<Tournament> getAllMajorTournaments() {
         return tournamentRepository.getAllMajorTournaments();
     }
 
-    public Set<Tournament> getAllQualifierTournaments() {
+    private Set<Tournament> getAllQualifierTournaments() {
         return tournamentRepository.getAllQualifierTournaments();
     }
 
@@ -75,6 +75,6 @@ public class TournamentService {
     public Optional<Tournament> getMostImportantActiveTournament() {
         return getAllTournaments().stream()
                 .filter(isTournamentActive())
-                .max(sortTournamentsByImportance());
+                .min(sortTournamentsByImportanceMostToLeast());
     }
 }
