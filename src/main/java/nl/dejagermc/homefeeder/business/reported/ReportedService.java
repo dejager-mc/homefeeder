@@ -1,7 +1,7 @@
-package nl.dejagermc.homefeeder.output.reported;
+package nl.dejagermc.homefeeder.business.reported;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.output.reported.model.ReportedTo;
+import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 

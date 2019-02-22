@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.business;
+package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
@@ -9,7 +9,9 @@ import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.gathering.radarr.RadarrService;
 import nl.dejagermc.homefeeder.gathering.sonarr.SonarrService;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
+import nl.dejagermc.homefeeder.business.reported.ReportedService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,29 +25,24 @@ import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.Match
 
 @Service
 @Slf4j
-public class StatusReportService {
-
-    private UserState userState;
+public class StatusReportService extends AbstractReportService {
 
     private SonarrService sonarrService;
     private RadarrService radarrService;
     private TournamentService tournamentService;
     private MatchService matchService;
 
-    private GoogleHomeReporter googleHomeReporter;
-
     @Autowired
-    public StatusReportService(UserState userState, SonarrService sonarrService, RadarrService radarrService, TournamentService tournamentService, MatchService matchService, GoogleHomeReporter googleHomeReporter) {
-        this.userState = userState;
+    public StatusReportService(UserState userState, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, SonarrService sonarrService, RadarrService radarrService, TournamentService tournamentService, MatchService matchService) {
+        super(userState, reportedService, telegramOutput, googleHomeOutput);
         this.sonarrService = sonarrService;
         this.radarrService = radarrService;
         this.tournamentService = tournamentService;
         this.matchService = matchService;
-        this.googleHomeReporter = googleHomeReporter;
     }
 
     public void statusUpdate() {
-        if (userState.isMute() || !userState.isHome() || userState.isSleeping()) {
+        if (!userState.reportNow()) {
             return;
         }
 
@@ -59,7 +56,7 @@ public class StatusReportService {
         // games
         addMatchesToUpdate(sb);
 
-        googleHomeReporter.broadcast(sb.toString());
+        googleHomeOutput.broadcast(sb.toString());
         markEverythingAsReported();
     }
 

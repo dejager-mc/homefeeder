@@ -1,8 +1,8 @@
 package nl.dejagermc.homefeeder.web;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.DotaReportService;
-import nl.dejagermc.homefeeder.business.StatusReportService;
+import nl.dejagermc.homefeeder.business.reporting.DotaReportService;
+import nl.dejagermc.homefeeder.business.reporting.StatusReportService;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

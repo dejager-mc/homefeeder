@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.output.reported.model;
+package nl.dejagermc.homefeeder.business.reported.model;
 
 public enum ReportedTo {
     TELEGRAM,

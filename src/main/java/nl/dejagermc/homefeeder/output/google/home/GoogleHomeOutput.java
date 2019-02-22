@@ -1,7 +1,6 @@
 package nl.dejagermc.homefeeder.output.google.home;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.user.UserState;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,25 +11,22 @@ import java.io.IOException;
 
 @Service
 @Slf4j
-public class GoogleHomeReporter {
+public class GoogleHomeOutput {
 
     private static final String BROADCAST_JSON_MESSAGE = "{\"command\":\"%s\", \"user\":\"GoogleAssistantRelay\", \"broadcast\":\"false\"}";
-    private UserState userState;
 
     @Value("${google.assistant.relay.uri}")
     private String uri;
 
     @Autowired
-    public GoogleHomeReporter(UserState userState) {
-        this.userState = userState;
+    public GoogleHomeOutput() {
+        // empty
     }
 
     public void broadcast(String message) {
-        if (userState.useGoogleHome()) {
-            String optimisedMessage = optimiseNamesForSpeech(message);
-            String json = String.format(BROADCAST_JSON_MESSAGE, optimisedMessage);
-            broadcastToGoogleHome(json);
-        }
+        String optimisedMessage = optimiseNamesForSpeech(message);
+        String json = String.format(BROADCAST_JSON_MESSAGE, optimisedMessage);
+        broadcastToGoogleHome(json);
     }
 
     private String optimiseNamesForSpeech(String message) {

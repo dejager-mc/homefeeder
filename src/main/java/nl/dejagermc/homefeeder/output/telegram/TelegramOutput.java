@@ -1,7 +1,6 @@
 package nl.dejagermc.homefeeder.output.telegram;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.user.UserState;
 import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class TelegramReporter {
+public class TelegramOutput {
     private static final String BASE = "https://api.telegram.org";
     private static final String BOT = "/bot";
     private static final String CHANNEL = "/sendMessage?chat_id=";
@@ -25,19 +24,15 @@ public class TelegramReporter {
     @Value("${telegram.channel.name}")
     private String channelName;
 
-    private UserState userState;
     private JsoupUtil jsoupUtil;
 
     @Autowired
-    public TelegramReporter(UserState userState, JsoupUtil jsoupUtil) {
-        this.userState = userState;
+    public TelegramOutput(JsoupUtil jsoupUtil) {
         this.jsoupUtil = jsoupUtil;
     }
 
     public void sendMessage(String message) {
-        if (userState.useTelegram()) {
-            doSendMessage(message);
-        }
+        doSendMessage(message);
     }
 
     private void doSendMessage(String message) {

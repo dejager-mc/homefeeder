@@ -10,7 +10,7 @@ import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.MatchRepository;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.TournamentRepository;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.junit.Before;
@@ -66,7 +66,7 @@ public class StreamOutputServiceTest extends TestSetup {
     @MockBean
     private OpenhabOutput openhabOutput;
     @MockBean
-    private GoogleHomeReporter googleHomeReporter;
+    private GoogleHomeOutput googleHomeOutput;
     @MockBean
     private MatchRepository matchRepository;
     @MockBean
@@ -120,7 +120,7 @@ public class StreamOutputServiceTest extends TestSetup {
 
         streamOutputService.streamLiveMatch();
 
-        verify(googleHomeReporter, times(1)).broadcast(googleBroadcastCaptor.capture());
+        verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
         validateMockitoUsage();
         assertEquals("There is no match that can be streamed.", googleBroadcastCaptor.getValue());
     }
@@ -139,7 +139,7 @@ public class StreamOutputServiceTest extends TestSetup {
 
         streamOutputService.streamLiveMatch();
 
-        verify(googleHomeReporter, times(1)).broadcast(googleBroadcastCaptor.capture());
+        verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
         verify(openhabOutput, times(1)).turnOnTv();
         verify(openhabOutput, times(1)).streamToTv(twitchStreamUri.capture());
         validateMockitoUsage();
@@ -158,7 +158,7 @@ public class StreamOutputServiceTest extends TestSetup {
 
         streamOutputService.streamLiveMatch();
 
-        verify(googleHomeReporter, times(1)).broadcast(googleBroadcastCaptor.capture());
+        verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
         verify(openhabOutput, times(1)).turnOnTv();
         verify(openhabOutput, times(1)).streamToTv(twitchStreamUri.capture());
         validateMockitoUsage();

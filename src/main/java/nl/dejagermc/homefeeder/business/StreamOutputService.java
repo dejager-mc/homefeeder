@@ -6,7 +6,7 @@ import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.util.MatchUtil;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +31,15 @@ public class StreamOutputService {
     private UserState userState;
     private MatchService matchService;
     private TournamentService tournamentService;
-    private GoogleHomeReporter googleHomeReporter;
+    private GoogleHomeOutput googleHomeOutput;
 
     @Autowired
-    public StreamOutputService(OpenhabOutput openhabOutput, UserState userState, MatchService matchService, TournamentService tournamentService, GoogleHomeReporter googleHomeReporter) {
+    public StreamOutputService(OpenhabOutput openhabOutput, UserState userState, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
         this.openhabOutput = openhabOutput;
         this.userState = userState;
         this.matchService = matchService;
         this.tournamentService = tournamentService;
-        this.googleHomeReporter = googleHomeReporter;
+        this.googleHomeOutput = googleHomeOutput;
     }
 
     public void streamLiveMatch() {
@@ -47,11 +47,11 @@ public class StreamOutputService {
 
         if (match.isPresent()) {
             Match liveMatch = match.get();
-            googleHomeReporter.broadcast(String.format(MATCH_FOUND_MESSAGE, liveMatch.leftTeam(), liveMatch.rightTeam()));
+            googleHomeOutput.broadcast(String.format(MATCH_FOUND_MESSAGE, liveMatch.leftTeam(), liveMatch.rightTeam()));
             openhabOutput.turnOnTv();
             openhabOutput.streamToTv(MatchUtil.getStreamUri(match.get()));
         } else {
-            googleHomeReporter.broadcast(NO_MATCH_FOUND_MESSAGE);
+            googleHomeOutput.broadcast(NO_MATCH_FOUND_MESSAGE);
         }
     }
 

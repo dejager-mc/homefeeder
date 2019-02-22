@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.business;
+package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
@@ -6,10 +6,10 @@ import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
-import nl.dejagermc.homefeeder.output.reported.ReportedService;
-import nl.dejagermc.homefeeder.output.reported.model.ReportedTo;
-import nl.dejagermc.homefeeder.output.telegram.TelegramReporter;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
+import nl.dejagermc.homefeeder.business.reported.ReportedService;
+import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,10 +28,10 @@ public class DotaReportService extends AbstractReportService {
     private TournamentService tournamentService;
 
     @Autowired
-    public DotaReportService(TournamentService tournamentService, UserState userState, ReportedService reportedService,
-                             TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter,
-                             MatchService matchService) {
-        super(userState, reportedService, telegramReporter, googleHomeReporter);
+    public DotaReportService(UserState userState, ReportedService reportedService,
+                             TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput,
+                             MatchService matchService, TournamentService tournamentService) {
+        super(userState, reportedService, telegramOutput, googleHomeOutput);
         this.matchService = matchService;
         this.tournamentService = tournamentService;
     }
@@ -63,7 +63,7 @@ public class DotaReportService extends AbstractReportService {
         }
 
         if (!sb.toString().isBlank()) {
-            telegramReporter.sendMessage(tournamentType.getName() + " matches:\n" + sb.toString());
+            telegramOutput.sendMessage(tournamentType.getName() + " matches:\n" + sb.toString());
         }
     }
 
@@ -78,18 +78,18 @@ public class DotaReportService extends AbstractReportService {
     private void reportNewToTelegram(Match match) {
         if (!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM)) {
             String message = formatMatchForTelegram(match);
-            telegramReporter.sendMessage(message);
+            telegramOutput.sendMessage(message);
             reportedService.reportThisToThat(match, ReportedTo.TELEGRAM);
         }
     }
 
     private void reportNewToGoogleHome(Match match) {
         if (!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME)) {
-            if (userState.isSleeping() || !userState.isHome() || userState.isMute()) {
+            if (!userState.reportNow()) {
                 matchService.addMatchNotReported(match);
             } else {
                 String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
-                googleHomeReporter.broadcast(message);
+                googleHomeOutput.broadcast(message);
                 reportedService.reportThisToThat(match, ReportedTo.GOOGLE_HOME);
             }
         }

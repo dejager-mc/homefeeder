@@ -2,17 +2,17 @@ package nl.dejagermc.homefeeder.schedulers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
-import nl.dejagermc.homefeeder.business.DotaReportService;
+import nl.dejagermc.homefeeder.business.reporting.DotaReportService;
 import nl.dejagermc.homefeeder.config.CacheManagerConfig;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.MatchRepository;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.TournamentRepository;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
-import nl.dejagermc.homefeeder.output.reported.ReportedService;
-import nl.dejagermc.homefeeder.output.reported.model.ReportedTo;
-import nl.dejagermc.homefeeder.output.telegram.TelegramReporter;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
+import nl.dejagermc.homefeeder.business.reported.ReportedService;
+import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
 import nl.dejagermc.homefeeder.schudulers.DotaScheduler;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.junit.Before;
@@ -45,9 +45,9 @@ public class DotaSchedulerTest extends TestSetup {
     @MockBean
     private MatchRepository matchRepository;
     @MockBean
-    private TelegramReporter telegramReporter;
+    private TelegramOutput telegramOutput;
     @MockBean
-    private GoogleHomeReporter googleHomeReporter;
+    private GoogleHomeOutput googleHomeOutput;
 
     @Autowired
     private DotaScheduler dotaScheduler;
@@ -90,23 +90,23 @@ public class DotaSchedulerTest extends TestSetup {
         // run 1
         dotaScheduler.reportLiveMatches();
 
-        verify(telegramReporter, times(1)).sendMessage(anyString());
-        verify(googleHomeReporter, times(1)).broadcast(anyString());
+        verify(telegramOutput, times(1)).sendMessage(anyString());
+        verify(googleHomeOutput, times(1)).broadcast(anyString());
         validateMockitoUsage();
         assertTrue(reportedService.hasThisBeenReported(match1, ReportedTo.GOOGLE_HOME));
         assertTrue(reportedService.hasThisBeenReported(match1, ReportedTo.TELEGRAM));
 
 
         // run 2
-        clearInvocations(telegramReporter, googleHomeReporter);
+        clearInvocations(telegramOutput, googleHomeOutput);
         Match match2 = defaultMatch(teamLeft, teamRight, tournamentName, true);
         when(matchRepository.getAllMatches()).thenReturn(Set.of(match2));
         validateMockitoUsage();
 
         dotaScheduler.reportLiveMatches();
 
-        verify(telegramReporter, times(0)).sendMessage(anyString());
-        verify(googleHomeReporter, times(0)).broadcast(anyString());
+        verify(telegramOutput, times(0)).sendMessage(anyString());
+        verify(googleHomeOutput, times(0)).broadcast(anyString());
         validateMockitoUsage();
     }
 }

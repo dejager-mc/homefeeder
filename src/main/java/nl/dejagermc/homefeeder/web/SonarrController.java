@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.web;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.DownloadReportService;
+import nl.dejagermc.homefeeder.business.reporting.DownloadReportService;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.business;
+package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
@@ -7,15 +7,16 @@ import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import nl.dejagermc.homefeeder.gathering.radarr.RadarrService;
 import nl.dejagermc.homefeeder.gathering.sonarr.SonarrService;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
-import nl.dejagermc.homefeeder.output.telegram.TelegramReporter;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
+import nl.dejagermc.homefeeder.business.reported.ReportedService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
 import nl.dejagermc.homefeeder.user.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class DownloadReportService {
+public class DownloadReportService extends AbstractReportService {
 
     private static final String TELEGRAM_MOVIE_REPORT = "<b>Movie available</b>%n%s (%s)%n<a href=https://www.imdb" +
             ".com/title/%s>%s</a>";
@@ -25,20 +26,14 @@ public class DownloadReportService {
     private static final String GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT = "Episode %s for series %s is now available.";
     private static final String GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT = "%s episodes for series %s are now available.";
 
-
-    private TelegramReporter telegramReporter;
-    private GoogleHomeReporter googleHomeReporter;
     private RadarrService radarrService;
     private SonarrService sonarrService;
-    private UserState userState;
 
     @Autowired
-    public DownloadReportService(TelegramReporter telegramReporter, GoogleHomeReporter googleHomeReporter, RadarrService radarrService, SonarrService sonarrService, UserState userState) {
-        this.telegramReporter = telegramReporter;
-        this.googleHomeReporter = googleHomeReporter;
+    public DownloadReportService(UserState userState, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, RadarrService radarrService, SonarrService sonarrService) {
+        super(userState, reportedService, telegramOutput, googleHomeOutput);
         this.radarrService = radarrService;
         this.sonarrService = sonarrService;
-        this.userState = userState;
     }
 
     public void reportRadarr(RadarrWebhookSchema schema) {
@@ -50,7 +45,7 @@ public class DownloadReportService {
                 remoteMovie.getImdbId(),
                 remoteMovie.getTitle());
 
-        telegramReporter.sendMessage(telegramReport);
+        telegramOutput.sendMessage(telegramReport);
 
         if (!userState.reportNow()) {
             radarrService.addNotYetReported(schema);
@@ -58,7 +53,7 @@ public class DownloadReportService {
             String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
                     remoteMovie.getTitle());
 
-            googleHomeReporter.broadcast(googleHomeReport);
+            googleHomeOutput.broadcast(googleHomeReport);
         }
     }
 
@@ -71,7 +66,7 @@ public class DownloadReportService {
                     episode.getEpisodeNumber(),
                     episode.getTitle(),
                     episode.getQuality());
-            telegramReporter.sendMessage(telegramReport);
+            telegramOutput.sendMessage(telegramReport);
         }
 
         if (!userState.reportNow()) {
@@ -81,12 +76,12 @@ public class DownloadReportService {
                 String googleHomeReport = String.format(GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT,
                         schema.getEpisodes().size(),
                         seriesName);
-                googleHomeReporter.broadcast(googleHomeReport);
-            } else if (schema.getEpisodes().size()==1) {
+                googleHomeOutput.broadcast(googleHomeReport);
+            } else if (schema.getEpisodes().size() == 1) {
                 String googleHomeReport = String.format(GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT,
                         schema.getEpisodes().get(0).getEpisodeNumber(),
                         seriesName);
-                googleHomeReporter.broadcast(googleHomeReport);
+                googleHomeOutput.broadcast(googleHomeReport);
             }
         }
     }

@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.schudulers;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.DotaReportService;
+import nl.dejagermc.homefeeder.business.reporting.DotaReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
