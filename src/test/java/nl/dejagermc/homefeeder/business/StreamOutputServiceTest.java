@@ -29,7 +29,6 @@ import java.util.Set;
 import static nl.dejagermc.homefeeder.util.builders.MatchBuilders.defaultMatch;
 import static nl.dejagermc.homefeeder.util.builders.TournamentBuilders.defaultTournament;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)

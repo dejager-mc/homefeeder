@@ -2,6 +2,8 @@ package nl.dejagermc.homefeeder.business;
 
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.TestSetup;
+import nl.dejagermc.homefeeder.config.CacheManagerConfig;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
@@ -23,24 +25,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static nl.dejagermc.homefeeder.util.builders.MatchBuilders.defaultMatch;
+import static nl.dejagermc.homefeeder.util.builders.TournamentBuilders.defaultTournament;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DotaReportService.class, ReportedService.class, UserState.class})
+@SpringBootTest(classes = {DotaReportService.class, ReportedService.class, UserState.class, CacheManagerConfig.class})
 @EnableConfigurationProperties
 @Slf4j
-public class DotaReportServiceTest {
+public class DotaReportServiceTest extends TestSetup {
 
-    @Autowired
-    private UserState userState;
     @Autowired
     private ReportedService reportedService;
     @MockBean
@@ -60,13 +60,7 @@ public class DotaReportServiceTest {
 
     @Before
     public void resetTestSetup() {
-        log.info("resetting test setup");
-        userState.useTelegram(true);
-        userState.useGoogleHome(true);
-        userState.favoriteTeams(Arrays.asList("OG"));
-        userState.isHome(true);
-        userState.isMute(false);
-        userState.isSleeping(false);
+        log.info("Loading specific test setup for {}...", this.getClass().getSimpleName());
         reportedService.resetAll();
     }
 
@@ -87,7 +81,7 @@ public class DotaReportServiceTest {
     @Test
     public void testReportLiveMatch1LiveMatch() {
         String favTeam = "OG";
-        Match match = getMatchForTeam(favTeam, "VP");
+        Match match = defaultMatch(favTeam, "VP", "DREAMLEAGUE", true);
 
         assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
         assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
@@ -110,8 +104,7 @@ public class DotaReportServiceTest {
 
         // setup
         String favTeam = "OG";
-        Match match = getMatchForTeam(favTeam, "VP");
-//        Match match2 = getMatchForTeam(favTeam, "EG");
+        Match match = defaultMatch(favTeam, "VP", "DREAMLEAGUE", true);
 
         assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
         assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
@@ -145,8 +138,8 @@ public class DotaReportServiceTest {
 
         // setup
         String favTeam = "OG";
-        Match match = getMatchForTeam(favTeam, "VP");
-        Match match2 = getMatchForTeam(favTeam, "EG");
+        Match match = defaultMatch(favTeam, "VP", "DREAMLEAGUE", true);
+        Match match2 = defaultMatch(favTeam, "EG", "DREAMLEAGUE", true);
 
         assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
         assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
@@ -177,13 +170,14 @@ public class DotaReportServiceTest {
         assertTrue(reportedService.hasThisBeenReported(match2, ReportedTo.GOOGLE_HOME));
         assertTrue(reportedService.hasThisBeenReported(match2, ReportedTo.TELEGRAM));
     }
+
     @Test
     public void testReportTodaysMatchesPremierOnly() {
         // 1 match is aanwezig
         // 1 premier tournament is aanwezig
         String tournamentName = "DREAMLEAGUE";
-        Match match = getMatchForTeam("OG", "EG");
-        Tournament tournament = getPremierTournament(tournamentName, TournamentType.PREMIER);
+        Match match = defaultMatch("OG", "EG", tournamentName, true);
+        Tournament tournament = defaultTournament(tournamentName, TournamentType.PREMIER, true, true);
 
         when(tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER)).thenReturn(Set.of(tournament));
         when(matchService.getTodaysMatchesForTournament(tournamentName)).thenReturn(Set.of(match));
@@ -195,31 +189,4 @@ public class DotaReportServiceTest {
         List<String> telegramLines = Arrays.asList(telegramCaptor.getValue().split("\n"));
         assertTrue(telegramLines.size()==3);
     }
-
-    private Match getMatchForTeam(String leftTeam, String rightTeam) {
-        return Match.builder()
-                .matchTime(LocalDateTime.now())
-                .gameType("")
-                .leftTeam(leftTeam)
-                .rightTeam(rightTeam)
-                .tournamentName("DREAMLEAGUE")
-                .twitchChannel("dreamleauge")
-                .youtubeChannel("")
-                .build();
-    }
-
-    private Tournament getPremierTournament(String name, TournamentType tournamentType) {
-        return Tournament.builder()
-                .isByValve(true)
-                .start(LocalDateTime.now().minusDays(5))
-                .end(LocalDateTime.now().plusDays(5))
-                .name(name)
-                .teams(2)
-                .location("London")
-                .prize(5)
-                .tournamentType(tournamentType)
-                .winner("")
-                .build();
-    }
-
 }

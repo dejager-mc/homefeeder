@@ -1,6 +1,5 @@
 package nl.dejagermc.homefeeder.gathering.liquipedia.dota;
 
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.TournamentRepository;
@@ -13,10 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.util.builders.TournamentBuilders.defaultTournament;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -137,6 +134,5 @@ public class TournamentServiceTest {
         assertTrue(result.isPresent());
         assertEquals(mostImportantActiveTournamentMajor, result.get());
     }
-
 
 }

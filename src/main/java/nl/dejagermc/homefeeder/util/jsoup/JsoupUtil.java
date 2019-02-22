@@ -19,7 +19,7 @@ public class JsoupUtil {
         try {
             return Optional.of(Jsoup.connect(uri).get());
         } catch (Exception e) {
-            log.error(ERROR_MSG, uri, e);
+            log.error(ERROR_MSG, uri);
             return Optional.empty();
         }
     }
@@ -27,7 +27,7 @@ public class JsoupUtil {
         try {
             return Optional.of(Jsoup.connect(uri).ignoreContentType(true).get());
         } catch (Exception e) {
-            log.error(ERROR_MSG, uri, e);
+            log.error(ERROR_MSG, uri);
             return Optional.empty();
         }
     }
@@ -45,7 +45,7 @@ public class JsoupUtil {
                             .execute()
                             .body();
         } catch (IOException e) {
-            log.error(ERROR_MSG, uri, e);
+            log.error(ERROR_MSG, uri);
             return "ERROR";
         }
     }

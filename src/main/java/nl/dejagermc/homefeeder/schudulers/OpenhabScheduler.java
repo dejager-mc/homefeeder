@@ -18,7 +18,7 @@ public class OpenhabScheduler {
     }
 
     @Scheduled(fixedDelay = 300000, initialDelay = 10000)
-    public void homefeederUpAndRunning() {
+    public void homefeederIsOnline() {
         openhabOutput.homefeederIsOnline();
     }
 }

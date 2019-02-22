@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Accessors(fluent = true)
@@ -21,9 +21,12 @@ public class UserState {
     private boolean isMute = false;
 
     // settings
-    private boolean useGoogleHome = true;
-    private boolean useTelegram = true;
-    private List<String> favoriteTeams = Arrays.asList("OG", "Secret", "VP");
+    @Value("${homefeeder.use.googlehome}")
+    private boolean useGoogleHome;
+    @Value("${homefeeder.use.telegram}")
+    private boolean useTelegram;
+    @Value("${homefeeder.dota.favorite.teams}")
+    private List<String> favoriteTeams;
 
     public boolean reportNow() {
         return !isSleeping && !isMute && isHome;
