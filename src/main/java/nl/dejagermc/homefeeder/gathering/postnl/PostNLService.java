@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class PostNLUtil {
+public class PostNLService {
     @Value("${postnl.login.email}")
     private String email;
     @Value("${postnl.login.password}")

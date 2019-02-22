@@ -56,33 +56,30 @@ public class StreamOutputService {
     }
 
     private Optional<Match> getMostImportantLiveMatch() {
-        Set<Match> liveMatches =
-                matchService.getLiveMatches().stream().filter(isMatchMetStream()).collect(Collectors.toSet());
-        if (liveMatches.isEmpty()) {
+        Set<Match> streamableLiveMatches = matchService.getLiveMatches().stream()
+                .filter(isMatchMetStream())
+                .collect(Collectors.toSet());
+
+        if (streamableLiveMatches.isEmpty()) {
             return Optional.empty();
         }
 
-        List<String> teams = userState.favoriteTeams();
-        List<Tournament> matchTournaments = liveMatches.stream()
+        List<Tournament> sortedTournamentsWithLiveMatches = streamableLiveMatches.stream()
                 .map(match -> tournamentService.getTournamentByName(match.tournamentName()))
                 .distinct()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .sorted(sortTournamentsByImportance().reversed())
                 .collect(Collectors.toList());
 
-        matchTournaments.sort(sortTournamentsByImportance().reversed());
+        List<String> teams = userState.favoriteTeams();
+        Optional<Match> possibleMatch = getFirstMatchForTournamentAndFavTeam(sortedTournamentsWithLiveMatches, streamableLiveMatches, teams);
 
-        Optional<Match> possibleMatch = getFirstMatchForTournamentAndFavTeam(matchTournaments, liveMatches, teams);
         if (possibleMatch.isPresent()) {
             return possibleMatch;
         }
 
-        possibleMatch = getFirstMatchForTournament(matchTournaments, liveMatches);
-        if (possibleMatch.isPresent()) {
-            return possibleMatch;
-        }
-
-        return Optional.empty();
+        return getFirstMatchForTournament(sortedTournamentsWithLiveMatches, streamableLiveMatches);
     }
 
     private Optional<Match> getFirstMatchForTournamentAndFavTeam(final List<Tournament> sortedTournaments,

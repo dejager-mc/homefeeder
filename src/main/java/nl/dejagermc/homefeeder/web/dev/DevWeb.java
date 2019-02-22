@@ -5,7 +5,7 @@ import nl.dejagermc.homefeeder.business.DotaReportService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.postnl.PostNLUtil;
+import nl.dejagermc.homefeeder.gathering.postnl.PostNLService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeReporter;
 import nl.dejagermc.homefeeder.output.telegram.TelegramReporter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +116,7 @@ public class DevWeb {
 
     @GetMapping("/postnl")
     public String postnl() {
-        PostNLUtil util = new PostNLUtil();
+        PostNLService util = new PostNLService();
         util.test();
 
         return "postnl";

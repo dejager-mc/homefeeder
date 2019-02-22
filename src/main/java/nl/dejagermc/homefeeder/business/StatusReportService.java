@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,33 +64,37 @@ public class StatusReportService {
     }
 
     private void addSonarrToUpdate(StringBuilder sb) {
-        List<SonarrWebhookSchema> schemas = sonarrService.getDelayedReportedSeries();
+        Set<SonarrWebhookSchema> schemas = sonarrService.getNotYetReported();
 
         if (schemas.isEmpty()) {
             return;
         }
 
-        sb.append(schemas.size() + " series were downloaded: ");
-        schemas.stream().forEach(episodes -> episodes.getEpisodes().stream().forEach(serie -> sb.append(serie.getTitle() + " ")));
+        sb.append(schemas.size()).append(" series were downloaded: ");
+        schemas.forEach(schema -> addEachSonarrEpisodeToUpdate(schema, sb));
         sb.append("%n");
     }
 
-    private void addRadarrToUpdate(StringBuilder sb) {
-        List<RadarrWebhookSchema> movies = radarrService.getDelayedReportedMovies();
+    private void addEachSonarrEpisodeToUpdate(SonarrWebhookSchema schema, StringBuilder sb) {
+        schema.getEpisodes().forEach(episode -> sb.append(episode.getTitle()).append(" "));
+    }
 
-        if (movies.isEmpty()) {
+    private void addRadarrToUpdate(StringBuilder sb) {
+        Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
+
+        if (schemas.isEmpty()) {
             return;
         }
 
-        sb.append(movies.size() + " movies were downloaded: ");
-        movies.stream().forEach(movieSchema -> sb.append(movieSchema.getMovie().getTitle() + " "));
+        sb.append(schemas.size()).append(" movies were downloaded: ");
+        schemas.forEach(schema -> sb.append(schema.getMovie().getTitle()).append(" "));
         sb.append("%n");
     }
 
     private void addTournamentToUpdate(StringBuilder sb) {
         Optional<Tournament> optionalTournament = tournamentService.getMostImportantActiveTournament();
 
-        if (!optionalTournament.isPresent()) {
+        if (optionalTournament.isEmpty()) {
             return;
         }
 
@@ -131,8 +134,8 @@ public class StatusReportService {
     }
 
     private void markEverythingAsReported() {
-        sonarrService.resetDelayedReportedSeries();
-        radarrService.resetDelayedReportedMovies();
+        sonarrService.resetNotYetReported();
+        radarrService.resetNotYetReported();
         matchService.resetMatchesNotReported();
     }
 }

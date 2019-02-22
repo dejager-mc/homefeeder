@@ -37,12 +37,9 @@ public class DotaReportService extends AbstractReportService {
     }
 
     public void reportLiveMatch() {
-        log.info("reportLiveMatch");
         for (String team : userState.favoriteTeams()) {
-            log.info("reportLiveMatch for team {}", team);
             Optional<Match> optionalMatch = matchService.getLiveMatchForTeam(team);
             if (optionalMatch.isPresent()) {
-                log.info("Found match for team {}", team);
                 Match match = optionalMatch.get();
                 reportNewToTelegram(match);
                 reportNewToGoogleHome(match);
@@ -57,24 +54,17 @@ public class DotaReportService extends AbstractReportService {
     }
 
     private void reportTodaysMatchsForTournamentType(TournamentType tournamentType) {
-        log.info("Start report for {} tournaments", tournamentType.getName());
         StringBuilder sb = new StringBuilder();
         Set<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
 
         for (Tournament tournament : tournaments) {
-            log.info("Adding matches for tournament: {}", tournament);
             matchService.getTodaysMatchesForTournament(tournament.name()).stream()
-                    .forEach(match -> test(sb, match));
+                    .forEach(match -> sb.append(formatMatchForTelegram(match)));
         }
 
         if (!sb.toString().isBlank()) {
             telegramReporter.sendMessage(tournamentType.getName() + " matches:\n" + sb.toString());
         }
-    }
-
-    private void test(StringBuilder sb, Match match) {
-        sb.append(formatMatchForTelegram(match));
-        log.info("Found match: {}", match);
     }
 
     private String formatMatchForTelegram(Match match) {

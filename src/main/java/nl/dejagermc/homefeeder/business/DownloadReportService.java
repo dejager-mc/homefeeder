@@ -17,12 +17,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DownloadReportService {
 
-    private final String telegramMovieReport = "<b>Movie available</b>%n%s (%s)%n<a href=https://www.imdb.com/title/%s>%s</a>";
-    private final String googleHomeMovieReport = "The movie %s is now available.";
+    private static final String TELEGRAM_MOVIE_REPORT = "<b>Movie available</b>%n%s (%s)%n<a href=https://www.imdb" +
+            ".com/title/%s>%s</a>";
+    private static final String GOOGLE_HOME_MOVIE_REPORT = "The movie %s is now available.";
 
-    private final String telegramSeriesReport = "<b>Episode available</b>%n%s - %sx%s - %s [%s]";
-    private final String googleHomeSeriesOneEpisodeReport = "Episode %s for series %s is now available.";
-    private final String googleHomeSeriesMultipleEpisodesReport = "%s episodes for series %s are now available.";
+    private static final String TELEGRAM_SERIES_REPORT = "<b>Episode available</b>%n%s - %sx%s - %s [%s]";
+    private static final String GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT = "Episode %s for series %s is now available.";
+    private static final String GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT = "%s episodes for series %s are now available.";
 
 
     private TelegramReporter telegramReporter;
@@ -43,7 +44,7 @@ public class DownloadReportService {
     public void reportRadarr(RadarrWebhookSchema schema) {
         RemoteMovie remoteMovie = schema.getRemoteMovie();
 
-        String telegramReport = String.format(telegramMovieReport,
+        String telegramReport = String.format(TELEGRAM_MOVIE_REPORT,
                 remoteMovie.getTitle(),
                 remoteMovie.getYear(),
                 remoteMovie.getImdbId(),
@@ -52,9 +53,9 @@ public class DownloadReportService {
         telegramReporter.sendMessage(telegramReport);
 
         if (!userState.reportNow()) {
-            radarrService.delayReportForMovie(schema);
+            radarrService.addNotYetReported(schema);
         } else {
-            String googleHomeReport = String.format(googleHomeMovieReport,
+            String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
                     remoteMovie.getTitle());
 
             googleHomeReporter.broadcast(googleHomeReport);
@@ -64,7 +65,7 @@ public class DownloadReportService {
     public void reportSonarr(SonarrWebhookSchema schema) {
         String seriesName = schema.getSeries().getTitle();
         for (Episode episode : schema.getEpisodes()) {
-            String telegramReport = String.format(telegramSeriesReport,
+            String telegramReport = String.format(TELEGRAM_SERIES_REPORT,
                     seriesName,
                     episode.getSeasonNumber(),
                     episode.getEpisodeNumber(),
@@ -74,15 +75,15 @@ public class DownloadReportService {
         }
 
         if (!userState.reportNow()) {
-            sonarrService.delayReportForSeries(schema);
+            sonarrService.addNotYetReported(schema);
         } else {
             if (schema.getEpisodes().size() > 1) {
-                String googleHomeReport = String.format(googleHomeSeriesMultipleEpisodesReport,
+                String googleHomeReport = String.format(GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT,
                         schema.getEpisodes().size(),
                         seriesName);
                 googleHomeReporter.broadcast(googleHomeReport);
             } else if (schema.getEpisodes().size()==1) {
-                String googleHomeReport = String.format(googleHomeSeriesOneEpisodeReport,
+                String googleHomeReport = String.format(GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT,
                         schema.getEpisodes().get(0).getEpisodeNumber(),
                         seriesName);
                 googleHomeReporter.broadcast(googleHomeReport);

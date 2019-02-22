@@ -5,7 +5,7 @@ import nl.dejagermc.homefeeder.gathering.sonarr.repository.SonarrRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class SonarrService {
@@ -16,15 +16,15 @@ public class SonarrService {
         this.sonarrRepository = sonarrRepository;
     }
 
-    public void delayReportForSeries(SonarrWebhookSchema episodes) {
+    public void addNotYetReported(SonarrWebhookSchema episodes) {
         sonarrRepository.addEpisodes(episodes);
     }
 
-    public List<SonarrWebhookSchema> getDelayedReportedSeries() {
+    public Set<SonarrWebhookSchema> getNotYetReported() {
         return sonarrRepository.getEpisodes();
     }
 
-    public void resetDelayedReportedSeries() {
+    public void resetNotYetReported() {
         sonarrRepository.resetEpisodes();
     }
 }

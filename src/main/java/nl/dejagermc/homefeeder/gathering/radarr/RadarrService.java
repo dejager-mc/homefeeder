@@ -1,13 +1,19 @@
 package nl.dejagermc.homefeeder.gathering.radarr;
 
-import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.gathering.radarr.repository.RadarrRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
+/**
+ * Service for movies downloaded by Radarr
+ * Movies get reported directly when downloaded
+ * However if the user settings do not allow this
+ * the movie will be stored by this service for
+ * reporting at a different moment
+ */
 @Service
 public class RadarrService {
 
@@ -18,15 +24,15 @@ public class RadarrService {
         this.radarrRepository = radarrRepository;
     }
 
-    public void delayReportForMovie(RadarrWebhookSchema movie) {
+    public void addNotYetReported(RadarrWebhookSchema movie) {
         radarrRepository.addMovie(movie);
     }
 
-    public List<RadarrWebhookSchema> getDelayedReportedMovies() {
+    public Set<RadarrWebhookSchema> getNotYetReported() {
         return radarrRepository.getMovies();
     }
 
-    public void resetDelayedReportedMovies() {
+    public void resetNotYetReported() {
         radarrRepository.resetMovies();
     }
 }

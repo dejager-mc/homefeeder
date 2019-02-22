@@ -3,22 +3,23 @@ package nl.dejagermc.homefeeder.gathering.radarr.repository;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Component
 public class RadarrRepository {
-    private List<RadarrWebhookSchema> movies = new ArrayList<>();
+    private Set<RadarrWebhookSchema> movies = new HashSet<>();
 
     public void resetMovies() {
-        movies = new ArrayList<>();
+        movies = new HashSet<>();
     }
 
     public void addMovie(RadarrWebhookSchema movie) {
         this.movies.add(movie);
     }
 
-    public List<RadarrWebhookSchema> getMovies() {
+    public Set<RadarrWebhookSchema> getMovies() {
         return movies;
     }
 }

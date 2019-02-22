@@ -2,13 +2,9 @@ package nl.dejagermc.homefeeder.output.openhab;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 @Slf4j
@@ -26,6 +22,9 @@ public class OpenhabOutput {
     @Value("${openhab.tv.stream}")
     private String tvStream;
 
+    @Value("${openhab.homefeeder.online}")
+    private String homefeederIsOnline;
+
     private JsoupUtil jsoupUtil;
 
     @Autowired
@@ -33,24 +32,29 @@ public class OpenhabOutput {
         this.jsoupUtil = jsoupUtil;
     }
 
-    public void turnOnTv() {
-        turnOnOpenhabItem(tvSwitch, ON);
+    public boolean turnOnTv() {
+        return turnOnOpenhabItem(tvSwitch, ON);
     }
 
-    public void streamToTv(String uri) {
-        turnOnOpenhabItem(tvStream, uri);
+    public boolean streamToTv(String uri) {
+        return turnOnOpenhabItem(tvStream, uri);
     }
 
-    private void turnOnOpenhabItem(final String item, final String body) {
+    public boolean homefeederIsOnline() {
+        return turnOnOpenhabItem(homefeederIsOnline, ON);
+    }
+
+    private boolean turnOnOpenhabItem(final String item, final String body) {
         String response = jsoupUtil.postToOpenhab(openhabApiUri + item, body);
-        handleResponse(response);
+        return isCorrectResponse(response);
     }
 
-    private void handleResponse(String response) {
+    private boolean isCorrectResponse(String response) {
         if (response.isBlank()) {
-            log.info("openhab: ok");
+            return true;
         } else {
-            log.error("openhab: not ok: {}", response);
+            log.error("openhab response not ok: {}", response);
+            return false;
         }
     }
 

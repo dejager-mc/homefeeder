@@ -3,22 +3,22 @@ package nl.dejagermc.homefeeder.gathering.sonarr.repository;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class SonarrRepository {
-    private List<SonarrWebhookSchema> episodes = new ArrayList<>();
+    private Set<SonarrWebhookSchema> episodes = new HashSet<>();
 
     public void resetEpisodes() {
-        episodes = new ArrayList<>();
+        episodes = new HashSet<>();
     }
 
     public void addEpisodes(SonarrWebhookSchema episodeList) {
         this.episodes.add(episodeList);
     }
 
-    public List<SonarrWebhookSchema> getEpisodes() {
+    public Set<SonarrWebhookSchema> getEpisodes() {
         return episodes;
     }
 }
