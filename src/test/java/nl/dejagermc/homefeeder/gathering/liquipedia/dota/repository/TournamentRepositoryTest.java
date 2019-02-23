@@ -18,9 +18,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TournamentRepository.class)
@@ -37,10 +41,12 @@ public class TournamentRepositoryTest {
     @Test
     public void testPremierTournament() {
         String premierTournaments = readFileToString("src/test/resources/gathering/liquipedia/dota/tournaments.premier.html");
+        premierTournaments = setDatesTournaments(premierTournaments);
         Document docPremierTournaments = Jsoup.parseBodyFragment(premierTournaments);
 
         Mockito.when(jsoupUtil.getDocument(URI_PREMIER)).thenReturn(Optional.of(docPremierTournaments));
         Set<Tournament> premierTournamentsList = tournamentRepository.getAllPremierTournaments();
+        assertEquals(2, premierTournamentsList.size());
     }
 
     private String readFileToString(String path) {
@@ -52,5 +58,38 @@ public class TournamentRepositoryTest {
             e.printStackTrace();
             return "";
         }
+    }
+
+    private String setDatesTournaments(String tournaments) {
+        // tournament1 = live, same day
+        // tournament2 = future, same month
+        // tournament3 = past, different month
+
+        DateTimeFormatter formatterSameDay = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US);
+        DateTimeFormatter formatMonth = DateTimeFormatter.ofPattern("MMM", Locale.US);
+        DateTimeFormatter formatDay = DateTimeFormatter.ofPattern("d", Locale.US);
+        DateTimeFormatter formatYear = DateTimeFormatter.ofPattern("yyyy", Locale.US);
+
+        LocalDateTime futureMonthStart = LocalDateTime.now().plusMonths(2).withDayOfMonth(2);
+        LocalDateTime futureMonthEnd = futureMonthStart.plusDays(5);
+        String futureSameMonthDateTournament2 =
+                futureMonthStart.format(formatMonth) + " " +
+                futureMonthStart.format(formatDay) + " - " +
+                futureMonthEnd.format(formatDay) + ", " +
+                futureMonthStart.format(formatYear);
+
+        LocalDateTime pastMonth1Start = LocalDateTime.of(2017,1,1,0,0,0);
+        LocalDateTime pastMonth2End = LocalDateTime.of(2017,3,1,0,0,0);
+        String pastDifferentMonthsTournament3 = pastMonth1Start.format(formatMonth) + " " +
+                pastMonth1Start.format(formatDay) + " - " +
+                pastMonth2End.format(formatMonth) + " " +
+                pastMonth2End.format(formatDay) + ", " +
+                pastMonth1Start.format(formatYear);
+
+        tournaments = tournaments.replace("dateTournament1", LocalDateTime.now().format(formatterSameDay));
+        tournaments = tournaments.replace("dateTournament2", futureSameMonthDateTournament2);
+        tournaments = tournaments.replace("dateTournament3", pastDifferentMonthsTournament3);
+
+        return tournaments;
     }
 }
