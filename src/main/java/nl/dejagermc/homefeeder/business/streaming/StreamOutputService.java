@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.business;
+package nl.dejagermc.homefeeder.business.streaming;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;

@@ -2,6 +2,7 @@ package nl.dejagermc.homefeeder.business;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
+import nl.dejagermc.homefeeder.business.streaming.StreamOutputService;
 import nl.dejagermc.homefeeder.config.CacheManagerConfig;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;

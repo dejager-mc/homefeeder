@@ -2,7 +2,7 @@ package nl.dejagermc.homefeeder.web;
 
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.StreamOutputService;
+import nl.dejagermc.homefeeder.business.streaming.StreamOutputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
