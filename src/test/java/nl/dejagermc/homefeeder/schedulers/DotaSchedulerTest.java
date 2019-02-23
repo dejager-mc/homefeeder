@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.util.builders.MatchBuilders.defaultMatch;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.MatchBuilders.defaultMatch;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;

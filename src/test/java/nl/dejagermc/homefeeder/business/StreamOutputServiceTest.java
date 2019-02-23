@@ -26,8 +26,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.util.builders.MatchBuilders.defaultMatch;
-import static nl.dejagermc.homefeeder.util.builders.TournamentBuilders.defaultTournament;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.MatchBuilders.defaultMatch;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 

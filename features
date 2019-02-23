@@ -11,10 +11,10 @@
 [-] Persist settings: no need. syncing of settings for openhab is build in, only favorite teams is not. wont change much
 [X] On startup notify openhab which can then send updated settings back
 [X] Let openhab know homefeeder is online every 5 seconds
-[ ] Get an update when a favorite team has finished playing a match (with results?)
+[-] Get an update when a favorite team has finished playing a match (with results?)
 
 Bugs:
-[ ] Report matches of the day to telegram: sometimes qualifier matches also get matched with the full /
+[X] Report matches of the day to telegram: sometimes qualifier matches also get matched with the full /
     different tournament.
     - possible bug with getting the full tournament name for match
-[ ] Reporting on live matches happens more than once per match
+[X] Reporting on live matches happens more than once per match

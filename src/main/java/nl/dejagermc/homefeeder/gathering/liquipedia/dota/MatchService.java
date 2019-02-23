@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isEenMatchDieVandaagIs;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchThatHappensToday;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchWithOneOfTheseTeams;
 
 @Service
 @Slf4j
@@ -59,15 +60,21 @@ public class MatchService {
                 .findFirst();
     }
 
+    public Set<Match> getLiveMatchForTeams(List<String> teams) {
+        return getLiveMatches().stream()
+                .filter(isMatchWithOneOfTheseTeams(teams))
+                .collect(Collectors.toSet());
+    }
+
     public Set<Match> getTodaysMatches() {
         return repository.getAllMatches().stream()
-                .filter(isEenMatchDieVandaagIs())
+                .filter(isMatchThatHappensToday())
                 .collect(Collectors.toSet());
     }
 
     public Set<Match> getTodaysMatchesForTournament(String tournament) {
         return repository.getAllMatches().stream()
-                .filter(isEenMatchDieVandaagIs())
+                .filter(isMatchThatHappensToday())
                 .filter(m -> m.tournamentName().equals(tournament))
                 .collect(Collectors.toSet());
     }

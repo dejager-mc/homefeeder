@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.util.builders.TournamentBuilders.defaultTournament;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.validateMockitoUsage;

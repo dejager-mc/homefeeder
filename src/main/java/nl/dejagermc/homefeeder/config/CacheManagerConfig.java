@@ -21,9 +21,11 @@ public class CacheManagerConfig {
         CaffeineCache getAllMajorTournaments = buildCache("getAllMajorTournaments", ticker, 60*24, 1);
         CaffeineCache getAllQualifierTournaments = buildCache("getAllQualifierTournaments", ticker, 60*24, 1);
         CaffeineCache getFullTournamentName = buildCache("getFullTournamentName", ticker, 60*24, 100);
+        CaffeineCache getAllDeliveries = buildCache("getAllDeliveries", ticker, 15, 1);
 
         SimpleCacheManager manager = new SimpleCacheManager();
-        manager.setCaches(Arrays.asList(getAllMatches, getAllPremierTournaments, getAllMajorTournaments, getAllQualifierTournaments, getFullTournamentName));
+        manager.setCaches(Arrays.asList(getAllMatches, getAllPremierTournaments, getAllMajorTournaments,
+                getAllQualifierTournaments, getFullTournamentName, getAllDeliveries));
         return manager;
     }
 

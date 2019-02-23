@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchMetStream;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchWithStream;
 import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportanceMostToLeast;
 
 @Service
@@ -57,7 +57,7 @@ public class StreamOutputService {
 
     private Optional<Match> getMostImportantLiveMatch() {
         Set<Match> streamableLiveMatches = matchService.getLiveMatches().stream()
-                .filter(isMatchMetStream())
+                .filter(isMatchWithStream())
                 .collect(Collectors.toSet());
 
         if (streamableLiveMatches.isEmpty()) {

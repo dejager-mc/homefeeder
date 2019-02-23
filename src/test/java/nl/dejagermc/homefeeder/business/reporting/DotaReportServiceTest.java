@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.util.builders.MatchBuilders.defaultMatch;
-import static nl.dejagermc.homefeeder.util.builders.TournamentBuilders.defaultTournament;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.MatchBuilders.defaultMatch;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 

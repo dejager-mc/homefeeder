@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.util.builders;
+package nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders;
 
 import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
 

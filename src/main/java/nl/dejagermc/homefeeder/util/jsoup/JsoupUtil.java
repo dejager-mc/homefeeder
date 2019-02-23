@@ -49,4 +49,9 @@ public class JsoupUtil {
             return "ERROR";
         }
     }
+
+    public Optional<Document> getPostNlDeliveriesDocument(String user, String password) {
+
+        return Optional.empty();
+    }
 }

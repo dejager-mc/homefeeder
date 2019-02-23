@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.util.builders.MatchBuilders.*;
+import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.MatchBuilders.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
