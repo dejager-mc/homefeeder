@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class DeliveryRepository {
-    private static final String POSTNL_LOGIN_URI = "";
+    private static final String POSTNL_URI = "https://www.postnl.nl/";
 
     @Value("${postnl.login.email}")
     private String email;
@@ -39,6 +39,24 @@ public class DeliveryRepository {
         Elements elements = getAllDeliveryElements();
         return convertElementsToDeliveries(elements);
     }
+
+    // login to postnl
+    public void test() {
+        log.info("Attempting to log in to postnl website");
+        String uri = getLoginUri();
+        log.info("login uri: {}", uri);
+    }
+
+    private String getLoginUri() {
+        Optional<Document> doc = jsoupUtil.getDocument(POSTNL_URI);
+        if (doc.isPresent()) {
+            return doc.get().select("a#consumer-login-link").attr("href");
+        }
+        log.info("No uri found");
+        return "";
+    }
+
+    // fetch data when logged in
 
     private Elements getAllDeliveryElements() {
         Optional<Document> optionalDoc = jsoupUtil.getPostNlDeliveriesDocument(email, password);

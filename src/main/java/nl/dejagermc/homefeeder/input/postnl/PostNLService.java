@@ -31,6 +31,10 @@ public class PostNLService {
                 .collect(Collectors.toSet());
     }
 
+    public void test() {
+        deliveryRepository.test();
+    }
+
 //    public void test() {
 //        try {
 //            //With this you login and a session is created
