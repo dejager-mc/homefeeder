@@ -25,10 +25,6 @@ public class MatchService {
         this.repository = repository;
     }
 
-    public Set<Match> getAllMatches() {
-        return repository.getAllMatches();
-    }
-
     public Optional<Match> getNextMatchForTeam(String team) {
         return repository.getAllMatches().stream()
                 .sorted(Comparator.comparing(Match::matchTime))
@@ -40,8 +36,8 @@ public class MatchService {
         matchesNotReported.add(match);
     }
 
-    public Set<Match> getMatchesNotReported() {
-        return matchesNotReported;
+    public List<Match> getMatchesNotReported() {
+        return new ArrayList<>(matchesNotReported);
     }
 
     public void resetMatchesNotReported() {
@@ -60,22 +56,22 @@ public class MatchService {
                 .findFirst();
     }
 
-    public Set<Match> getLiveMatchForTeams(List<String> teams) {
+    public List<Match> getLiveMatchForTeams(List<String> teams) {
         return getLiveMatches().stream()
                 .filter(isMatchWithOneOfTheseTeams(teams))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public Set<Match> getTodaysMatches() {
+    public List<Match> getTodaysMatches() {
         return repository.getAllMatches().stream()
                 .filter(isMatchThatHappensToday())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public Set<Match> getTodaysMatchesForTournament(String tournament) {
+    public List<Match> getTodaysMatchesForTournament(String tournament) {
         return repository.getAllMatches().stream()
                 .filter(isMatchThatHappensToday())
                 .filter(m -> m.tournamentName().equals(tournament))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 }

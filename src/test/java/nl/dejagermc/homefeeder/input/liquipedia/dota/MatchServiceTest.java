@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -72,19 +73,9 @@ public class MatchServiceTest {
     }
 
     @Test
-    public void testGetAllMatches() {
-        when(matchRepository.getAllMatches()).thenReturn(allMatches);
-        Set<Match> results = matchService.getAllMatches();
-        validateMockitoUsage();
-
-        assertEquals(13, results.size());
-        assertEquals(results, allMatches);
-    }
-
-    @Test
     public void testGetTodaysMatches() {
         when(matchRepository.getAllMatches()).thenReturn(allMatches);
-        Set<Match> results = matchService.getTodaysMatches();
+        List<Match> results = matchService.getTodaysMatches();
         validateMockitoUsage();
 
         assertEquals(7, results.size());
@@ -96,7 +87,7 @@ public class MatchServiceTest {
     @Test
     public void testGetTodaysMatchesForTournament1() {
         when(matchRepository.getAllMatches()).thenReturn(allMatches);
-        Set<Match> results = matchService.getTodaysMatchesForTournament("tournament1");
+        List<Match> results = matchService.getTodaysMatchesForTournament("tournament1");
         validateMockitoUsage();
 
         assertEquals(4, results.size());
@@ -107,7 +98,7 @@ public class MatchServiceTest {
     @Test
     public void testGetTodaysMatchesForTournament2() {
         when(matchRepository.getAllMatches()).thenReturn(allMatches);
-        Set<Match> results = matchService.getTodaysMatchesForTournament("tournament2");
+        List<Match> results = matchService.getTodaysMatchesForTournament("tournament2");
         validateMockitoUsage();
 
         assertEquals(3, results.size());
@@ -118,7 +109,7 @@ public class MatchServiceTest {
     @Test
     public void testGetTodaysMatchesForTournament3() {
         when(matchRepository.getAllMatches()).thenReturn(allMatches);
-        Set<Match> results = matchService.getTodaysMatchesForTournament("tournament3");
+        List<Match> results = matchService.getTodaysMatchesForTournament("tournament3");
         validateMockitoUsage();
 
         assertTrue(results.isEmpty());

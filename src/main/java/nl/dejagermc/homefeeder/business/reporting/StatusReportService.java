@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -109,30 +110,30 @@ public class StatusReportService extends AbstractReportService {
 
     private void addMatchesToUpdate(StringBuilder sb) {
         // matches earlier
-        Set<Match> favTeamMissedMatches = matchService.getMatchesNotReported();
+        List<Match> favTeamMissedMatches = matchService.getMatchesNotReported();
         if (!favTeamMissedMatches.isEmpty()) {
             sb.append("You've missed the following games:%n");
             addAllMatchesToReport(sb, favTeamMissedMatches);
         }
         // matches live
-        Set<Match> liveMatchesOfFavoriteTeams = matchService.getLiveMatchForTeams(userState.favoriteTeams());
+        List<Match> liveMatchesOfFavoriteTeams = matchService.getLiveMatchForTeams(userState.favoriteTeams());
         if (!liveMatchesOfFavoriteTeams.isEmpty()) {
             sb.append("Playing live are:%n");
             addAllMatchesToReport(sb, liveMatchesOfFavoriteTeams);
         }
         // matchers later today
-        Set<Match> futureMatchesOfFavoriteTeams =
+        List<Match> futureMatchesOfFavoriteTeams =
                 matchService.getTodaysMatches().stream()
                         .filter(isMatchWithOneOfTheseTeams(userState.favoriteTeams()))
                         .filter(isMatchThatWillTakePlaceLaterToday())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toList());
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {
             sb.append("Games played later today are:%n");
             addAllMatchesToReport(sb, futureMatchesOfFavoriteTeams);
         }
     }
 
-    private void addAllMatchesToReport(StringBuilder sb, Set<Match> matches) {
+    private void addAllMatchesToReport(StringBuilder sb, List<Match> matches) {
         for (Match match : matches) {
             String report = String.format("At %s: %s versus %s%n",
                     match.matchTime().format(DateTimeFormatter.ofPattern("H:mm")),

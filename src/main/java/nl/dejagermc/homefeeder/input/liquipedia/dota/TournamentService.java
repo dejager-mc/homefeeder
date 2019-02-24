@@ -7,10 +7,7 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.TournamentReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.TournamentPredicates.isTournamentActive;
@@ -53,16 +50,16 @@ public class TournamentService {
         return tournamentRepository.getAllQualifierTournaments();
     }
 
-    public Set<Tournament> getAllActiveTournamentsForType(final TournamentType tournamentType) {
+    public List<Tournament> getAllActiveTournamentsForType(final TournamentType tournamentType) {
         switch (tournamentType) {
             case PREMIER:
-                return getAllPremierTournaments().stream().filter(isTournamentActive()).collect(Collectors.toSet());
+                return getAllPremierTournaments().stream().filter(isTournamentActive()).collect(Collectors.toList());
             case MAJOR:
-                return getAllMajorTournaments().stream().filter(isTournamentActive()).collect(Collectors.toSet());
+                return getAllMajorTournaments().stream().filter(isTournamentActive()).collect(Collectors.toList());
             case QUALIFIER:
-                return getAllQualifierTournaments().stream().filter(isTournamentActive()).collect(Collectors.toSet());
+                return getAllQualifierTournaments().stream().filter(isTournamentActive()).collect(Collectors.toList());
             default:
-                return Collections.emptySet();
+                return Collections.emptyList();
         }
     }
 

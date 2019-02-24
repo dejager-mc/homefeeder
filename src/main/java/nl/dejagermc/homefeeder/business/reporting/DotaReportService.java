@@ -63,10 +63,10 @@ public class DotaReportService extends AbstractReportService {
 
     private void reportTodaysMatchsForTournamentType(TournamentType tournamentType) {
         StringBuilder sb = new StringBuilder();
-        Set<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
+        List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
 
         for (Tournament tournament : tournaments) {
-            Set<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name());
+            List<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name());
             if (!matches.isEmpty()) {
                 matches.forEach(match -> sb.append(getTodayDotaMatchTelegramMessage(match)));
                 sb.append("\n");
@@ -80,12 +80,12 @@ public class DotaReportService extends AbstractReportService {
 
     private void reportTodaysFavoriteTeamMatchesForQualifierTournaments() {
         StringBuilder sb = new StringBuilder();
-        Set<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(QUALIFIER);
+        List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(QUALIFIER);
 
         for (Tournament tournament : tournaments) {
-            Set<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name()).stream()
+            List<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name()).stream()
                     .filter(isMatchWithOneOfTheseTeams(userState.favoriteTeams()))
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
             if (!matches.isEmpty()) {
                 sb.append(tournament.name()).append("\n");
                 matches.forEach(match -> sb.append(getTodayDotaMatchTelegramMessage(match)));

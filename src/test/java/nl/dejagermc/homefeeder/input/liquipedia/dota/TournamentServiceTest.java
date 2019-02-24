@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -80,7 +81,7 @@ public class TournamentServiceTest {
     @Test
     public void testGetAllActivePremierTournaments() {
         when(tournamentRepository.getAllPremierTournaments()).thenReturn(premierTournaments);
-        Set<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER);
+        List<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER);
         validateMockitoUsage();
 
         assertEquals(2, results.size());
@@ -90,7 +91,7 @@ public class TournamentServiceTest {
     @Test
     public void testGetAllActiveMajorTournaments() {
         when(tournamentRepository.getAllMajorTournaments()).thenReturn(majorTournaments);
-        Set<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.MAJOR);
+        List<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.MAJOR);
         validateMockitoUsage();
 
         assertEquals(1, results.size());
@@ -100,7 +101,7 @@ public class TournamentServiceTest {
     @Test
     public void testGetAllActiveQualifierTournaments() {
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
-        Set<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.QUALIFIER);
+        List<Tournament> results = tournamentService.getAllActiveTournamentsForType(TournamentType.QUALIFIER);
         validateMockitoUsage();
 
         assertEquals(1, results.size());

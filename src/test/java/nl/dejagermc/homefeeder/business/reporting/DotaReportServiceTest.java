@@ -180,8 +180,8 @@ public class DotaReportServiceTest extends TestSetup {
         Match match = defaultMatch("OG", "EG", tournamentName, true);
         Tournament tournament = defaultTournament(tournamentName, TournamentType.PREMIER, true, true);
 
-        when(tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER)).thenReturn(Set.of(tournament));
-        when(matchService.getTodaysMatchesForTournament(tournamentName)).thenReturn(Set.of(match));
+        when(tournamentService.getAllActiveTournamentsForType(TournamentType.PREMIER)).thenReturn(List.of(tournament));
+        when(matchService.getTodaysMatchesForTournament(tournamentName)).thenReturn(List.of(match));
         validateMockitoUsage();
 
         dotaReportService.reportTodaysMatches();
