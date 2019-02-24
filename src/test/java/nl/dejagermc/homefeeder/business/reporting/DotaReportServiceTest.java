@@ -4,11 +4,11 @@ package nl.dejagermc.homefeeder.business.reporting;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
 import nl.dejagermc.homefeeder.config.CacheManagerConfig;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
@@ -30,8 +30,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.MatchBuilders.defaultMatch;
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.builders.MatchBuilders.defaultMatch;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -74,8 +75,8 @@ public class DotaReportServiceTest extends TestSetup {
         validateMockitoUsage();
 
         dotaReportService.reportLiveMatch();
-        assertTrue(!reportedService.hasThisBeenReported(null, ReportedTo.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReported(null, ReportedTo.TELEGRAM));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(null, ReportedTo.GOOGLE_HOME));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(null, ReportedTo.TELEGRAM));
     }
 
     @Test
@@ -83,8 +84,8 @@ public class DotaReportServiceTest extends TestSetup {
         String favTeam = "OG";
         Match match = defaultMatch(favTeam, "VP", "DREAMLEAGUE", true);
 
-        assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match, ReportedTo.TELEGRAM));
 
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
         validateMockitoUsage();
@@ -93,8 +94,8 @@ public class DotaReportServiceTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
-        assertTrue(reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
-        assertTrue(reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match, ReportedTo.TELEGRAM));
     }
 
     @Test
@@ -106,8 +107,8 @@ public class DotaReportServiceTest extends TestSetup {
         String favTeam = "OG";
         Match match = defaultMatch(favTeam, "VP", "DREAMLEAGUE", true);
 
-        assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match, ReportedTo.TELEGRAM));
 
         // run 1
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
@@ -117,8 +118,8 @@ public class DotaReportServiceTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
-        assertTrue(reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
-        assertTrue(reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match, ReportedTo.TELEGRAM));
 
 
         // run 2
@@ -141,10 +142,10 @@ public class DotaReportServiceTest extends TestSetup {
         Match match = defaultMatch(favTeam, "VP", "DREAMLEAGUE", true);
         Match match2 = defaultMatch(favTeam, "EG", "DREAMLEAGUE", true);
 
-        assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
-        assertTrue(!reportedService.hasThisBeenReported(match2, ReportedTo.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReported(match2, ReportedTo.TELEGRAM));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match, ReportedTo.TELEGRAM));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match2, ReportedTo.GOOGLE_HOME));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match2, ReportedTo.TELEGRAM));
 
         // run 1
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
@@ -154,8 +155,8 @@ public class DotaReportServiceTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
-        assertTrue(reportedService.hasThisBeenReported(match, ReportedTo.GOOGLE_HOME));
-        assertTrue(reportedService.hasThisBeenReported(match, ReportedTo.TELEGRAM));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match, ReportedTo.TELEGRAM));
 
 
         // run 2
@@ -167,8 +168,8 @@ public class DotaReportServiceTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
-        assertTrue(reportedService.hasThisBeenReported(match2, ReportedTo.GOOGLE_HOME));
-        assertTrue(reportedService.hasThisBeenReported(match2, ReportedTo.TELEGRAM));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match2, ReportedTo.GOOGLE_HOME));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match2, ReportedTo.TELEGRAM));
     }
 
     @Test
@@ -187,6 +188,6 @@ public class DotaReportServiceTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(telegramCaptor.capture());
 
         List<String> telegramLines = Arrays.asList(telegramCaptor.getValue().split("\n"));
-        assertTrue(telegramLines.size()==3);
+        assertEquals(telegramLines.size(), 2);
     }
 }

@@ -3,14 +3,14 @@ package nl.dejagermc.homefeeder.business.reporting;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
-import nl.dejagermc.homefeeder.gathering.postnl.PostNLService;
-import nl.dejagermc.homefeeder.gathering.postnl.model.Delivery;
-import nl.dejagermc.homefeeder.gathering.radarr.RadarrService;
-import nl.dejagermc.homefeeder.gathering.sonarr.SonarrService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.input.postnl.PostNLService;
+import nl.dejagermc.homefeeder.input.postnl.model.Delivery;
+import nl.dejagermc.homefeeder.input.radarr.RadarrService;
+import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
@@ -23,8 +23,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchThatWillTakePlaceLaterToday;
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchWithOneOfTheseTeams;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchThatWillTakePlaceLaterToday;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchWithOneOfTheseTeams;
 
 @Service
 @Slf4j

@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
 import nl.dejagermc.homefeeder.business.reporting.DotaReportService;
 import nl.dejagermc.homefeeder.config.CacheManagerConfig;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.MatchRepository;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.TournamentRepository;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.MatchRepository;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.TournamentRepository;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.MatchBuilders.defaultMatch;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.builders.MatchBuilders.defaultMatch;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -82,8 +82,8 @@ public class DotaSchedulerTest extends TestSetup {
         Match match1 = defaultMatch(teamLeft, teamRight, tournamentName, true);
 
         // check begin state is correct
-        assertTrue(!reportedService.hasThisBeenReported(match1, ReportedTo.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReported(match1, ReportedTo.TELEGRAM));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportedTo.GOOGLE_HOME));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportedTo.TELEGRAM));
 
         when(matchRepository.getAllMatches()).thenReturn(Set.of(match1));
         validateMockitoUsage();
@@ -93,8 +93,8 @@ public class DotaSchedulerTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
         validateMockitoUsage();
-        assertTrue(reportedService.hasThisBeenReported(match1, ReportedTo.GOOGLE_HOME));
-        assertTrue(reportedService.hasThisBeenReported(match1, ReportedTo.TELEGRAM));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportedTo.GOOGLE_HOME));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportedTo.TELEGRAM));
 
 
         // run 2

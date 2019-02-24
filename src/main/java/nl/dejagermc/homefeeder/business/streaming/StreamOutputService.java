@@ -1,11 +1,11 @@
 package nl.dejagermc.homefeeder.business.streaming;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.util.MatchUtil;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.util.MatchUtil;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
 import nl.dejagermc.homefeeder.user.UserState;
@@ -17,8 +17,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.MatchPredicates.isMatchWithStream;
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportanceMostToLeast;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchWithStream;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportanceMostToLeast;
 
 @Service
 @Slf4j

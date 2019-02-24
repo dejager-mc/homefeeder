@@ -4,13 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
 import nl.dejagermc.homefeeder.business.streaming.StreamOutputService;
 import nl.dejagermc.homefeeder.config.CacheManagerConfig;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.TournamentService;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.Tournament;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.model.TournamentType;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.MatchRepository;
-import nl.dejagermc.homefeeder.gathering.liquipedia.dota.repository.TournamentRepository;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.MatchRepository;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.TournamentRepository;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
 import nl.dejagermc.homefeeder.user.UserState;
@@ -27,8 +27,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.MatchBuilders.defaultMatch;
-import static nl.dejagermc.homefeeder.gathering.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.builders.MatchBuilders.defaultMatch;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
