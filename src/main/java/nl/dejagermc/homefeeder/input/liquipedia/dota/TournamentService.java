@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.TournamentPredicates.isTournamentActive;
-import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportanceMostToLeast;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.TournamentPredicates.*;
 
 @Service
 @Slf4j
@@ -69,9 +68,10 @@ public class TournamentService {
                 .findFirst();
     }
 
-    public Optional<Tournament> getMostImportantActiveTournament() {
+    public Optional<Tournament> getMostImportantPremierOrMajorActiveTournament() {
         return getAllTournaments().stream()
                 .filter(isTournamentActive())
+                .filter(isPremierOrMajorTournament())
                 .min(sortTournamentsByImportanceMostToLeast());
     }
 }

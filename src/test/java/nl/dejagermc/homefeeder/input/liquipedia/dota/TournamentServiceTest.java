@@ -113,7 +113,7 @@ public class TournamentServiceTest {
         when(tournamentRepository.getAllPremierTournaments()).thenReturn(premierTournaments);
         when(tournamentRepository.getAllMajorTournaments()).thenReturn(majorTournaments);
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
-        Optional<Tournament> result = tournamentService.getMostImportantActiveTournament();
+        Optional<Tournament> result = tournamentService.getMostImportantPremierOrMajorActiveTournament();
         validateMockitoUsage();
 
         assertTrue(result.isPresent());
@@ -129,7 +129,7 @@ public class TournamentServiceTest {
         when(tournamentRepository.getAllPremierTournaments()).thenReturn(premierTournaments);
         when(tournamentRepository.getAllMajorTournaments()).thenReturn(majorTournaments);
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
-        Optional<Tournament> result = tournamentService.getMostImportantActiveTournament();
+        Optional<Tournament> result = tournamentService.getMostImportantPremierOrMajorActiveTournament();
         validateMockitoUsage();
 
         assertTrue(result.isPresent());

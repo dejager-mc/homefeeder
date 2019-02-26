@@ -16,6 +16,10 @@ public class TournamentPredicates {
                 t.end().isAfter(LocalDateTime.now());
     }
 
+    public static Predicate<Tournament> isPremierOrMajorTournament() {
+        return t -> t.isPremier() || t.isMajor();
+    }
+
     public static Comparator<Tournament> sortTournamentsByImportanceMostToLeast() {
         return Comparator
                 .comparing(Tournament::isByValve)

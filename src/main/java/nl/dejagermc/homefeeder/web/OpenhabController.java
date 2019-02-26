@@ -27,14 +27,12 @@ public class OpenhabController extends AbstractController {
     @GetMapping("/userIsHome/{value}")
     public ResponseEntity userIsHome(@PathVariable boolean value) {
         userState.isHome(value);
-        statusReportService.statusUpdate();
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/userIsSleeping/{value}")
     public ResponseEntity userIsSleeping(@PathVariable boolean value) {
         userState.isSleeping(value);
-        statusReportService.statusUpdate();
         return new ResponseEntity(HttpStatus.OK);
     }
 

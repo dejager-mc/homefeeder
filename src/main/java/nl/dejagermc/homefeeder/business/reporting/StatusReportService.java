@@ -67,7 +67,7 @@ public class StatusReportService extends AbstractReportService {
         addPostNLDeliveriesToReport(sb);
 
         googleHomeOutput.broadcast(sb.toString());
-        markEverythingAsReported();
+        resetAllNotYetReportedItems();
     }
 
     private void addSonarrToUpdate(StringBuilder sb) {
@@ -99,7 +99,7 @@ public class StatusReportService extends AbstractReportService {
     }
 
     private void addTournamentToUpdate(StringBuilder sb) {
-        Optional<Tournament> optionalTournament = tournamentService.getMostImportantActiveTournament();
+        Optional<Tournament> optionalTournament = tournamentService.getMostImportantPremierOrMajorActiveTournament();
 
         if (optionalTournament.isEmpty()) {
             return;
@@ -154,7 +154,7 @@ public class StatusReportService extends AbstractReportService {
         }
     }
 
-    private void markEverythingAsReported() {
+    private void resetAllNotYetReportedItems() {
         sonarrService.resetNotYetReported();
         radarrService.resetNotYetReported();
         matchService.resetMatchesNotReported();
