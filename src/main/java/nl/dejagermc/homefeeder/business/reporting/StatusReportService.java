@@ -77,13 +77,13 @@ public class StatusReportService extends AbstractReportService {
             return;
         }
 
-        sb.append(schemas.size()).append(" series were downloaded: ");
-        schemas.forEach(schema -> addEachSonarrEpisodeToUpdate(schema, sb));
-        sb.append("%n");
-    }
-
-    private void addEachSonarrEpisodeToUpdate(SonarrWebhookSchema schema, StringBuilder sb) {
-        schema.getEpisodes().forEach(episode -> sb.append(episode.getTitle()).append(" "));
+        if (schemas.size() == 1) {
+            sb.append("The following series has a new episode: ").append(schemas.iterator().next().getSeries().getTitle());
+        } else {
+            sb.append("The following series have new episode: ");
+            schemas.forEach(schema -> sb.append(schema.getSeries().getTitle()).append(", "));
+        }
+        sb.append("\n");
     }
 
     private void addRadarrToUpdate(StringBuilder sb) {
@@ -93,9 +93,13 @@ public class StatusReportService extends AbstractReportService {
             return;
         }
 
-        sb.append(schemas.size()).append(" movies were downloaded: ");
-        schemas.forEach(schema -> sb.append(schema.getMovie().getTitle()).append(" "));
-        sb.append("%n");
+        if (schemas.size() == 1) {
+            sb.append(schemas.size()).append(" movie was downloaded: ");
+        } else {
+            sb.append(schemas.size()).append(" movies were downloaded: ");
+        }
+        schemas.forEach(schema -> sb.append(schema.getMovie().getTitle()).append(", "));
+        sb.append("\n");
     }
 
     private void addTournamentToUpdate(StringBuilder sb) {
@@ -105,20 +109,20 @@ public class StatusReportService extends AbstractReportService {
             return;
         }
 
-        sb.append("Dota tournament ").append(optionalTournament.get().name()).append(" is active.%n");
+        sb.append("Dota tournament ").append(optionalTournament.get().name()).append(" is active.\n");
     }
 
     private void addMatchesToUpdate(StringBuilder sb) {
         // matches earlier
         List<Match> favTeamMissedMatches = matchService.getMatchesNotReported();
         if (!favTeamMissedMatches.isEmpty()) {
-            sb.append("You've missed the following games:%n");
+            sb.append("You've missed the following games:\n");
             addAllMatchesToReport(sb, favTeamMissedMatches);
         }
         // matches live
         List<Match> liveMatchesOfFavoriteTeams = matchService.getLiveMatchForTeams(userState.favoriteTeams());
         if (!liveMatchesOfFavoriteTeams.isEmpty()) {
-            sb.append("Playing live are:%n");
+            sb.append("Playing live are:\n");
             addAllMatchesToReport(sb, liveMatchesOfFavoriteTeams);
         }
         // matchers later today
@@ -128,7 +132,7 @@ public class StatusReportService extends AbstractReportService {
                         .filter(isMatchThatWillTakePlaceLaterToday())
                         .collect(Collectors.toList());
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {
-            sb.append("Games played later today are:%n");
+            sb.append("Games played later today are:\n");
             addAllMatchesToReport(sb, futureMatchesOfFavoriteTeams);
         }
     }
