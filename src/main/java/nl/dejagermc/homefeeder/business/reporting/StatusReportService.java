@@ -14,7 +14,7 @@ import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +38,10 @@ public class StatusReportService extends AbstractReportService {
     private PostNLService postNLService;
 
     @Autowired
-    public StatusReportService(UserState userState, ReportedService reportedService, TelegramOutput telegramOutput,
+    public StatusReportService(HomeFeederState homeFeederState, ReportedService reportedService, TelegramOutput telegramOutput,
                                GoogleHomeOutput googleHomeOutput, SonarrService sonarrService,
                                RadarrService radarrService, TournamentService tournamentService, MatchService matchService, PostNLService postNLService) {
-        super(userState, reportedService, telegramOutput, googleHomeOutput);
+        super(homeFeederState, reportedService, telegramOutput, googleHomeOutput);
         this.sonarrService = sonarrService;
         this.radarrService = radarrService;
         this.tournamentService = tournamentService;
@@ -50,7 +50,7 @@ public class StatusReportService extends AbstractReportService {
     }
 
     public void statusUpdate() {
-        if (!userState.reportNow()) {
+        if (!homeFeederState.reportNow()) {
             return;
         }
 
@@ -120,7 +120,7 @@ public class StatusReportService extends AbstractReportService {
             addAllMatchesToReport(sb, favTeamMissedMatches);
         }
         // matches live
-        List<Match> liveMatchesOfFavoriteTeams = matchService.getLiveMatchForTeams(userState.favoriteTeams());
+        List<Match> liveMatchesOfFavoriteTeams = matchService.getLiveMatchForTeams(homeFeederState.favoriteTeams());
         if (!liveMatchesOfFavoriteTeams.isEmpty()) {
             sb.append("Playing live are:\n");
             addAllMatchesToReport(sb, liveMatchesOfFavoriteTeams);
@@ -128,7 +128,7 @@ public class StatusReportService extends AbstractReportService {
         // matchers later today
         List<Match> futureMatchesOfFavoriteTeams =
                 matchService.getTodaysMatches().stream()
-                        .filter(isMatchWithOneOfTheseTeams(userState.favoriteTeams()))
+                        .filter(isMatchWithOneOfTheseTeams(homeFeederState.favoriteTeams()))
                         .filter(isMatchThatWillTakePlaceLaterToday())
                         .collect(Collectors.toList());
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {

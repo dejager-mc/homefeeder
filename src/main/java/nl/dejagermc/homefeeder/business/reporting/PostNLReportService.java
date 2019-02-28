@@ -5,7 +5,7 @@ import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.input.postnl.PostNLService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +16,8 @@ public class PostNLReportService extends AbstractReportService {
     private PostNLService postNLService;
 
     @Autowired
-    public PostNLReportService(UserState userState, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, PostNLService postNLService) {
-        super(userState, reportedService, telegramOutput, googleHomeOutput);
+    public PostNLReportService(HomeFeederState homeFeederState, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, PostNLService postNLService) {
+        super(homeFeederState, reportedService, telegramOutput, googleHomeOutput);
         this.postNLService = postNLService;
     }
 

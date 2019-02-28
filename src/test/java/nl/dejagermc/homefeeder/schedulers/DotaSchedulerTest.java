@@ -14,7 +14,7 @@ import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
 import nl.dejagermc.homefeeder.schudulers.DotaScheduler;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DotaScheduler.class, DotaReportService.class, UserState.class, ReportedService.class,
+@SpringBootTest(classes = {DotaScheduler.class, DotaReportService.class, HomeFeederState.class, ReportedService.class,
         MatchService.class, TournamentService.class, CacheManagerConfig.class})
 @EnableConfigurationProperties
 @Slf4j
@@ -54,7 +54,7 @@ public class DotaSchedulerTest extends TestSetup {
     @Autowired
     private DotaReportService dotaReportService;
     @Autowired
-    private UserState userState;
+    private HomeFeederState homeFeederState;
     @Autowired
     private ReportedService reportedService;
     @Autowired

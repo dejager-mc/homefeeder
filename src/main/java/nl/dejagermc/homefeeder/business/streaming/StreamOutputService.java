@@ -8,7 +8,7 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.util.MatchUtil;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +28,15 @@ public class StreamOutputService {
     private static final String MATCH_FOUND_MESSAGE = "Streaming %s versus %s.";
 
     private OpenhabOutput openhabOutput;
-    private UserState userState;
+    private HomeFeederState homeFeederState;
     private MatchService matchService;
     private TournamentService tournamentService;
     private GoogleHomeOutput googleHomeOutput;
 
     @Autowired
-    public StreamOutputService(OpenhabOutput openhabOutput, UserState userState, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
+    public StreamOutputService(OpenhabOutput openhabOutput, HomeFeederState homeFeederState, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
         this.openhabOutput = openhabOutput;
-        this.userState = userState;
+        this.homeFeederState = homeFeederState;
         this.matchService = matchService;
         this.tournamentService = tournamentService;
         this.googleHomeOutput = googleHomeOutput;
@@ -72,7 +72,7 @@ public class StreamOutputService {
                 .sorted(sortTournamentsByImportanceMostToLeast())
                 .collect(Collectors.toList());
 
-        List<String> teams = userState.favoriteTeams();
+        List<String> teams = homeFeederState.favoriteTeams();
         Optional<Match> possibleMatch = getFirstMatchForTournamentAndFavTeam(sortedTournamentsWithLiveMatches, streamableLiveMatches, teams);
 
         if (possibleMatch.isPresent()) {

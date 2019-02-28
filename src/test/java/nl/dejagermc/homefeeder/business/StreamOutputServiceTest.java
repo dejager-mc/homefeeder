@@ -13,7 +13,7 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.MatchRepository;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.TournamentRepository;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {StreamOutputService.class, UserState.class, MatchService.class, TournamentService.class, CacheManagerConfig.class})
+@SpringBootTest(classes = {StreamOutputService.class, HomeFeederState.class, MatchService.class, TournamentService.class, CacheManagerConfig.class})
 @EnableConfigurationProperties
 @Slf4j
 public class StreamOutputServiceTest extends TestSetup {

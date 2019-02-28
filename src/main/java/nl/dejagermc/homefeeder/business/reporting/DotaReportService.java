@@ -10,14 +10,13 @@ import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType.*;
@@ -36,16 +35,16 @@ public class DotaReportService extends AbstractReportService {
     private TournamentService tournamentService;
 
     @Autowired
-    public DotaReportService(UserState userState, ReportedService reportedService,
+    public DotaReportService(HomeFeederState homeFeederState, ReportedService reportedService,
                              TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput,
                              MatchService matchService, TournamentService tournamentService) {
-        super(userState, reportedService, telegramOutput, googleHomeOutput);
+        super(homeFeederState, reportedService, telegramOutput, googleHomeOutput);
         this.matchService = matchService;
         this.tournamentService = tournamentService;
     }
 
     public void reportLiveMatch() {
-        for (String team : userState.favoriteTeams()) {
+        for (String team : homeFeederState.favoriteTeams()) {
             Optional<Match> optionalMatch = matchService.getLiveMatchForTeam(team);
             if (optionalMatch.isPresent()) {
                 Match match = optionalMatch.get();
@@ -84,7 +83,7 @@ public class DotaReportService extends AbstractReportService {
 
         for (Tournament tournament : tournaments) {
             List<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name()).stream()
-                    .filter(isMatchWithOneOfTheseTeams(userState.favoriteTeams()))
+                    .filter(isMatchWithOneOfTheseTeams(homeFeederState.favoriteTeams()))
                     .collect(Collectors.toList());
             if (!matches.isEmpty()) {
                 sb.append(tournament.name()).append("\n");
@@ -124,7 +123,7 @@ public class DotaReportService extends AbstractReportService {
 
     private void reportNewToGoogleHome(Match match) {
         if (!reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME)) {
-            if (!userState.reportNow()) {
+            if (!homeFeederState.reportNow()) {
                 matchService.addMatchNotReported(match);
             } else {
                 String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());

@@ -3,7 +3,7 @@ package nl.dejagermc.homefeeder.web;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.business.reporting.DotaReportService;
 import nl.dejagermc.homefeeder.business.reporting.StatusReportService;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,27 +18,27 @@ public class OpenhabController extends AbstractController {
     private StatusReportService statusReportService;
 
     @Autowired
-    public OpenhabController(UserState userState, DotaReportService dotaReportService, StatusReportService statusReportService) {
-        super(userState);
+    public OpenhabController(HomeFeederState homeFeederState, DotaReportService dotaReportService, StatusReportService statusReportService) {
+        super(homeFeederState);
         this.dotaReportService = dotaReportService;
         this.statusReportService = statusReportService;
     }
 
     @GetMapping("/userIsHome/{value}")
     public ResponseEntity userIsHome(@PathVariable boolean value) {
-        userState.isHome(value);
+        homeFeederState.isHome(value);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/userIsSleeping/{value}")
     public ResponseEntity userIsSleeping(@PathVariable boolean value) {
-        userState.isSleeping(value);
+        homeFeederState.isSleeping(value);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/mute/{value}")
     public ResponseEntity mute(@PathVariable boolean value) {
-        userState.isMute(value);
+        homeFeederState.isMute(value);
         return new ResponseEntity(HttpStatus.OK);
     }
 

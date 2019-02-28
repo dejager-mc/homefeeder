@@ -14,6 +14,7 @@ Features:
 [X] Let openhab know homefeeder is online every 5 seconds
 [-] Get an update when a favorite team has finished playing a match (with results?)
 [ ] Google Calendar integration
+[X] application state accessable through get and adjustable through put
 
 Improvements:
 [X] Reset caches / reported list daily at 02:00

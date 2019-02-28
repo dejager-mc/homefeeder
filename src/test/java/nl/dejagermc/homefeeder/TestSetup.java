@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class TestSetup {
 
     @Autowired
-    private UserState userState;
+    private HomeFeederState homeFeederState;
 
     @Autowired
     private CacheManager cacheManager;
@@ -20,12 +20,12 @@ public class TestSetup {
     @Before
     public void basicResetTestSetup() {
         log.info("Loading default test setup...");
-        userState.useTelegram(true);
-        userState.useGoogleHome(true);
-        userState.favoriteTeams(Arrays.asList("OG"));
-        userState.isHome(true);
-        userState.isMute(false);
-        userState.isSleeping(false);
+        homeFeederState.useTelegram(true);
+        homeFeederState.useGoogleHome(true);
+        homeFeederState.favoriteTeams(Arrays.asList("OG"));
+        homeFeederState.isHome(true);
+        homeFeederState.isMute(false);
+        homeFeederState.isSleeping(false);
         cacheManager.getCache("getAllMatches").clear();
         cacheManager.getCache("getAllPremierTournaments").clear();
         cacheManager.getCache("getAllMajorTournaments").clear();

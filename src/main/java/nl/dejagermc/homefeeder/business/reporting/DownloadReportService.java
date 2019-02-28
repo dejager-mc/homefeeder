@@ -10,7 +10,7 @@ import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.user.UserState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +30,8 @@ public class DownloadReportService extends AbstractReportService {
     private SonarrService sonarrService;
 
     @Autowired
-    public DownloadReportService(UserState userState, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, RadarrService radarrService, SonarrService sonarrService) {
-        super(userState, reportedService, telegramOutput, googleHomeOutput);
+    public DownloadReportService(HomeFeederState homeFeederState, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, RadarrService radarrService, SonarrService sonarrService) {
+        super(homeFeederState, reportedService, telegramOutput, googleHomeOutput);
         this.radarrService = radarrService;
         this.sonarrService = sonarrService;
     }
@@ -47,7 +47,7 @@ public class DownloadReportService extends AbstractReportService {
 
         telegramOutput.sendMessage(telegramReport);
 
-        if (!userState.reportNow()) {
+        if (!homeFeederState.reportNow()) {
             radarrService.addNotYetReported(schema);
         } else {
             String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
@@ -69,7 +69,7 @@ public class DownloadReportService extends AbstractReportService {
             telegramOutput.sendMessage(telegramReport);
         }
 
-        if (!userState.reportNow()) {
+        if (!homeFeederState.reportNow()) {
             sonarrService.addNotYetReported(schema);
         } else {
             if (schema.getEpisodes().size() > 1) {
