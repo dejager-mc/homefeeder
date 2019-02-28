@@ -29,7 +29,16 @@ public class HomeFeederController {
         return convertToDto(homeFeederState);
     }
 
-    @PutMapping("state")
+    @PutMapping(value = "state/openhab", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateHomeFeederStateOpenhabSettings(@RequestBody final HomeFeederStateDto homeFeederStateDto) {
+        HomeFeederState newHomeFeederState = convertToEntity(homeFeederStateDto);
+        homeFeederState.isHome(newHomeFeederState.isHome());
+        homeFeederState.isSleeping(newHomeFeederState.isSleeping());
+        homeFeederState.isMute(newHomeFeederState.isMute());
+    }
+
+    @PutMapping(value = "state", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void updateHomeFeederState(@RequestBody final HomeFeederStateDto homeFeederStateDto) {
         HomeFeederState newHomeFeederState = convertToEntity(homeFeederStateDto);
