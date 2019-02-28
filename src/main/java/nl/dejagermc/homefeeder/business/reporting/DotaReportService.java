@@ -8,7 +8,7 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
-import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
 import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,21 +114,21 @@ public class DotaReportService extends AbstractReportService {
     }
 
     private void reportNewToTelegram(Match match) {
-        if (!reportedService.hasThisBeenReportedToThat(match, ReportedTo.TELEGRAM)) {
+        if (!reportedService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM)) {
             String message = getLiveDotaMatchTelegramMessage(match);
             telegramOutput.sendMessage(message);
-            reportedService.markThisReportedToThat(match, ReportedTo.TELEGRAM);
+            reportedService.markThisReportedToThat(match, ReportMethods.TELEGRAM);
         }
     }
 
     private void reportNewToGoogleHome(Match match) {
-        if (!reportedService.hasThisBeenReportedToThat(match, ReportedTo.GOOGLE_HOME)) {
+        if (!reportedService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME)) {
             if (!homeFeederState.reportNow()) {
                 matchService.addMatchNotReported(match);
             } else {
                 String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
                 googleHomeOutput.broadcast(message);
-                reportedService.markThisReportedToThat(match, ReportedTo.GOOGLE_HOME);
+                reportedService.markThisReportedToThat(match, ReportMethods.GOOGLE_HOME);
             }
         }
     }

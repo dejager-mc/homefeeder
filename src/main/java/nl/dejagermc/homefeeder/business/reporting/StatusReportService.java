@@ -49,7 +49,7 @@ public class StatusReportService extends AbstractReportService {
         this.postNLService = postNLService;
     }
 
-    public void statusUpdate() {
+    public void whatHappenedWhileIWasGoneReport() {
         if (!homeFeederState.reportNow()) {
             return;
         }

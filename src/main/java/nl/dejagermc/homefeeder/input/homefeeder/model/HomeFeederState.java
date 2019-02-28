@@ -3,6 +3,7 @@ package nl.dejagermc.homefeeder.input.homefeeder.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.List;
 @Setter
 @Component
 @NoArgsConstructor
+@ToString
 public class HomeFeederState {
     // openhab
     private boolean isHome = true;

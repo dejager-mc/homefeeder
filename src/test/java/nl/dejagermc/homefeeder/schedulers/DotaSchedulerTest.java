@@ -11,7 +11,7 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.MatchRepository;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.TournamentRepository;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
-import nl.dejagermc.homefeeder.business.reported.model.ReportedTo;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
 import nl.dejagermc.homefeeder.schudulers.DotaScheduler;
 import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
@@ -82,8 +82,8 @@ public class DotaSchedulerTest extends TestSetup {
         Match match1 = defaultMatch(teamLeft, teamRight, tournamentName, true);
 
         // check begin state is correct
-        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportedTo.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportedTo.TELEGRAM));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportMethods.GOOGLE_HOME));
+        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportMethods.TELEGRAM));
 
         when(matchRepository.getAllMatches()).thenReturn(Set.of(match1));
         validateMockitoUsage();
@@ -93,8 +93,8 @@ public class DotaSchedulerTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
         validateMockitoUsage();
-        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportedTo.GOOGLE_HOME));
-        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportedTo.TELEGRAM));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportMethods.GOOGLE_HOME));
+        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportMethods.TELEGRAM));
 
 
         // run 2
