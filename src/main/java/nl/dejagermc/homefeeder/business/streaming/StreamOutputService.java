@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.business.streaming;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
@@ -8,7 +9,6 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.util.MatchUtil;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +28,15 @@ public class StreamOutputService {
     private static final String MATCH_FOUND_MESSAGE = "Streaming %s versus %s.";
 
     private OpenhabOutput openhabOutput;
-    private HomeFeederState homeFeederState;
     private MatchService matchService;
     private TournamentService tournamentService;
     private GoogleHomeOutput googleHomeOutput;
+    private SettingsService settingsService;
 
     @Autowired
-    public StreamOutputService(OpenhabOutput openhabOutput, HomeFeederState homeFeederState, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
+    public StreamOutputService(OpenhabOutput openhabOutput, SettingsService settingsService, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
         this.openhabOutput = openhabOutput;
-        this.homeFeederState = homeFeederState;
+        this.settingsService = settingsService;
         this.matchService = matchService;
         this.tournamentService = tournamentService;
         this.googleHomeOutput = googleHomeOutput;
@@ -72,7 +72,7 @@ public class StreamOutputService {
                 .sorted(sortTournamentsByImportanceMostToLeast())
                 .collect(Collectors.toList());
 
-        List<String> teams = homeFeederState.favoriteTeams();
+        List<String> teams = settingsService.getFavoriteDotaTeams();
         Optional<Match> possibleMatch = getFirstMatchForTournamentAndFavTeam(sortedTournamentsWithLiveMatches, streamableLiveMatches, teams);
 
         if (possibleMatch.isPresent()) {

@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 import java.util.List;
 
 @Accessors
-public class HomeFeederStateDto {
+public class HomeFeederSettingsDto {
     // openhab
     private boolean isHome;
     private boolean isSleeping;

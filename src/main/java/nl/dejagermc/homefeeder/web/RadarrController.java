@@ -3,7 +3,7 @@ package nl.dejagermc.homefeeder.web;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.business.reporting.DownloadReportService;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
+import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class RadarrController extends AbstractController {
     private DownloadReportService downloadReportService;
 
     @Autowired
-    public RadarrController(HomeFeederState homeFeederState, DownloadReportService downloadReportService) {
-        super(homeFeederState);
+    public RadarrController(SettingsService settingsService, DownloadReportService downloadReportService) {
+        super(settingsService);
         this.downloadReportService = downloadReportService;
     }
 

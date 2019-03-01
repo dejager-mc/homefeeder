@@ -3,17 +3,20 @@ package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
+import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.config.CacheManagerConfig;
+import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
+import nl.dejagermc.homefeeder.input.homefeeder.model.DotaSettings;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
+import nl.dejagermc.homefeeder.input.homefeeder.model.OpenHabSettings;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.business.reported.ReportedService;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,9 +38,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DotaReportService.class, ReportedService.class, HomeFeederState.class, CacheManagerConfig.class})
-@EnableConfigurationProperties
 @Slf4j
 public class DotaReportServiceTest extends TestSetup {
 

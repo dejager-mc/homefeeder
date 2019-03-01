@@ -2,7 +2,8 @@ package nl.dejagermc.homefeeder.input.homefeeder;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.DotaSettings;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
 import nl.dejagermc.homefeeder.input.homefeeder.model.OpenHabSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,14 @@ import java.util.List;
 @Service
 public class SettingsService {
     private OpenHabSettings openHabSettings;
-    private HomeFeederState homeFeederState;
+    private HomeFeederSettings homeFeederSettings;
+    private DotaSettings dotaSettings;
 
     @Autowired
-    public SettingsService(OpenHabSettings openHabSettings, HomeFeederState homeFeederState) {
+    public SettingsService(OpenHabSettings openHabSettings, HomeFeederSettings homeFeederSettings, DotaSettings dotaSettings) {
         this.openHabSettings = openHabSettings;
-        this.homeFeederState = homeFeederState;
+        this.homeFeederSettings = homeFeederSettings;
+        this.dotaSettings = dotaSettings;
     }
 
     public boolean isUserAbleToGetReport() {
@@ -27,17 +30,29 @@ public class SettingsService {
     }
 
     public List<String> getFavoriteDotaTeams() {
-        return homeFeederState.favoriteTeams();
+        return dotaSettings.getFavoriteTeams();
     }
 
     public List<ReportMethods> getReportMethods() {
         List<ReportMethods> reportMethods = Collections.emptyList();
-        if (homeFeederState.useTelegram()) {
+        if (homeFeederSettings.isUseTelegram()) {
             reportMethods.add(ReportMethods.TELEGRAM);
         }
-        if (homeFeederState.useGoogleHome()) {
+        if (homeFeederSettings.isUseGoogleHome()) {
             reportMethods.add(ReportMethods.GOOGLE_HOME);
         }
         return reportMethods;
+    }
+
+    public OpenHabSettings getOpenHabSettings() {
+        return openHabSettings;
+    }
+
+    public HomeFeederSettings getHomeFeederSettings() {
+        return homeFeederSettings;
+    }
+
+    public DotaSettings getDotaSettings() {
+        return dotaSettings;
     }
 }

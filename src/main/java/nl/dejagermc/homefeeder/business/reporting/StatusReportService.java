@@ -3,6 +3,7 @@ package nl.dejagermc.homefeeder.business.reporting;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
+import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
@@ -14,7 +15,7 @@ import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
+import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +39,10 @@ public class StatusReportService extends AbstractReportService {
     private PostNLService postNLService;
 
     @Autowired
-    public StatusReportService(HomeFeederState homeFeederState, ReportedService reportedService, TelegramOutput telegramOutput,
+    public StatusReportService(SettingsService settingsService, ReportedService reportedService, TelegramOutput telegramOutput,
                                GoogleHomeOutput googleHomeOutput, SonarrService sonarrService,
                                RadarrService radarrService, TournamentService tournamentService, MatchService matchService, PostNLService postNLService) {
-        super(homeFeederState, reportedService, telegramOutput, googleHomeOutput);
+        super(settingsService, reportedService, telegramOutput, googleHomeOutput);
         this.sonarrService = sonarrService;
         this.radarrService = radarrService;
         this.tournamentService = tournamentService;
@@ -50,7 +51,7 @@ public class StatusReportService extends AbstractReportService {
     }
 
     public void whatHappenedWhileIWasGoneReport() {
-        if (!homeFeederState.reportNow()) {
+        if (!settingsService.isUserAbleToGetReport()) {
             return;
         }
 
@@ -120,7 +121,7 @@ public class StatusReportService extends AbstractReportService {
             addAllMatchesToReport(sb, favTeamMissedMatches);
         }
         // matches live
-        List<Match> liveMatchesOfFavoriteTeams = matchService.getLiveMatchForTeams(homeFeederState.favoriteTeams());
+        List<Match> liveMatchesOfFavoriteTeams = matchService.getLiveMatchForTeams(settingsService.getFavoriteDotaTeams());
         if (!liveMatchesOfFavoriteTeams.isEmpty()) {
             sb.append("Playing live are:\n");
             addAllMatchesToReport(sb, liveMatchesOfFavoriteTeams);
@@ -128,7 +129,7 @@ public class StatusReportService extends AbstractReportService {
         // matchers later today
         List<Match> futureMatchesOfFavoriteTeams =
                 matchService.getTodaysMatches().stream()
-                        .filter(isMatchWithOneOfTheseTeams(homeFeederState.favoriteTeams()))
+                        .filter(isMatchWithOneOfTheseTeams(settingsService.getFavoriteDotaTeams()))
                         .filter(isMatchThatWillTakePlaceLaterToday())
                         .collect(Collectors.toList());
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {

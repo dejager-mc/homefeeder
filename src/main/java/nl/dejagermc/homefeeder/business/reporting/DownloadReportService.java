@@ -1,16 +1,16 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RemoteMovie;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
+import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.radarr.RadarrService;
 import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.business.reported.ReportedService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +30,8 @@ public class DownloadReportService extends AbstractReportService {
     private SonarrService sonarrService;
 
     @Autowired
-    public DownloadReportService(HomeFeederState homeFeederState, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, RadarrService radarrService, SonarrService sonarrService) {
-        super(homeFeederState, reportedService, telegramOutput, googleHomeOutput);
+    public DownloadReportService(SettingsService settingsService, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, RadarrService radarrService, SonarrService sonarrService) {
+        super(settingsService, reportedService, telegramOutput, googleHomeOutput);
         this.radarrService = radarrService;
         this.sonarrService = sonarrService;
     }
@@ -47,7 +47,7 @@ public class DownloadReportService extends AbstractReportService {
 
         telegramOutput.sendMessage(telegramReport);
 
-        if (!homeFeederState.reportNow()) {
+        if (!settingsService.isUserAbleToGetReport()) {
             radarrService.addNotYetReported(schema);
         } else {
             String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
@@ -69,7 +69,7 @@ public class DownloadReportService extends AbstractReportService {
             telegramOutput.sendMessage(telegramReport);
         }
 
-        if (!homeFeederState.reportNow()) {
+        if (!settingsService.isUserAbleToGetReport()) {
             sonarrService.addNotYetReported(schema);
         } else {
             if (schema.getEpisodes().size() > 1) {

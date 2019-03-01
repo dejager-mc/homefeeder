@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.input.homefeeder.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -14,7 +15,9 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class DotaSettings {
-    @Value("${homefeeder.dota.favorite.teams}")
-    private List<String> favoriteTeams;
+public class HomeFeederSettings {
+    @Value("${homefeeder.use.googlehome}")
+    private boolean useGoogleHome;
+    @Value("${homefeeder.use.telegram}")
+    private boolean useTelegram;
 }

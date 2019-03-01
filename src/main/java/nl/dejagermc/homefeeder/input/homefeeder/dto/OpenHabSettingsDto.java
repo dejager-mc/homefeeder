@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @ToString
-public class OpenHabStateDto {
+public class OpenHabSettingsDto {
     private boolean isHome;
     private boolean isSleeping;
     private boolean isMute;
