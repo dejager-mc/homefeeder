@@ -10,7 +10,6 @@ import nl.dejagermc.homefeeder.web.dto.settings.AllSettingsDto;
 import nl.dejagermc.homefeeder.web.dto.settings.DotaSettingsDto;
 import nl.dejagermc.homefeeder.web.dto.settings.HomeFeederSettingsDto;
 import nl.dejagermc.homefeeder.web.dto.settings.OpenHabSettingsDto;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,13 +20,11 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class SettingsController extends AbstractController {
 
-    private ModelMapper modelMapper;
     private SettingsMapping settingsMapping;
 
     @Autowired
-    public SettingsController(SettingsService settingsService, ModelMapper modelMapper, SettingsMapping settingsMapping) {
+    public SettingsController(SettingsService settingsService, SettingsMapping settingsMapping) {
         super(settingsService);
-        this.modelMapper = modelMapper;
         this.settingsMapping = settingsMapping;
     }
 

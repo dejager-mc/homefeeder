@@ -113,12 +113,7 @@ public class StatusReportBusinessService extends AbstractReportBusinessService {
 
     private void addTournamentToUpdate(StringBuilder sb) {
         Optional<Tournament> optionalTournament = tournamentService.getMostImportantPremierOrMajorActiveTournament();
-
-        if (optionalTournament.isEmpty()) {
-            return;
-        }
-
-        sb.append("Dota tournament ").append(optionalTournament.get().name()).append(" is active.\n");
+        optionalTournament.ifPresent(t -> sb.append("Dota tournament ").append(t.name()).append(" is active.\n"));
     }
 
     private void addMatchesToUpdate(StringBuilder sb) {
@@ -141,7 +136,7 @@ public class StatusReportBusinessService extends AbstractReportBusinessService {
                         .filter(isMatchThatWillTakePlaceLaterToday())
                         .collect(Collectors.toList());
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {
-            sb.append("Games played later today are:\n");
+            sb.append("Dota games later today: ");
             addAllMatchesToReport(sb, futureMatchesOfFavoriteTeams);
         }
     }

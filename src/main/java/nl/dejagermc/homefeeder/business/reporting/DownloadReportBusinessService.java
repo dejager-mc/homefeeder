@@ -25,7 +25,7 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
     private static final String GOOGLE_HOME_MOVIE_REPORT = "The movie %s is now available.";
 
     private static final String TELEGRAM_SERIES_REPORT = "<b>Episode available</b>%n%s - %sx%s - %s [%s]";
-    private static final String GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT = "Episode %s for series %s is now available.";
+    private static final String GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT = "%s, episode %s now available.";
     private static final String GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT = "%s episodes for series %s are now available.";
 
     private RadarrService radarrService;
@@ -52,7 +52,6 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
 
         if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
             if (settingsService.surpressMessage()) {
-                // nothing
                 return;
             }
 
@@ -86,7 +85,6 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
 
         if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
             if (settingsService.surpressMessage()) {
-                // nothing
                 return;
             }
 
@@ -101,8 +99,8 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
                     googleHomeOutput.broadcast(googleHomeReport);
                 } else if (schema.getEpisodes().size() == 1) {
                     String googleHomeReport = String.format(GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT,
-                            schema.getEpisodes().get(0).getEpisodeNumber(),
-                            seriesName);
+                            seriesName,
+                            schema.getEpisodes().get(0).getEpisodeNumber());
                     googleHomeOutput.broadcast(googleHomeReport);
                 }
             }

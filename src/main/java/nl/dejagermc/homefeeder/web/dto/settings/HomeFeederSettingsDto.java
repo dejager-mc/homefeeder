@@ -5,8 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 @Accessors
 @Getter
 @Setter
