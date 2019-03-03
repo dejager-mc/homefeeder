@@ -23,21 +23,26 @@ public class GoogleHomeOutput {
         // empty
     }
 
-    public void broadcast(String message) {
+    public boolean broadcast(String message) {
+        if (message.isBlank()) {
+            return true;
+        }
+
         String optimisedMessage = optimiseNamesForSpeech(message);
         String json = String.format(BROADCAST_JSON_MESSAGE, optimisedMessage);
-        broadcastToGoogleHome(json);
+        return broadcastToGoogleHome(json);
     }
 
     private String optimiseNamesForSpeech(String message) {
-        message = message.replaceAll("OG", "O G ");
-        message = message.replaceAll("VP", "V P ");
-        message = message.replaceAll("NIP", "N I P ");
-        message = message.replaceAll("EG", "E G ");
-        return message;
+        return message
+                .replaceAll("OG", "O G ")
+                .replaceAll("VP", "V P ")
+                .replaceAll("NIP", "N I P ")
+                .replaceAll("EG", "E G ");
     }
 
-    private void broadcastToGoogleHome(String json) {
+    private boolean broadcastToGoogleHome(String json) {
+        log.info("Broadcasting: {}", json);
         try {
             String response = Jsoup.connect(uri)
                     .timeout(60000)
@@ -48,8 +53,10 @@ public class GoogleHomeOutput {
                     .execute()
                     .body();
             handleResponse(response);
+            return true;
         } catch (IOException e) {
             log.error("Error sending broadcast: {}", e);
+            return false;
         }
     }
 

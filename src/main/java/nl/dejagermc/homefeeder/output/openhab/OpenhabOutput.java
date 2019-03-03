@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.output.openhab;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.StreamTarget;
 import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,11 +16,21 @@ public class OpenhabOutput {
     @Value("${openhab.rest}")
     private String openhabApiUri;
 
+    // openhab switch items
     @Value("${openhab.tv.switch}")
-    private String tvSwitch;
+    private String sonyTvLivingRoomSwitch;
+    @Value("${openhab.tv.lg.switch}")
+    private String lgTvCinemaSwitch;
+    @Value("${openhab.pc.asgard.switch}")
+    private String asgardPcLivingRoomSwitch;
 
+    // openhab stream items
     @Value("${openhab.tv.stream}")
-    private String tvStream;
+    private String sonyTvLivingRoom;
+    @Value("${openhab.tv.lg.stream}")
+    private String lgTvCinema;
+    @Value("${openhab.pc.asgard.stream}")
+    private String asgardPcLivingRoom;
 
     @Value("${openhab.homefeeder.online}")
     private String homefeederIsOnline;
@@ -32,11 +43,24 @@ public class OpenhabOutput {
     }
 
     public boolean turnOnTv() {
-        return turnOnOpenhabItem(tvSwitch, ON);
+        return turnOnOpenhabItem(sonyTvLivingRoomSwitch, ON);
     }
 
     public boolean streamToTv(String uri) {
-        return turnOnOpenhabItem(tvStream, uri);
+        return turnOnOpenhabItem(sonyTvLivingRoom, uri);
+    }
+
+    public boolean streamToDevice(String uri, StreamTarget streamTarget) {
+        switch (streamTarget) {
+            case SONY_TV_LIVING_ROOM:
+                return turnOnOpenhabItem(sonyTvLivingRoom, uri);
+            case LG_TV_CINEMA:
+                return turnOnOpenhabItem(lgTvCinema, uri);
+            case ASGARD_PC_LIVING_ROOM:
+                return turnOnOpenhabItem(asgardPcLivingRoom, uri);
+            default:
+                return false;
+        }
     }
 
     public boolean homefeederIsOnline() {

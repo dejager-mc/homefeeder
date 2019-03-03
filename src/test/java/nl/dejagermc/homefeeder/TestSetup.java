@@ -3,7 +3,7 @@ package nl.dejagermc.homefeeder;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.config.HomeFeederConfig;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = HomeFeederConfig.class)
@@ -40,14 +43,13 @@ public class TestSetup {
         settingsService.getOpenHabSettings().setMute(false);
         settingsService.getOpenHabSettings().setSleeping(false);
 
-        cacheManager.getCache("getAllMatches").clear();
-        cacheManager.getCache("getAllPremierTournaments").clear();
-        cacheManager.getCache("getAllMajorTournaments").clear();
-        cacheManager.getCache("getAllQualifierTournaments").clear();
+        cacheManager.getCacheNames().forEach(name -> cacheManager.getCache(name).clear());
     }
 
     @Test
-    public void testStartup() {
-        assertEquals(settingsService.isUserAbleToGetReport(), true);
+    public void testSettings() {
+        assertFalse(settingsService.surpressMessage());
+        assertFalse(settingsService.saveOutputForLater());
+        assertThat(settingsService.getReportMethods(), containsInAnyOrder(ReportMethods.values()));
     }
 }

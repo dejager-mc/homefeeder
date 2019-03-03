@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
@@ -13,9 +14,8 @@ import nl.dejagermc.homefeeder.input.postnl.model.Delivery;
 import nl.dejagermc.homefeeder.input.radarr.RadarrService;
 import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.business.reported.ReportedService;
+import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPred
 
 @Service
 @Slf4j
-public class StatusReportService extends AbstractReportService {
+public class StatusReportBusinessService extends AbstractReportBusinessService {
 
     private SonarrService sonarrService;
     private RadarrService radarrService;
@@ -39,10 +39,10 @@ public class StatusReportService extends AbstractReportService {
     private PostNLService postNLService;
 
     @Autowired
-    public StatusReportService(SettingsService settingsService, ReportedService reportedService, TelegramOutput telegramOutput,
-                               GoogleHomeOutput googleHomeOutput, SonarrService sonarrService,
-                               RadarrService radarrService, TournamentService tournamentService, MatchService matchService, PostNLService postNLService) {
-        super(settingsService, reportedService, telegramOutput, googleHomeOutput);
+    public StatusReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutput telegramOutput,
+                                       GoogleHomeOutput googleHomeOutput, SonarrService sonarrService,
+                                       RadarrService radarrService, TournamentService tournamentService, MatchService matchService, PostNLService postNLService) {
+        super(settingsService, reportedBusinessService, telegramOutput, googleHomeOutput);
         this.sonarrService = sonarrService;
         this.radarrService = radarrService;
         this.tournamentService = tournamentService;
@@ -50,25 +50,33 @@ public class StatusReportService extends AbstractReportService {
         this.postNLService = postNLService;
     }
 
-    public void whatHappenedWhileIWasGoneReport() {
-        if (!settingsService.isUserAbleToGetReport()) {
+    public void reportSavedMessagesToGoogleHome() {
+        if (settingsService.surpressMessage()) {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        // series
-        addSonarrToUpdate(sb);
-        // movies
-        addRadarrToUpdate(sb);
-        // tournament
-        addTournamentToUpdate(sb);
-        // games
-        addMatchesToUpdate(sb);
-        // postnl
-        addPostNLDeliveriesToReport(sb);
+        Set<ReportMethods> reportMethods = settingsService.getReportMethods();
 
-        googleHomeOutput.broadcast(sb.toString());
-        resetAllNotYetReportedItems();
+        if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
+            StringBuilder sb = new StringBuilder();
+            // series
+            addSonarrToUpdate(sb);
+            // movies
+            addRadarrToUpdate(sb);
+            // tournament
+            addTournamentToUpdate(sb);
+            // games
+            addMatchesToUpdate(sb);
+            // postnl
+            addPostNLDeliveriesToReport(sb);
+
+            if (!sb.toString().isBlank()) {
+                boolean success = googleHomeOutput.broadcast(sb.toString());
+                if (success) {
+                    resetAllNotYetReportedItems();
+                }
+            }
+        }
     }
 
     private void addSonarrToUpdate(StringBuilder sb) {

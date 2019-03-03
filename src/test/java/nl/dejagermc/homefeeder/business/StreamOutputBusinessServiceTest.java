@@ -2,14 +2,7 @@ package nl.dejagermc.homefeeder.business;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
-import nl.dejagermc.homefeeder.business.streaming.StreamOutputService;
-import nl.dejagermc.homefeeder.config.CacheManagerConfig;
-import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
-import nl.dejagermc.homefeeder.input.homefeeder.model.DotaSettings;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
-import nl.dejagermc.homefeeder.input.homefeeder.model.OpenHabSettings;
-import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
+import nl.dejagermc.homefeeder.business.streaming.StreamOutputBusinessService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
@@ -19,14 +12,10 @@ import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
@@ -36,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @Slf4j
-public class StreamOutputServiceTest extends TestSetup {
+public class StreamOutputBusinessServiceTest extends TestSetup {
 
     private Set<Match> allMatches;
 
@@ -74,7 +63,7 @@ public class StreamOutputServiceTest extends TestSetup {
     private TournamentRepository tournamentRepository;
 
     @Autowired
-    private StreamOutputService streamOutputService;
+    private StreamOutputBusinessService streamOutputBusinessService;
 
     @Captor
     private ArgumentCaptor<String> googleBroadcastCaptor;
@@ -119,7 +108,7 @@ public class StreamOutputServiceTest extends TestSetup {
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
         validateMockitoUsage();
 
-        streamOutputService.streamLiveMatch();
+        streamOutputBusinessService.streamLiveMatch();
 
         verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
         validateMockitoUsage();
@@ -138,7 +127,7 @@ public class StreamOutputServiceTest extends TestSetup {
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
         validateMockitoUsage();
 
-        streamOutputService.streamLiveMatch();
+        streamOutputBusinessService.streamLiveMatch();
 
         verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
         verify(openhabOutput, times(1)).turnOnTv();
@@ -157,7 +146,7 @@ public class StreamOutputServiceTest extends TestSetup {
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
         validateMockitoUsage();
 
-        streamOutputService.streamLiveMatch();
+        streamOutputBusinessService.streamLiveMatch();
 
         verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
         verify(openhabOutput, times(1)).turnOnTv();

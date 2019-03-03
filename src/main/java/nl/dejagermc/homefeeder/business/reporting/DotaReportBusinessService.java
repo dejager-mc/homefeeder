@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.reported.ReportedService;
+import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType.*;
@@ -24,7 +24,7 @@ import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPred
 
 @Service
 @Slf4j
-public class DotaReportService extends AbstractReportService {
+public class DotaReportBusinessService extends AbstractReportBusinessService {
 
     private static final String LIVE_DOTA_MATCH_TELEGRAM_MESSAGE = "<b>Live: %S versus %S</b>%n%s%n";
     private static final String TODAY_DOTA_MATCH_TELEGRAM_MESSAGE = "%S: %S versus %S%n";
@@ -33,22 +33,19 @@ public class DotaReportService extends AbstractReportService {
     private TournamentService tournamentService;
 
     @Autowired
-    public DotaReportService(SettingsService settingsService, ReportedService reportedService,
-                             TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput,
-                             MatchService matchService, TournamentService tournamentService) {
-        super(settingsService, reportedService, telegramOutput, googleHomeOutput);
+    public DotaReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService,
+                                     TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput,
+                                     MatchService matchService, TournamentService tournamentService) {
+        super(settingsService, reportedBusinessService, telegramOutput, googleHomeOutput);
         this.matchService = matchService;
         this.tournamentService = tournamentService;
     }
 
     public void reportLiveMatch() {
         for (String team : settingsService.getFavoriteDotaTeams()) {
-            Optional<Match> optionalMatch = matchService.getLiveMatchForTeam(team);
-            if (optionalMatch.isPresent()) {
-                Match match = optionalMatch.get();
-                reportNewToTelegram(match);
-                reportNewToGoogleHome(match);
-            }
+            matchService
+                    .getLiveMatchForTeam(team)
+                    .ifPresent(this::reportLiveMatchToReportMethods);
         }
     }
 
@@ -96,7 +93,6 @@ public class DotaReportService extends AbstractReportService {
     }
 
 
-
     private String getLiveDotaMatchTelegramMessage(Match match) {
         return String.format(LIVE_DOTA_MATCH_TELEGRAM_MESSAGE,
                 match.leftTeam(),
@@ -111,23 +107,39 @@ public class DotaReportService extends AbstractReportService {
                 match.rightTeam());
     }
 
-    private void reportNewToTelegram(Match match) {
-        if (!reportedService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM)) {
-            String message = getLiveDotaMatchTelegramMessage(match);
-            telegramOutput.sendMessage(message);
-            reportedService.markThisReportedToThat(match, ReportMethods.TELEGRAM);
+    private void reportLiveMatchToReportMethods(Match match) {
+        Set<ReportMethods> reportMethods = settingsService.getReportMethods();
+
+        if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
+            if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME)) {
+                reportLiveMatchToGoogleHome(match);
+            }
+        }
+
+        if (reportMethods.contains(ReportMethods.TELEGRAM)) {
+            if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM)) {
+                reportLiveMatchToTelegram(match);
+            }
         }
     }
 
-    private void reportNewToGoogleHome(Match match) {
-        if (!reportedService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME)) {
-            if (!settingsService.isUserAbleToGetReport()) {
-                matchService.addMatchNotReported(match);
-            } else {
-                String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
-                googleHomeOutput.broadcast(message);
-                reportedService.markThisReportedToThat(match, ReportMethods.GOOGLE_HOME);
-            }
+    private void reportLiveMatchToTelegram(Match match) {
+        String message = getLiveDotaMatchTelegramMessage(match);
+        telegramOutput.sendMessage(message);
+        reportedBusinessService.markThisReportedToThat(match, ReportMethods.TELEGRAM);
+    }
+
+    private void reportLiveMatchToGoogleHome(Match match) {
+        if (settingsService.surpressMessage()) {
+            // do nothing
+            return;
+        }
+        if (settingsService.saveOutputForLater()) {
+            matchService.addMatchNotReported(match);
+        } else {
+            String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
+            googleHomeOutput.broadcast(message);
+            reportedBusinessService.markThisReportedToThat(match, ReportMethods.GOOGLE_HOME);
         }
     }
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Service
 @Slf4j
-public class ReportedService {
+public class ReportedBusinessService {
     private Set<Pair<Object, ReportMethods>> reportedObjects = new HashSet<>();
 
     @Scheduled(cron = "0 0 2 * * *")

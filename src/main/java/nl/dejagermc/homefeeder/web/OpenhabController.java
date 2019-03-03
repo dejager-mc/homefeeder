@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.web;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.reporting.StatusReportService;
+import nl.dejagermc.homefeeder.business.reporting.StatusReportBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class OpenhabController extends AbstractController {
 
-    private StatusReportService statusReportService;
+    private StatusReportBusinessService statusReportBusinessService;
 
     @Autowired
-    public OpenhabController(SettingsService settingsService, StatusReportService statusReportService) {
+    public OpenhabController(SettingsService settingsService, StatusReportBusinessService statusReportBusinessService) {
         super(settingsService);
-        this.statusReportService = statusReportService;
+        this.statusReportBusinessService = statusReportBusinessService;
     }
 
     @GetMapping("/whatHappenedWhileIWasGoneReport")
     public ResponseEntity whatHappenedWhileIWasGoneReport() {
-        statusReportService.whatHappenedWhileIWasGoneReport();
+        statusReportBusinessService.reportSavedMessagesToGoogleHome();
         return new ResponseEntity(HttpStatus.OK);
     }
 }

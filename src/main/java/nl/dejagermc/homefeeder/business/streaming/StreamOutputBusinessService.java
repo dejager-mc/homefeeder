@@ -22,7 +22,7 @@ import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.Tournamen
 
 @Service
 @Slf4j
-public class StreamOutputService {
+public class StreamOutputBusinessService {
 
     private static final String NO_MATCH_FOUND_MESSAGE = "There is no match that can be streamed.";
     private static final String MATCH_FOUND_MESSAGE = "Streaming %s versus %s.";
@@ -34,7 +34,7 @@ public class StreamOutputService {
     private SettingsService settingsService;
 
     @Autowired
-    public StreamOutputService(OpenhabOutput openhabOutput, SettingsService settingsService, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
+    public StreamOutputBusinessService(OpenhabOutput openhabOutput, SettingsService settingsService, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
         this.openhabOutput = openhabOutput;
         this.settingsService = settingsService;
         this.matchService = matchService;

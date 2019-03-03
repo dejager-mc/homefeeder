@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.input.homefeeder.dto;
+package nl.dejagermc.homefeeder.web.dto.settings;
 
 import lombok.Getter;
 import lombok.Setter;

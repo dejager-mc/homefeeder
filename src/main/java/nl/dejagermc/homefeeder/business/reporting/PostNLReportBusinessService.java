@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.reported.ReportedService;
+import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.postnl.PostNLService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class PostNLReportService extends AbstractReportService {
+public class PostNLReportBusinessService extends AbstractReportBusinessService {
 
     private PostNLService postNLService;
 
     @Autowired
-    public PostNLReportService(SettingsService settingsService, ReportedService reportedService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, PostNLService postNLService) {
-        super(settingsService, reportedService, telegramOutput, googleHomeOutput);
+    public PostNLReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, PostNLService postNLService) {
+        super(settingsService, reportedBusinessService, telegramOutput, googleHomeOutput);
         this.postNLService = postNLService;
     }
 

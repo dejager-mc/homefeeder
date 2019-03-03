@@ -2,7 +2,7 @@ package nl.dejagermc.homefeeder.web;
 
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.business.streaming.StreamOutputService;
+import nl.dejagermc.homefeeder.business.streaming.StreamOutputBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class TaskerController {
 
-    private StreamOutputService streamOutputService;
+    private StreamOutputBusinessService streamOutputBusinessService;
 
     @Autowired
-    public TaskerController(StreamOutputService streamOutputService) {
-        this.streamOutputService = streamOutputService;
+    public TaskerController(StreamOutputBusinessService streamOutputBusinessService) {
+        this.streamOutputBusinessService = streamOutputBusinessService;
     }
 
     @GetMapping("dotaOnTv")
     public ResponseEntity dotaOnTv() {
         log.info("start dota stream on tv");
-        streamOutputService.streamLiveMatch();
+        streamOutputBusinessService.streamLiveMatch();
         return new ResponseEntity(HttpStatus.OK);
     }
 

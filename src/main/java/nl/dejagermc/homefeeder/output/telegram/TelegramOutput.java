@@ -8,15 +8,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class TelegramOutput {
     private static final String BASE = "https://api.telegram.org";
-    private static final String BOT = "/bot";
-    private static final String CHANNEL = "/sendMessage?chat_id=";
-    private static final String MESSAGE = "&text=";
+    private static final String BOT_BASE = "/bot";
+    private static final String CHANNEL_BASE = "/sendMessage?chat_id=";
+    private static final String MESSAGE_BASE = "&text=";
     private static final String PARSE_MODE = "&parse_mode=html";
 
     @Value("${telegram.bot.name}")
@@ -32,18 +33,19 @@ public class TelegramOutput {
     }
 
     public void sendMessage(String message) {
+        if (message.isBlank()) {
+            return;
+        }
         doSendMessage(message);
     }
 
     private void doSendMessage(String message) {
         try {
-            String encodedMessage = URLEncoder.encode(message, "UTF-8");
+            String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
             Optional<Document> doc = jsoupUtil.getDocumentIgnoreContentType(createUrl(botName, channelName, encodedMessage));
-            if (doc.isPresent()) {
-                handleTelegramResponse(doc.get().body().text());
-            }
+            doc.ifPresent(d -> handleTelegramResponse(d.body().text()));
         } catch (Exception e) {
-            log.error("Error sending message to telegram: {}", e);
+            log.error("Error sending message to telegram: {}", e.getMessage());
         }
     }
 
@@ -56,15 +58,10 @@ public class TelegramOutput {
     }
 
     private String createUrl(String botName, String channelName, String message) {
-        return new StringBuilder()
-                .append(BASE)
-                .append(BOT)
-                .append(botName)
-                .append(CHANNEL)
-                .append(channelName)
-                .append(PARSE_MODE)
-                .append(MESSAGE)
-                .append(message)
-                .toString();
+        return  BASE +
+                BOT_BASE + botName +
+                CHANNEL_BASE + channelName +
+                PARSE_MODE +
+                MESSAGE_BASE + message;
     }
 }

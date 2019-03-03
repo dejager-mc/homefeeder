@@ -2,8 +2,8 @@ package nl.dejagermc.homefeeder.schedulers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
-import nl.dejagermc.homefeeder.business.reported.ReportedService;
-import nl.dejagermc.homefeeder.business.reporting.DotaReportService;
+import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
+import nl.dejagermc.homefeeder.business.reporting.DotaReportBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
@@ -43,11 +43,11 @@ public class DotaSchedulerTest extends TestSetup {
     @Autowired
     private DotaScheduler dotaScheduler;
     @Autowired
-    private DotaReportService dotaReportService;
+    private DotaReportBusinessService dotaReportBusinessService;
     @Autowired
     private SettingsService settingsService;
     @Autowired
-    private ReportedService reportedService;
+    private ReportedBusinessService reportedBusinessService;
     @Autowired
     private MatchService matchService;
     @Autowired
@@ -59,7 +59,7 @@ public class DotaSchedulerTest extends TestSetup {
     @Before
     public void resetTestSetup() {
         log.info("resetting test setup");
-        reportedService.resetAll();
+        reportedBusinessService.resetAll();
     }
 
     @Test
@@ -73,8 +73,8 @@ public class DotaSchedulerTest extends TestSetup {
         Match match1 = defaultMatch(teamLeft, teamRight, tournamentName, true);
 
         // check begin state is correct
-        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportMethods.GOOGLE_HOME));
-        assertTrue(!reportedService.hasThisBeenReportedToThat(match1, ReportMethods.TELEGRAM));
+        assertTrue(!reportedBusinessService.hasThisBeenReportedToThat(match1, ReportMethods.GOOGLE_HOME));
+        assertTrue(!reportedBusinessService.hasThisBeenReportedToThat(match1, ReportMethods.TELEGRAM));
 
         when(matchRepository.getAllMatches()).thenReturn(Set.of(match1));
         validateMockitoUsage();
@@ -84,8 +84,8 @@ public class DotaSchedulerTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
         validateMockitoUsage();
-        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportMethods.GOOGLE_HOME));
-        assertTrue(reportedService.hasThisBeenReportedToThat(match1, ReportMethods.TELEGRAM));
+        assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match1, ReportMethods.GOOGLE_HOME));
+        assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match1, ReportMethods.TELEGRAM));
 
 
         // run 2

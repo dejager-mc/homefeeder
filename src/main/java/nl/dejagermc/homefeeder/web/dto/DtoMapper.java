@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.config;
+package nl.dejagermc.homefeeder.web.dto;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
