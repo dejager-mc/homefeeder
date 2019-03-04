@@ -27,7 +27,7 @@ import static org.junit.Assert.assertFalse;
 public class TestSetup {
 
     @Autowired
-    private SettingsService settingsService;
+    public SettingsService settingsService;
 
     @Autowired
     private CacheManager cacheManager;

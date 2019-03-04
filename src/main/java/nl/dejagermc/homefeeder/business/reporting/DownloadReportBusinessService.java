@@ -88,7 +88,7 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
                 return;
             }
 
-            if (settingsService.surpressMessage()) {
+            if (settingsService.saveOutputForLater()) {
                 sonarrService.addNotYetReported(schema);
             } else {
 

@@ -107,7 +107,7 @@ public class StatusReportBusinessService extends AbstractReportBusinessService {
         } else {
             sb.append(schemas.size()).append(" movies were downloaded: ");
         }
-        schemas.forEach(schema -> sb.append(schema.getMovie().getTitle()).append(", "));
+        schemas.forEach(schema -> sb.append(schema.getRemoteMovie().getTitle()).append(", "));
         sb.append("\n");
     }
 
