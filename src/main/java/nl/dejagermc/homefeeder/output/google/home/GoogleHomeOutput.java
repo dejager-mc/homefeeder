@@ -1,6 +1,8 @@
 package nl.dejagermc.homefeeder.output.google.home;
 
+import io.github.classgraph.json.JSONUtils;
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +20,21 @@ public class GoogleHomeOutput {
     @Value("${google.assistant.relay.uri}")
     private String uri;
 
+    private JsoupUtil jsoupUtil;
+
     @Autowired
-    public GoogleHomeOutput() {
-        // empty
+    public GoogleHomeOutput(JsoupUtil jsoupUtil) {
+        this.jsoupUtil = jsoupUtil;
     }
 
-    public boolean broadcast(String message) {
+    public void broadcast(String message) {
         if (message.isBlank()) {
-            return true;
+            return;
         }
 
         String optimisedMessage = optimiseNamesForSpeech(message);
         String json = String.format(BROADCAST_JSON_MESSAGE, optimisedMessage);
-        return broadcastToGoogleHome(json);
+        broadcastToGoogleHome(json);
     }
 
     private String optimiseNamesForSpeech(String message) {
@@ -41,23 +45,10 @@ public class GoogleHomeOutput {
                 .replaceAll("EG", "E G ");
     }
 
-    private boolean broadcastToGoogleHome(String json) {
+    private void broadcastToGoogleHome(String json) {
         log.info("Broadcasting: {}", json);
-        try {
-            String response = Jsoup.connect(uri)
-                    .timeout(60000)
-                    .ignoreContentType(true)
-                    .method(Connection.Method.POST)
-                    .header("Content-Type", "application/json")
-                    .requestBody(json)
-                    .execute()
-                    .body();
-            handleResponse(response);
-            return true;
-        } catch (IOException e) {
-            log.error("Error sending broadcast: {}", e);
-            return false;
-        }
+        String response = jsoupUtil.postJson(uri, json);
+        handleResponse(response);
     }
 
     private void handleResponse(String response) {

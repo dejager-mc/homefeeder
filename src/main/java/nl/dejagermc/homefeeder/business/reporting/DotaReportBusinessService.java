@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType.*;
@@ -108,18 +107,12 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
     }
 
     private void reportLiveMatchToReportMethods(Match match) {
-        Set<ReportMethods> reportMethods = settingsService.getReportMethods();
-
-        if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
-            if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME)) {
-                reportLiveMatchToGoogleHome(match);
-            }
+        if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME)) {
+            reportLiveMatchToGoogleHome(match);
         }
 
-        if (reportMethods.contains(ReportMethods.TELEGRAM)) {
-            if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM)) {
-                reportLiveMatchToTelegram(match);
-            }
+        if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM)) {
+            reportLiveMatchToTelegram(match);
         }
     }
 
@@ -131,10 +124,10 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
 
     private void reportLiveMatchToGoogleHome(Match match) {
         if (settingsService.surpressMessage()) {
-            // do nothing
             return;
         }
         if (settingsService.saveOutputForLater()) {
+            log.info("Save for later: {}", match);
             matchService.addMatchNotReported(match);
         } else {
             String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());

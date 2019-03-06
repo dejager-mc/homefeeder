@@ -17,7 +17,7 @@ public class JsoupUtil {
 
     public Optional<Document> getDocument(final String uri) {
         try {
-            return Optional.of(Jsoup.connect(uri).get());
+            return Optional.of(Jsoup.connect(uri).timeout(5000).get());
         } catch (Exception e) {
             log.error(ERROR_MSG, uri);
             return Optional.empty();
@@ -25,14 +25,14 @@ public class JsoupUtil {
     }
     public Optional<Document> getDocumentIgnoreContentType(final String uri) {
         try {
-            return Optional.of(Jsoup.connect(uri).ignoreContentType(true).get());
+            return Optional.of(Jsoup.connect(uri).timeout(5000).ignoreContentType(true).get());
         } catch (Exception e) {
             log.error(ERROR_MSG, uri);
             return Optional.empty();
         }
     }
 
-    public String postToOpenhab(String uri, String body) {
+    public String postJson(String uri, String body) {
         try {
             return
                     Jsoup.connect(uri)

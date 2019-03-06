@@ -55,27 +55,21 @@ public class StatusReportBusinessService extends AbstractReportBusinessService {
             return;
         }
 
-        Set<ReportMethods> reportMethods = settingsService.getReportMethods();
+        StringBuilder sb = new StringBuilder();
+        // series
+        addSonarrToUpdate(sb);
+        // movies
+        addRadarrToUpdate(sb);
+        // tournament
+        addTournamentToUpdate(sb);
+        // games
+        addMatchesToUpdate(sb);
+        // postnl
+        addPostNLDeliveriesToReport(sb);
 
-        if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
-            StringBuilder sb = new StringBuilder();
-            // series
-            addSonarrToUpdate(sb);
-            // movies
-            addRadarrToUpdate(sb);
-            // tournament
-            addTournamentToUpdate(sb);
-            // games
-            addMatchesToUpdate(sb);
-            // postnl
-            addPostNLDeliveriesToReport(sb);
-
-            if (!sb.toString().isBlank()) {
-                boolean success = googleHomeOutput.broadcast(sb.toString());
-                if (success) {
-                    resetAllNotYetReportedItems();
-                }
-            }
+        if (!sb.toString().isBlank()) {
+            googleHomeOutput.broadcast(sb.toString());
+            resetAllNotYetReportedItems();
         }
     }
 
@@ -163,6 +157,7 @@ public class StatusReportBusinessService extends AbstractReportBusinessService {
     }
 
     private void resetAllNotYetReportedItems() {
+        log.info("Reset not yet reported");
         sonarrService.resetNotYetReported();
         radarrService.resetNotYetReported();
         matchService.resetMatchesNotReported();

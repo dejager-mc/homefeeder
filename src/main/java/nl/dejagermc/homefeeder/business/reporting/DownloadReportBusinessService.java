@@ -40,69 +40,75 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
 
     public void reportRadarr(RadarrWebhookSchema schema) {
         RemoteMovie remoteMovie = schema.getRemoteMovie();
-        Set<ReportMethods> reportMethods = settingsService.getReportMethods();
 
-        if (reportMethods.contains(ReportMethods.TELEGRAM)) {
-            String telegramReport = String.format(TELEGRAM_MOVIE_REPORT,
-                    remoteMovie.getTitle(),
-                    remoteMovie.getYear());
+        // telegram
+        String telegramReport = String.format(TELEGRAM_MOVIE_REPORT,
+                remoteMovie.getTitle(),
+                remoteMovie.getYear());
 
-            telegramOutput.sendMessage(telegramReport);
+        telegramOutput.sendMessage(telegramReport);
+
+        // google home
+        reportRadarrToGoogleHome(schema);
+    }
+
+    private void reportRadarrToGoogleHome(RadarrWebhookSchema schema) {
+        if (settingsService.surpressMessage()) {
+            return;
         }
 
-        if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
-            if (settingsService.surpressMessage()) {
-                return;
-            }
+        RemoteMovie remoteMovie = schema.getRemoteMovie();
 
-            if (settingsService.saveOutputForLater()) {
-                radarrService.addNotYetReported(schema);
-            } else {
-                String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
-                        remoteMovie.getTitle());
+        if (settingsService.saveOutputForLater()) {
+            log.info("Save for later: {}", schema.getRemoteMovie());
+            radarrService.addNotYetReported(schema);
+        } else {
+            String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
+                    remoteMovie.getTitle());
 
-                googleHomeOutput.broadcast(googleHomeReport);
-            }
+            googleHomeOutput.broadcast(googleHomeReport);
         }
     }
 
     public void reportSonarr(SonarrWebhookSchema schema) {
         String seriesName = schema.getSeries().getTitle();
-        Set<ReportMethods> reportMethods = settingsService.getReportMethods();
 
-        if (reportMethods.contains(ReportMethods.TELEGRAM)) {
-            String telegramReport;
-            for (Episode episode : schema.getEpisodes()) {
-                telegramReport = String.format(TELEGRAM_SERIES_REPORT,
-                        seriesName,
-                        episode.getSeasonNumber(),
-                        episode.getEpisodeNumber(),
-                        episode.getTitle(),
-                        episode.getQuality());
-                telegramOutput.sendMessage(telegramReport);
-            }
+        // telegram
+        String telegramReport;
+        for (Episode episode : schema.getEpisodes()) {
+            telegramReport = String.format(TELEGRAM_SERIES_REPORT,
+                    seriesName,
+                    episode.getSeasonNumber(),
+                    episode.getEpisodeNumber(),
+                    episode.getTitle(),
+                    episode.getQuality());
+            telegramOutput.sendMessage(telegramReport);
         }
 
-        if (reportMethods.contains(ReportMethods.GOOGLE_HOME)) {
-            if (settingsService.surpressMessage()) {
-                return;
-            }
+        // google home
+        reportSonarrToGoogleHome(schema);
+    }
 
-            if (settingsService.saveOutputForLater()) {
-                sonarrService.addNotYetReported(schema);
-            } else {
+    private void reportSonarrToGoogleHome(SonarrWebhookSchema schema) {
+        if (settingsService.surpressMessage()) {
+            return;
+        }
 
-                if (schema.getEpisodes().size() > 1) {
-                    String googleHomeReport = String.format(GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT,
-                            schema.getEpisodes().size(),
-                            seriesName);
-                    googleHomeOutput.broadcast(googleHomeReport);
-                } else if (schema.getEpisodes().size() == 1) {
-                    String googleHomeReport = String.format(GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT,
-                            seriesName,
-                            schema.getEpisodes().get(0).getEpisodeNumber());
-                    googleHomeOutput.broadcast(googleHomeReport);
-                }
+        if (settingsService.saveOutputForLater()) {
+            log.info("Save for later: {}", schema);
+            sonarrService.addNotYetReported(schema);
+        } else {
+            String seriesName = schema.getSeries().getTitle();
+            if (schema.getEpisodes().size() > 1) {
+                String googleHomeReport = String.format(GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT,
+                        schema.getEpisodes().size(),
+                        seriesName);
+                googleHomeOutput.broadcast(googleHomeReport);
+            } else if (schema.getEpisodes().size() == 1) {
+                String googleHomeReport = String.format(GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT,
+                        seriesName,
+                        schema.getEpisodes().get(0).getEpisodeNumber());
+                googleHomeOutput.broadcast(googleHomeReport);
             }
         }
     }

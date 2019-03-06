@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.springframework.beans.factory.annotation.Value;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Component
 @Accessors
@@ -13,8 +15,6 @@ import org.springframework.stereotype.Component;
 @Setter
 @ToString
 public class HomeFeederSettings {
-    @Value("${homefeeder.use.googlehome}")
-    private boolean useGoogleHome;
-    @Value("${homefeeder.use.telegram}")
-    private boolean useTelegram;
+    Set<ReportMethods> reportMethods = Set.of(ReportMethods.GOOGLE_HOME, ReportMethods.TELEGRAM);
+    // nothing yet
 }

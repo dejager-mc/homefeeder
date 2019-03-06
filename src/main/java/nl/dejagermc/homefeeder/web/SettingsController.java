@@ -3,7 +3,6 @@ package nl.dejagermc.homefeeder.web;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.homefeeder.model.DotaSettings;
-import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
 import nl.dejagermc.homefeeder.input.homefeeder.model.OpenHabSettings;
 import nl.dejagermc.homefeeder.web.dto.mapping.SettingsMapping;
 import nl.dejagermc.homefeeder.web.dto.settings.AllSettingsDto;
@@ -41,20 +40,13 @@ public class SettingsController extends AbstractController {
         settingsService.getOpenHabSettings().setHome(openHabSettings.isHome());
         settingsService.getOpenHabSettings().setSleeping(openHabSettings.isSleeping());
         settingsService.getOpenHabSettings().setMute(openHabSettings.isMute());
+        log.info("Openhab settings update: isHome = {}, isSleeping = {}, isMute = {}", openHabStateDto.isHome(), openHabStateDto.isSleeping(), openHabSettings.isMute());
     }
 
     @GetMapping(value = "homefeeder", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public HomeFeederSettingsDto getHomeFeederSettings() {
         return settingsMapping.convertToDto(settingsService.getHomeFeederSettings());
-    }
-
-    @PutMapping(value = "homefeeder", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public void updateHomeFeederState(@RequestBody final HomeFeederSettingsDto homeFeederStateDto) {
-        HomeFeederSettings newHomeFeederSettings = settingsMapping.convertToEntity(homeFeederStateDto);
-        settingsService.getHomeFeederSettings().setUseGoogleHome(newHomeFeederSettings.isUseGoogleHome());
-        settingsService.getHomeFeederSettings().setUseTelegram(newHomeFeederSettings.isUseTelegram());
     }
 
     @GetMapping(value = "dota", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

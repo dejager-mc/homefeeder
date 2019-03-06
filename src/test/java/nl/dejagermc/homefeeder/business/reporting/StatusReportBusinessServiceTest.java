@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -92,8 +93,7 @@ public class StatusReportBusinessServiceTest extends TestSetup {
         assertTrue(schemas.contains(schema));
 
         // mock google home output
-        when(googleHomeOutput.broadcast(anyString())).thenReturn(true);
-        validateMockitoUsage();
+//        validateMockitoUsage();
 
         // when reporting saved messages
         statusReportBusinessService.reportSavedMessagesToGoogleHome();
@@ -122,6 +122,7 @@ public class StatusReportBusinessServiceTest extends TestSetup {
 
         // When user is sleeping and radarr message is received
         settingsService.getOpenHabSettings().setSleeping(true);
+        doNothing().when(telegramOutput).sendMessage(anyString());
         radarrController.addRadarr(schema);
 
         // Then telegram is send but not google home
@@ -135,8 +136,7 @@ public class StatusReportBusinessServiceTest extends TestSetup {
         assertTrue(schemas.contains(schema));
 
         // mock google home output
-        when(googleHomeOutput.broadcast(anyString())).thenReturn(true);
-        validateMockitoUsage();
+        doNothing().when(googleHomeOutput).broadcast(anyString());
 
         // when reporting saved messages
         statusReportBusinessService.reportSavedMessagesToGoogleHome();

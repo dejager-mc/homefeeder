@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,14 +40,7 @@ public class SettingsService {
 
     @Cacheable(cacheNames = "getReportMethods", cacheManager = "cacheManagerCaffeine")
     public Set<ReportMethods> getReportMethods() {
-        Set<ReportMethods> reportMethods = new HashSet<>();
-        if (homeFeederSettings.isUseTelegram()) {
-            reportMethods.add(ReportMethods.TELEGRAM);
-        }
-        if (homeFeederSettings.isUseGoogleHome()) {
-            reportMethods.add(ReportMethods.GOOGLE_HOME);
-        }
-        return reportMethods;
+        return homeFeederSettings.getReportMethods();
     }
 
     public OpenHabSettings getOpenHabSettings() {

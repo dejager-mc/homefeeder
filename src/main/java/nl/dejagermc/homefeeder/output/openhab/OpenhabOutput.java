@@ -68,7 +68,7 @@ public class OpenhabOutput {
     }
 
     private boolean turnOnOpenhabItem(final String item, final String body) {
-        String response = jsoupUtil.postToOpenhab(openhabApiUri + item, body);
+        String response = jsoupUtil.postJson(openhabApiUri + item, body);
         return isCorrectResponse(response);
     }
 

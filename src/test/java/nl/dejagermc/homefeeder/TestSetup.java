@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 @SpringBootTest(classes = HomeFeederConfig.class)
 @EnableConfigurationProperties
 @Slf4j
+
 public class TestSetup {
 
     @Autowired
@@ -36,8 +37,6 @@ public class TestSetup {
     public void basicResetTestSetup() {
         log.info("Loading default test setup...");
 
-        settingsService.getHomeFeederSettings().setUseTelegram(true);
-        settingsService.getHomeFeederSettings().setUseGoogleHome(true);
         settingsService.getDotaSettings().setFavoriteTeams(Arrays.asList("OG"));
         settingsService.getOpenHabSettings().setHome(true);
         settingsService.getOpenHabSettings().setMute(false);
