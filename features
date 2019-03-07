@@ -23,7 +23,7 @@ Improvements:
 [X] Daily dota report: do reports per tournamenttype ánd per tournament
 [X] Only use Set for Matches / Tournaments in repository, services should always return sorted lists.
 [X] Daily tournament report: only use premier and major tournaments
-[ ] Daily tournament report: show tournament names as well
+[X] Daily tournament report: show tournament names as well
 
 
 

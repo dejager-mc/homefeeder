@@ -60,10 +60,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
 
         for (Tournament tournament : tournaments) {
             List<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name());
-            if (!matches.isEmpty()) {
-                matches.forEach(match -> sb.append(getTodayDotaMatchTelegramMessage(match)));
-                sb.append("\n");
-            }
+            addMatchesForTournamentToReport(matches, tournament, sb);
         }
 
         if (!sb.toString().isBlank()) {
@@ -79,11 +76,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
             List<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name()).stream()
                     .filter(isMatchWithOneOfTheseTeams(settingsService.getFavoriteDotaTeams()))
                     .collect(Collectors.toList());
-            if (!matches.isEmpty()) {
-                sb.append(tournament.name()).append("\n");
-                matches.forEach(match -> sb.append(getTodayDotaMatchTelegramMessage(match)));
-                sb.append("\n");
-            }
+            addMatchesForTournamentToReport(matches, tournament, sb);
         }
 
         if (!sb.toString().isBlank()) {
@@ -91,6 +84,14 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
         }
     }
 
+
+    private void addMatchesForTournamentToReport(List<Match> matches, Tournament tournament, StringBuilder sb) {
+        if (!matches.isEmpty()) {
+            sb.append("<b>").append(tournament.name()).append(":</b>\n");
+            matches.forEach(match -> sb.append(getTodayDotaMatchTelegramMessage(match)));
+            sb.append("\n\n");
+        }
+    }
 
     private String getLiveDotaMatchTelegramMessage(Match match) {
         return String.format(LIVE_DOTA_MATCH_TELEGRAM_MESSAGE,
