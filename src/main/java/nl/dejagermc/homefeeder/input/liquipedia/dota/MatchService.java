@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchThatHappensToday;
-import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchWithOneOfTheseTeams;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.*;
 
 @Service
 @Slf4j
@@ -78,6 +77,7 @@ public class MatchService {
         return repository.getAllMatches().stream()
                 .filter(isMatchThatHappensToday())
                 .filter(m -> m.tournamentName().equals(tournament))
+                .sorted(sortMatchesOnTime())
                 .collect(Collectors.toList());
     }
 }

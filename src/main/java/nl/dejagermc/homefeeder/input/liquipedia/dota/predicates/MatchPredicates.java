@@ -1,8 +1,10 @@
 package nl.dejagermc.homefeeder.input.liquipedia.dota.predicates;
 
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
+import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -28,6 +30,11 @@ public class MatchPredicates {
 
     public static Predicate<Match> isMatchWithOneOfTheseTeams(List<String> teams) {
         return match -> match.matchEitherTeam(teams);
+    }
+
+    public static Comparator<Match> sortMatchesOnTime() {
+        return Comparator
+                .comparing(Match::matchTime);
     }
 
 }
