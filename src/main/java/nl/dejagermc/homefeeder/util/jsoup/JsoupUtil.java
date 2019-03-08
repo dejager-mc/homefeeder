@@ -19,7 +19,7 @@ public class JsoupUtil {
         try {
             return Optional.of(Jsoup.connect(uri).timeout(5000).get());
         } catch (Exception e) {
-            log.error(ERROR_MSG, uri);
+            log.error(String.format(ERROR_MSG, uri), e);
             return Optional.empty();
         }
     }
@@ -27,7 +27,7 @@ public class JsoupUtil {
         try {
             return Optional.of(Jsoup.connect(uri).timeout(5000).ignoreContentType(true).get());
         } catch (Exception e) {
-            log.error(ERROR_MSG, uri);
+            log.error(String.format(ERROR_MSG, uri), e);
             return Optional.empty();
         }
     }
