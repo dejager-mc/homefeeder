@@ -7,7 +7,6 @@ import nl.dejagermc.homefeeder.domain.generated.radarr.RemoteMovie;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.input.radarr.RadarrService;
 import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
@@ -27,6 +26,8 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
     private static final String TELEGRAM_SERIES_REPORT = "<b>Episode available</b>%n%s - %sx%s - %s [%s]";
     private static final String GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT = "%s, episode %s now available.";
     private static final String GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT = "%s episodes for series %s are now available.";
+
+    private static final String SUMMARY_MESSAGE_TEMPLATE = "%s new %s now available. ";
 
     private RadarrService radarrService;
     private SonarrService sonarrService;
@@ -110,6 +111,39 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
                         schema.getEpisodes().get(0).getEpisodeNumber());
                 googleHomeOutput.broadcast(googleHomeReport);
             }
+        }
+    }
+
+    public void reportSummary() {
+        StringBuilder sb = new StringBuilder();
+        addSonarrToSummary(sb);
+        addRadarrToSummary(sb);
+        if (sb.length() > 0) {
+            googleHomeOutput.broadcast(sb.toString());
+        }
+        sonarrService.resetNotYetReported();
+        radarrService.resetNotYetReported();
+    }
+
+    private void addSonarrToSummary(StringBuilder sb) {
+        Set<SonarrWebhookSchema> schemas = sonarrService.getNotYetReported();
+
+        if (schemas.size() == 1) {
+            sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, 1, "epsiode is"));
+        }
+        if (schemas.size() > 1) {
+            sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, schemas.size(), "epsiodes are"));
+        }
+    }
+
+    private void addRadarrToSummary(StringBuilder sb) {
+        Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
+
+        if (schemas.size() == 1) {
+            sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, 1, "movie is"));
+        }
+        if (schemas.size() > 1) {
+            sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, schemas.size(), "movies are"));
         }
     }
 }

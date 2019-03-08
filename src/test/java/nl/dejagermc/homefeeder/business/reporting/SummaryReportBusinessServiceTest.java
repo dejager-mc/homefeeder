@@ -1,28 +1,26 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
-import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice;
 import nl.dejagermc.homefeeder.TestSetup;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
-import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
-import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.radarr.RadarrService;
 import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.startup.StartupCheck;
+import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
 import nl.dejagermc.homefeeder.web.RadarrController;
 import nl.dejagermc.homefeeder.web.SonarrController;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static nl.dejagermc.homefeeder.input.radarr.RadarrBuilder.getDefaultRadarrSchema;
@@ -33,17 +31,21 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @Slf4j
-public class StatusReportBusinessServiceTest extends TestSetup {
+public class SummaryReportBusinessServiceTest extends TestSetup {
 
     @MockBean
     private TelegramOutput telegramOutput;
     @MockBean
     private GoogleHomeOutput googleHomeOutput;
+    @MockBean
+    private JsoupUtil jsoupUtil;
+    @MockBean
+    private StartupCheck startupCheck;
 
     @Autowired
     private ReportedBusinessService reportedBusinessService;
     @Autowired
-    private StatusReportBusinessService statusReportBusinessService;
+    private SummaryReportBusinessService summaryReportBusinessService;
     @Autowired
     private RadarrController radarrController;
     @Autowired
@@ -81,6 +83,7 @@ public class StatusReportBusinessServiceTest extends TestSetup {
         // When user is sleeping and sonarr message is received
         settingsService.getOpenHabSettings().setSleeping(true);
         sonarrController.addSonarr(schema);
+        doNothing().when(telegramOutput).sendMessage(anyString());
 
         // Then telegram is send but not google home
         validateMockitoUsage();
@@ -93,10 +96,11 @@ public class StatusReportBusinessServiceTest extends TestSetup {
         assertTrue(schemas.contains(schema));
 
         // mock google home output
-//        validateMockitoUsage();
+        when(jsoupUtil.getDocument(anyString())).thenReturn(Optional.empty());
+        doNothing().when(googleHomeOutput).broadcast(anyString());
 
         // when reporting saved messages
-        statusReportBusinessService.reportSavedMessagesToGoogleHome();
+        summaryReportBusinessService.reportSummaryToGoogleHome();
 
         // then google home message is send
         verify(telegramOutput, times(0)).sendMessage(anyString());
@@ -122,7 +126,6 @@ public class StatusReportBusinessServiceTest extends TestSetup {
 
         // When user is sleeping and radarr message is received
         settingsService.getOpenHabSettings().setSleeping(true);
-        doNothing().when(telegramOutput).sendMessage(anyString());
         radarrController.addRadarr(schema);
 
         // Then telegram is send but not google home
@@ -136,10 +139,11 @@ public class StatusReportBusinessServiceTest extends TestSetup {
         assertTrue(schemas.contains(schema));
 
         // mock google home output
+        when(jsoupUtil.getDocument(anyString())).thenReturn(Optional.empty());
         doNothing().when(googleHomeOutput).broadcast(anyString());
 
         // when reporting saved messages
-        statusReportBusinessService.reportSavedMessagesToGoogleHome();
+        summaryReportBusinessService.reportSummaryToGoogleHome();
 
         // then google home message is send
         verify(telegramOutput, times(0)).sendMessage(anyString());

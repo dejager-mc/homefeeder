@@ -40,6 +40,12 @@ public class MatchService {
         return new ArrayList<>(matchesNotReported);
     }
 
+    public void removeMatchNotReported(Match match) {
+        if (matchesNotReported.contains(match)) {
+            matchesNotReported.remove(match);
+        }
+    }
+
     public void resetMatchesNotReported() {
         matchesNotReported = new HashSet<>();
     }

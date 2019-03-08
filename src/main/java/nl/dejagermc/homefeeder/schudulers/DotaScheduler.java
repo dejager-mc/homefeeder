@@ -20,7 +20,7 @@ public class DotaScheduler {
     @Scheduled(fixedDelay = 60000, initialDelay = 60000)
     public void reportLiveMatches() {
         log.info("Report live matches");
-        dotaReportBusinessService.reportLiveMatch();
+        dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
     }
 
     @Scheduled(cron = "0 5 6 * * *")

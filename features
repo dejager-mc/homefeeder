@@ -34,3 +34,4 @@ Bugs:
 [X] Reporting on live matches happens more than once per match
 [X] Movie download reporting to telegram was broken because of uri to IMDB. Removed it.
 [ ] Reporting breaklines to google home broadcast causes errors.
+[ ] When reporting live match make sure that same match is not in the saved-for-later list

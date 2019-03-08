@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType.*;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchThatWillTakePlaceLaterToday;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchWithOneOfTheseTeams;
 
 @Service
@@ -40,12 +42,10 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
         this.tournamentService = tournamentService;
     }
 
-    public void reportLiveMatch() {
-        for (String team : settingsService.getFavoriteDotaTeams()) {
-            matchService
-                    .getLiveMatchForTeam(team)
-                    .ifPresent(this::reportLiveMatchToReportMethods);
-        }
+    public void reportLiveMatchesFavoriteTeams() {
+        settingsService.getFavoriteDotaTeams()
+                .forEach(team -> matchService.getLiveMatchForTeam(team)
+                        .ifPresent(this::reportLiveMatch));
     }
 
     public void reportTodaysMatches() {
@@ -107,7 +107,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
                 match.rightTeam());
     }
 
-    private void reportLiveMatchToReportMethods(Match match) {
+    private void reportLiveMatch(Match match) {
         if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME)) {
             reportLiveMatchToGoogleHome(match);
         }
@@ -115,6 +115,8 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
         if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM)) {
             reportLiveMatchToTelegram(match);
         }
+
+        matchService.removeMatchNotReported(match);
     }
 
     private void reportLiveMatchToTelegram(Match match) {
@@ -134,6 +136,41 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
             String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
             googleHomeOutput.broadcast(message);
             reportedBusinessService.markThisReportedToThat(match, ReportMethods.GOOGLE_HOME);
+        }
+    }
+
+    public void reportSummary() {
+        StringBuilder sb = new StringBuilder();
+        addMostImportantActiveTournamentToSummary(sb);
+        addNotYetReportedAndFutureMatchesToSummary(sb);
+        if (sb.length() > 0) {
+            googleHomeOutput.broadcast(sb.toString());
+        }
+        matchService.resetMatchesNotReported();
+    }
+
+    private void addMostImportantActiveTournamentToSummary(StringBuilder sb) {
+        Optional<Tournament> optionalTournament = tournamentService.getMostImportantPremierOrMajorActiveTournament();
+        optionalTournament.ifPresent(t -> sb.append("Active Dota tournament is: ").append(t.name()));
+    }
+
+    private void addNotYetReportedAndFutureMatchesToSummary(StringBuilder sb) {
+        // matches earlier
+        List<Match> favTeamMissedMatches = matchService.getMatchesNotReported();
+        if (!favTeamMissedMatches.isEmpty()) {
+            sb.append("Your favorite teams have played ").append(favTeamMissedMatches.size()).append(" games today. ");
+        }
+
+        // matchers later today
+        List<Match> futureMatchesOfFavoriteTeams =
+                matchService.getTodaysMatches().stream()
+                        .filter(isMatchWithOneOfTheseTeams(settingsService.getFavoriteDotaTeams()))
+                        .filter(isMatchThatWillTakePlaceLaterToday())
+                        .collect(Collectors.toList());
+        if (!futureMatchesOfFavoriteTeams.isEmpty()) {
+            for (String team : settingsService.getFavoriteDotaTeams()) {
+                sb.append(team).append(" will be play later today. ");
+            }
         }
     }
 }

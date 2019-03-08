@@ -64,7 +64,7 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.empty());
         validateMockitoUsage();
 
-        dotaReportBusinessService.reportLiveMatch();
+        dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
         assertTrue(!reportedBusinessService.hasThisBeenReportedToThat(null, ReportMethods.GOOGLE_HOME));
         assertTrue(!reportedBusinessService.hasThisBeenReportedToThat(null, ReportMethods.TELEGRAM));
     }
@@ -80,7 +80,7 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
         validateMockitoUsage();
 
-        dotaReportBusinessService.reportLiveMatch();
+        dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
@@ -104,7 +104,7 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
         validateMockitoUsage();
 
-        dotaReportBusinessService.reportLiveMatch();
+        dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
@@ -117,7 +117,7 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
         validateMockitoUsage();
 
-        dotaReportBusinessService.reportLiveMatch();
+        dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
         verify(telegramOutput, times(0)).sendMessage(anyString());
         verify(googleHomeOutput, times(0)).broadcast(anyString());
     }
@@ -141,7 +141,7 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
         validateMockitoUsage();
 
-        dotaReportBusinessService.reportLiveMatch();
+        dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
@@ -154,7 +154,7 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match2));
         validateMockitoUsage();
 
-        dotaReportBusinessService.reportLiveMatch();
+        dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
         verify(telegramOutput, times(1)).sendMessage(anyString());
         verify(googleHomeOutput, times(1)).broadcast(anyString());
 
@@ -178,6 +178,6 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         verify(telegramOutput, times(1)).sendMessage(telegramCaptor.capture());
 
         List<String> telegramLines = Arrays.asList(telegramCaptor.getValue().split("\n"));
-        assertEquals(telegramLines.size(), 2);
+        assertEquals(3, telegramLines.size());
     }
 }
