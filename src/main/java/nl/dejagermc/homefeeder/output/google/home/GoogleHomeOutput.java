@@ -1,15 +1,11 @@
 package nl.dejagermc.homefeeder.output.google.home;
 
-import io.github.classgraph.json.JSONUtils;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -52,7 +48,7 @@ public class GoogleHomeOutput {
 
     private void broadcastToGoogleHome(String json) {
         log.info("Broadcasting: {}", json);
-        String response = jsoupUtil.postJson(uri, json);
+        String response = jsoupUtil.postJsonToGoogleRelayAssistant(uri, json);
         handleResponse(response);
     }
 

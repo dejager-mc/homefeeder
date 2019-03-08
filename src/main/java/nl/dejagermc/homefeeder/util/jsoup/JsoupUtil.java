@@ -32,7 +32,7 @@ public class JsoupUtil {
         }
     }
 
-    public String postJson(String uri, String body) {
+    public String postJsonToOpenhab(String uri, String body) {
         try {
             return
                     Jsoup.connect(uri)
@@ -45,7 +45,23 @@ public class JsoupUtil {
                             .execute()
                             .body();
         } catch (IOException e) {
-            log.error(ERROR_MSG, uri);
+            log.error(String.format(ERROR_MSG, uri), e);
+            return "ERROR";
+        }
+    }
+
+    public String postJsonToGoogleRelayAssistant(String uri, String json) {
+        try {
+            return Jsoup.connect(uri)
+                    .timeout(5000)
+                    .ignoreContentType(true)
+                    .method(Connection.Method.POST)
+                    .header("Content-Type", "application/json")
+                    .requestBody(json)
+                    .execute()
+                    .body();
+        } catch (IOException e) {
+            log.error(String.format(ERROR_MSG, uri), e);
             return "ERROR";
         }
     }
