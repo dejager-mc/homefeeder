@@ -40,9 +40,7 @@ public class MatchService {
     }
 
     public void removeMatchNotReported(Match match) {
-        if (matchesNotReported.contains(match)) {
-            matchesNotReported.remove(match);
-        }
+        matchesNotReported.remove(match);
     }
 
     public void resetMatchesNotReported() {

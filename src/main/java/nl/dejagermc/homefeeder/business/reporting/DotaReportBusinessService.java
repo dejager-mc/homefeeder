@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods.GOOGLE_HOME;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType.*;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchThatWillTakePlaceLaterToday;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchWithOneOfTheseTeams;
@@ -108,7 +109,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
     }
 
     private void reportLiveMatch(Match match) {
-        if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME)) {
+        if (!reportedBusinessService.hasThisBeenReportedToThat(match, GOOGLE_HOME)) {
             reportLiveMatchToGoogleHome(match);
         }
 
@@ -130,12 +131,11 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
             return;
         }
         if (settingsService.saveOutputForLater()) {
-            log.info("Save for later: {}", match);
             matchService.addMatchNotReported(match);
         } else {
             String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
             googleHomeOutput.broadcast(message);
-            reportedBusinessService.markThisReportedToThat(match, ReportMethods.GOOGLE_HOME);
+            reportedBusinessService.markThisReportedToThat(match, GOOGLE_HOME);
         }
     }
 
@@ -151,7 +151,12 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
 
     private void addMostImportantActiveTournamentToSummary(StringBuilder sb) {
         Optional<Tournament> optionalTournament = tournamentService.getMostImportantPremierOrMajorActiveTournament();
-        optionalTournament.ifPresent(t -> sb.append("Active Dota tournament is: ").append(t.name()));
+        if (optionalTournament.isPresent()) {
+            if (!reportedBusinessService.hasThisBeenReportedToThat(optionalTournament, GOOGLE_HOME)) {
+                optionalTournament.ifPresent(t -> sb.append("Active Dota tournament is: ").append(t.name()));
+                reportedBusinessService.markThisReportedToThat(optionalTournament, GOOGLE_HOME);
+            }
+        }
     }
 
     private void addNotYetReportedAndFutureMatchesToSummary(StringBuilder sb) {
@@ -169,7 +174,9 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
                         .collect(Collectors.toList());
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {
             for (String team : settingsService.getFavoriteDotaTeams()) {
-                sb.append(team).append(" will be play later today. ");
+                if (futureMatchesOfFavoriteTeams.stream().anyMatch(match -> match.matchEitherTeam(team))) {
+                    sb.append(team).append(" will be playing later today. ");
+                }
             }
         }
     }
