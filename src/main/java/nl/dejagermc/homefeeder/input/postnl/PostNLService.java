@@ -43,13 +43,13 @@ public class PostNLService {
 //                    .method(Connection.Method.POST)
 //                    .execute();
 //
-//            //This will get you cookies
+//            //This will getAllOpenhabThings you cookies
 //            Map<String, String> loginCookies = res.cookies();
 //
 //            //Here you parse the page that you want. Put the url that you see when you have logged in
 //            Document doc = Jsoup.connect("https://jouw.postnl.nl/?pst=k-pnl_f-f_p-pnl_u-txt_s-pwb_r-pnlinlogopties_v-jouwpost#!/overzicht")
 //                    .cookies(loginCookies)
-//                    .get();
+//                    .getAllOpenhabThings();
 //            log.info(doc.toString());
 //        } catch (Exception e) {
 //            log.error("Exception postnl: ", e);

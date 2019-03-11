@@ -13,7 +13,7 @@ import java.util.Optional;
 @Slf4j
 public class JsoupUtil {
 
-    private static final String ERROR_MSG = "Error connecting to uri: {}";
+    private static final String ERROR_MSG = "Error connecting to uri: %s";
 
     public Optional<Document> getDocument(final String uri) {
         try {
@@ -23,6 +23,7 @@ public class JsoupUtil {
             return Optional.empty();
         }
     }
+
     public Optional<Document> getDocumentIgnoreContentType(final String uri) {
         try {
             return Optional.of(Jsoup.connect(uri).timeout(5000).ignoreContentType(true).get());

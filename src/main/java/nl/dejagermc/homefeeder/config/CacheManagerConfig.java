@@ -13,28 +13,30 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class CacheManagerConfig {
+    private static final int MINUTES_25_HOURS = 60 * 25;
 
     @Bean
-    public CacheManager cacheManagerCaffeine(Ticker ticker) {
+    public CacheManager cacheManagerCaffeine(final Ticker ticker) {
         // short caches
         CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 15, 1);
-        CaffeineCache getAllPremierTournaments = buildCache("getAllPremierTournaments", ticker, 60*24, 1);
-        CaffeineCache getAllMajorTournaments = buildCache("getAllMajorTournaments", ticker, 60*24, 1);
-        CaffeineCache getAllQualifierTournaments = buildCache("getAllQualifierTournaments", ticker, 60*24, 1);
-        CaffeineCache getFullTournamentName = buildCache("getFullTournamentName", ticker, 60*24, 100);
+        CaffeineCache getAllPremierTournaments = buildCache("getAllPremierTournaments", ticker, MINUTES_25_HOURS, 1);
+        CaffeineCache getAllMajorTournaments = buildCache("getAllMajorTournaments", ticker, MINUTES_25_HOURS, 1);
+        CaffeineCache getAllQualifierTournaments = buildCache("getAllQualifierTournaments", ticker, MINUTES_25_HOURS, 1);
+        CaffeineCache getFullTournamentName = buildCache("getFullTournamentName", ticker, MINUTES_25_HOURS, 100);
         CaffeineCache getAllDeliveries = buildCache("getAllDeliveries", ticker, 15, 1);
 
         // never expiring caches
         CaffeineCache getReportMethods = buildNotExpiringCache("getReportMethods", ticker, 1);
+        CaffeineCache getAllOpenhabThings = buildNotExpiringCache("getAllOpenhabThings", ticker, 1);
 
         SimpleCacheManager manager = new SimpleCacheManager();
         manager.setCaches(Arrays.asList(getAllMatches, getAllPremierTournaments, getAllMajorTournaments,
-                getAllQualifierTournaments, getFullTournamentName, getAllDeliveries, getReportMethods));
+                getAllQualifierTournaments, getFullTournamentName, getAllDeliveries, getReportMethods, getAllOpenhabThings));
 
         return manager;
     }
 
-    private CaffeineCache buildCache(String name, Ticker ticker, int minutesToExpire, int maximumSize) {
+    private CaffeineCache buildCache(final String name, final Ticker ticker, final int minutesToExpire, final int maximumSize) {
         return new CaffeineCache(name, Caffeine.newBuilder()
                 .expireAfterWrite(minutesToExpire, TimeUnit.MINUTES)
                 .maximumSize(maximumSize)
@@ -43,7 +45,7 @@ public class CacheManagerConfig {
                 .build());
     }
 
-    private CaffeineCache buildNotExpiringCache(String name, Ticker ticker, int maximumSize) {
+    private CaffeineCache buildNotExpiringCache(final String name, final Ticker ticker, final int maximumSize) {
         return new CaffeineCache(name, Caffeine.newBuilder()
                 .expireAfterWrite(Integer.MAX_VALUE, TimeUnit.DAYS)
                 .maximumSize(maximumSize)

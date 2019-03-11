@@ -61,7 +61,7 @@ public class DeliveryRepository {
         // associated AJAX requests
         driver.get("https://jouw.postnl.nl/#!/overzicht");
 
-        // You can get status code unlike other Selenium drivers.
+        // You can getAllOpenhabThings status code unlike other Selenium drivers.
         // It blocks for AJAX requests and page loads after clicks
         // and keyboard events.
         System.out.println(driver.getStatusCode());

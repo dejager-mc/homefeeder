@@ -1,3 +1,9 @@
+Epic: Create google dialogflow project that connects with HomeFeeder to control all things in openhab
+[X] create google dialogflow with webhook to homefeeder
+[X] create openhab service that has access to all things in openhab
+[X] create logic that parses dialogflow request and finds matching openhab thing to perform the chosen action
+[X] create scheduled task that gets all openhab things on a daily basis
+
 Features:
 ​[X] Openhab via rest interface
 [X] Tasker connected
@@ -15,6 +21,7 @@ Features:
 [-] Get an update when a favorite team has finished playing a match (with results?)
 [ ] Google Calendar integration
 [X] application state accessable through get and adjustable through put
+[ ] Add reminder which color bin to put at the street
 
 Improvements:
 [X] Reset caches / reported list daily at 02:00
@@ -33,5 +40,5 @@ Bugs:
     - possible bug with getting the full tournament name for match
 [X] Reporting on live matches happens more than once per match
 [X] Movie download reporting to telegram was broken because of uri to IMDB. Removed it.
-[ ] Reporting breaklines to google home broadcast causes errors.
-[ ] When reporting live match make sure that same match is not in the saved-for-later list
+[X] Reporting breaklines to google home broadcast causes errors.
+[X] When reporting live match make sure that same match is not in the saved-for-later list

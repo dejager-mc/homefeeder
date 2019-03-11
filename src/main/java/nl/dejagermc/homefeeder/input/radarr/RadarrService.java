@@ -9,7 +9,7 @@ import java.util.Set;
 
 /**
  * Service for movies downloaded by Radarr
- * Movies get reported directly when downloaded
+ * Movies getAllOpenhabThings reported directly when downloaded
  * However if the user settings do not allow this
  * the movie will be stored by this service for
  * reporting at a different moment
