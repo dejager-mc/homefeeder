@@ -48,10 +48,6 @@ public class DialogflowBusinessService {
         log.info("Request made by home feeder action: {}", isAuthenticated);
 
         Map<String, Object> parameters = getParameters(request);
-        log.info("Parameters: {}", parameters.toString());
-        log.info("Action: {}", getAction(request));
-        log.info("Things: {}", getThings(parameters));
-        log.info("Action type: {}", getActionType(parameters));
 
         DialogflowEntity dialogflowEntity = new DialogflowEntity();
         dialogflowEntity.setAction(getAction(request));

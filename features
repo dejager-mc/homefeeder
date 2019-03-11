@@ -22,6 +22,7 @@ Features:
 [ ] Google Calendar integration
 [X] application state accessable through get and adjustable through put
 [ ] Add reminder which color bin to put at the street
+[ ] See how many people are connected to the teamspeak server. Report when coming home? Telegram messages?
 
 Improvements:
 [X] Reset caches / reported list daily at 02:00

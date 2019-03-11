@@ -3,10 +3,8 @@ package nl.dejagermc.homefeeder.input.radarr;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.Series;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 
 import java.util.Arrays;
-import java.util.Set;
 
 public class SonarrBuilder {
 
@@ -31,20 +29,4 @@ public class SonarrBuilder {
         series.setTitle("New Series");
         return series;
     }
-
-//    String seriesName = schema.getSeries().getTitle();
-//    Set<ReportMethods> reportMethods = settingsService.getReportMethods();
-//
-//        if (reportMethods.contains(ReportMethods.TELEGRAM)) {
-//        String telegramReport;
-//        for (Episode episode : schema.getEpisodes()) {
-//            telegramReport = String.format(TELEGRAM_SERIES_REPORT,
-//                    seriesName,
-//                    episode.getSeasonNumber(),
-//                    episode.getEpisodeNumber(),
-//                    episode.getTitle(),
-//                    episode.getQuality());
-//            telegramOutput.sendMessage(telegramReport);
-//        }
-//    }
 }
