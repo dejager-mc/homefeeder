@@ -7,10 +7,10 @@ import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public class BinPickupReportBusinessService extends AbstractReportBusinessServic
         if (binPickupOptional.isPresent()) {
             BinPickup binPickup = binPickupOptional.get();
             // if the next pickup day is tomorrow
-            if (LocalDate.now().plusDays(1).equals(binPickup.getPickupDay())) {
+            if (binPickup.getPickupDay().isEqual(LocalDate.now().plusDays(1))) {
                 reportToTelegram(binPickupOptional.get());
                 reportToGoogleHome(binPickupOptional.get());
             }

@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.input.radarr;
+package nl.dejagermc.homefeeder.input.sonarr;
 
 import nl.dejagermc.homefeeder.domain.generated.sonarr.Episode;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.Series;

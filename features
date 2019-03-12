@@ -14,14 +14,14 @@ Features:
 [ ] Postnl integration
 [X] Update matches without losing reported information
 [ ] Tradfri coap connectivity
-[ ] Access Google Home directly instead of through a third party relay
+[X] Access Google Home directly instead of through a third party relay
 [-] Persist settings: no need. syncing of settings for openhab is build in, only favorite teams is not. wont change much
 [X] On startup notify openhab which can then send updated settings back
 [X] Let openhab know homefeeder is online every 5 seconds
 [-] Get an update when a favorite team has finished playing a match (with results?)
 [ ] Google Calendar integration
 [X] application state accessable through get and adjustable through put
-[ ] Add reminder which color bin to put at the street
+[X] Add reminder which color bin to put at the street
 [ ] See how many people are connected to the teamspeak server. Report when coming home? Telegram messages?
 
 Improvements:
@@ -32,8 +32,6 @@ Improvements:
 [X] Only use Set for Matches / Tournaments in repository, services should always return sorted lists.
 [X] Daily tournament report: only use premier and major tournaments
 [X] Daily tournament report: show tournament names as well
-
-
 
 Bugs:
 [X] Report matches of the day to telegram: sometimes qualifier matches also get matched with the full /

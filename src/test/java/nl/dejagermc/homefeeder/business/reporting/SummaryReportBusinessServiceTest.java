@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static nl.dejagermc.homefeeder.input.radarr.RadarrBuilder.getDefaultRadarrSchema;
-import static nl.dejagermc.homefeeder.input.radarr.SonarrBuilder.getDefaultSonarrSchema;
+import static nl.dejagermc.homefeeder.input.sonarr.SonarrBuilder.getDefaultSonarrSchema;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;

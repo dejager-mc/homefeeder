@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ public class BinPickupRepository {
         this.jsoupUtil = jsoupUtil;
     }
 
+    @Cacheable(cacheNames = "getAllBinPickups", cacheManager = "cacheManagerCaffeine")
     public List<BinPickup> getAllBinPickups() {
         Elements elements = getAllElements();
         List<BinPickup> pickupList = new ArrayList<>();
