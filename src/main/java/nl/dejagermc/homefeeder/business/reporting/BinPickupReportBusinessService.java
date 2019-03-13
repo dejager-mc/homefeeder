@@ -58,7 +58,7 @@ public class BinPickupReportBusinessService extends AbstractReportBusinessServic
 
     private void reportToGoogleHome(BinPickup binPickup) {
         if (!reportedBusinessService.hasThisBeenReportedToThat(binPickup, GOOGLE_HOME)) {
-            if (!settingsService.surpressMessage()) {
+            if (!settingsService.saveOutputForLater()) {
                 String message = String.format(GOOGLE_HOME_MESSAGE, binPickup.getBinType());
                 googleHomeOutput.broadcast(message);
 

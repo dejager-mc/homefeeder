@@ -3,6 +3,8 @@ spring:
     name: Homefeeder
 server:
   port: 13005
+  servlet:
+    context-path: /homefeeder
 eureka:
   instance:
     hostname: localhost
