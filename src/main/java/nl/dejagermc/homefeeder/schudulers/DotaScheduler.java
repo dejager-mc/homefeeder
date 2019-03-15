@@ -19,12 +19,13 @@ public class DotaScheduler {
 
     @Scheduled(fixedDelay = 60000, initialDelay = 60000)
     public void reportLiveMatches() {
-        log.info("Report live matches");
+        log.info("UC100: Scheduler: report live matches");
         dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
     }
 
     @Scheduled(cron = "0 5 6 * * *")
     public void reportTodaysMatches() {
+        log.info("UC101: Scheduler: report todays matches");
         dotaReportBusinessService.reportTodaysMatches();
     }
 }

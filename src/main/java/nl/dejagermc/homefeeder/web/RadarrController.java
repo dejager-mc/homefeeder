@@ -27,6 +27,7 @@ public class RadarrController extends AbstractController {
 
     @PostMapping("add")
     public ResponseEntity addRadarr(@RequestBody RadarrWebhookSchema schema) {
+        log.info("UC302: movie download added");
         downloadReportBusinessService.reportRadarr(schema);
         return new ResponseEntity(HttpStatus.OK);
     }

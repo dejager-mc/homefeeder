@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.business.AbstractBusinessService;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RemoteMovie;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 @Service
 @Slf4j
-public class DownloadReportBusinessService extends AbstractReportBusinessService {
+public class DownloadReportBusinessService extends AbstractBusinessService {
 
     private static final String TELEGRAM_MOVIE_REPORT = "<b>Movie available</b>%n%s (%s)%n";
     private static final String GOOGLE_HOME_MOVIE_REPORT = "The movie %s is now available.";
@@ -41,12 +42,14 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
 
     public void reportRadarr(RadarrWebhookSchema schema) {
         RemoteMovie remoteMovie = schema.getRemoteMovie();
+        log.info("UC302: reporting movie downloaded: {}", remoteMovie.getTitle());
 
         // telegram
         String telegramReport = String.format(TELEGRAM_MOVIE_REPORT,
                 remoteMovie.getTitle(),
                 remoteMovie.getYear());
 
+        log.info("UC301: telegram: reporting movie");
         telegramOutput.sendMessage(telegramReport);
 
         // google home
@@ -60,19 +63,20 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
 
         RemoteMovie remoteMovie = schema.getRemoteMovie();
 
-        if (settingsService.saveOutputForLater()) {
-            log.info("Save for later: {}", schema.getRemoteMovie());
+        if (!settingsService.userIsAvailable()) {
+            log.info("UC302: google home: not reporting movie, user is not available");
             radarrService.addNotYetReported(schema);
         } else {
             String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
                     remoteMovie.getTitle());
-
+            log.info("UC302: google home: broadcasting movie downloaded");
             googleHomeOutput.broadcast(googleHomeReport);
         }
     }
 
     public void reportSonarr(SonarrWebhookSchema schema) {
         String seriesName = schema.getSeries().getTitle();
+        log.info("UC301: reporting series downloaded: {}", seriesName);
 
         // telegram
         String telegramReport;
@@ -83,6 +87,7 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
                     episode.getEpisodeNumber(),
                     episode.getTitle(),
                     episode.getQuality());
+            log.info("UC301: telegram: reporting episode");
             telegramOutput.sendMessage(telegramReport);
         }
 
@@ -95,11 +100,12 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
             return;
         }
 
-        if (settingsService.saveOutputForLater()) {
-            log.info("Save for later: {}", schema);
+        if (!settingsService.userIsAvailable()) {
+            log.info("UC301: google home: not reporting series, user is not available");
             sonarrService.addNotYetReported(schema);
         } else {
             String seriesName = schema.getSeries().getTitle();
+            log.info("UC301: google home: broadcasting series downloaded");
             if (schema.getEpisodes().size() > 1) {
                 String googleHomeReport = String.format(GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT,
                         schema.getEpisodes().size(),
@@ -114,23 +120,28 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
         }
     }
 
-    public void reportSummary() {
+    void reportSummary() {
+        log.info("UC303: report saved movies and series");
         StringBuilder sb = new StringBuilder();
         addSonarrToSummary(sb);
         addRadarrToSummary(sb);
+
         if (sb.length() > 0) {
+            log.info("UC303: {} google home: broadcasting saved messages");
             googleHomeOutput.broadcast(sb.toString());
         }
+
         sonarrService.resetNotYetReported();
         radarrService.resetNotYetReported();
     }
 
     private void addSonarrToSummary(StringBuilder sb) {
         Set<SonarrWebhookSchema> schemas = sonarrService.getNotYetReported();
+        log.info("UC303: {} series saved for reporting", schemas.size());
 
         if (schemas.size() == 1) {
             sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, 1, "epsiode is"));
-        }
+        } else
         if (schemas.size() > 1) {
             sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, schemas.size(), "epsiodes are"));
         }
@@ -138,6 +149,7 @@ public class DownloadReportBusinessService extends AbstractReportBusinessService
 
     private void addRadarrToSummary(StringBuilder sb) {
         Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
+        log.info("UC303: {} movies saved for reporting", schemas.size());
 
         if (schemas.size() == 1) {
             sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, 1, "movie is"));

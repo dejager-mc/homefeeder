@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.business.AbstractBusinessService;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class SummaryReportBusinessService extends AbstractReportBusinessService {
+public class SummaryReportBusinessService extends AbstractBusinessService {
 
     private DownloadReportBusinessService downloadReportBusinessService;
     private DotaReportBusinessService dotaReportBusinessService;

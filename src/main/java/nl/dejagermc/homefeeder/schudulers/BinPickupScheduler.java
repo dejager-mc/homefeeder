@@ -16,8 +16,9 @@ public class BinPickupScheduler {
         this.binPickupReportBusinessService = binPickupReportBusinessService;
     }
 
-    @Scheduled(cron = "0 0 12-22 ? * *")
+    @Scheduled(cron = "0 2 12-22 ? * *")
     public void scheduleBinPickupReporting() {
+        log.info("UC001: Scheduler: reporting bin pickup next day");
         binPickupReportBusinessService.reportNextBinPickup();
     }
 }

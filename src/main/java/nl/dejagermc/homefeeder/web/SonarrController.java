@@ -27,6 +27,7 @@ public class SonarrController extends AbstractController {
 
     @PostMapping("add")
     public ResponseEntity addSonarr(@RequestBody SonarrWebhookSchema schema) {
+        log.info("UC301: series download added");
         downloadReportBusinessService.reportSonarr(schema);
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -1,0 +1,17 @@
+UC001: reporting bin pickup
+UC004: report saved reports
+
+# dota
+UC100: report dota live match
+UC101: report todays matches
+UC102: report active tournament
+
+# Tradfri
+UC200: reboot gateway request
+UC201: get all devices
+UC202: report status
+
+# sonarr / radarr
+UC301: sonar incoming message
+UC302: radar incoming message
+UC303: summary report

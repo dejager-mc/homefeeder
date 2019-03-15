@@ -13,16 +13,26 @@ Features:
 [ ] Stream to chosen device
 [ ] Postnl integration
 [X] Update matches without losing reported information
-[ ] Tradfri coap connectivity
+[X] Tradfri coap connectivity
 [X] Access Google Home directly instead of through a third party relay
 [-] Persist settings: no need. syncing of settings for openhab is build in, only favorite teams is not. wont change much
 [X] On startup notify openhab which can then send updated settings back
 [X] Let openhab know homefeeder is online every 5 seconds
 [-] Get an update when a favorite team has finished playing a match (with results?)
-[ ] Google Calendar integration
+[-] Google Calendar integration
 [X] application state accessable through get and adjustable through put
 [X] Add reminder which color bin to put at the street
 [ ] See how many people are connected to the teamspeak server. Report when coming home? Telegram messages?
+[ ] Env. diagnostics: which services are not working
+    [X] Tradfri
+    [ ] Openhab
+    [ ] Apache
+    [ ] Bind
+    [ ] Google Home
+    [ ] Google Assistant Relay
+[X] Retry for Jsoup get requests
+[ ] Add use cases to logging
+[ ] Implement Direct Action to Google Actions
 
 Improvements:
 [X] Reset caches / reported list daily at 02:00

@@ -17,8 +17,7 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = HomeFeederConfig.class)
@@ -48,7 +47,7 @@ public class TestSetup {
     @Test
     public void testSettings() {
         assertFalse(settingsService.surpressMessage());
-        assertFalse(settingsService.saveOutputForLater());
+        assertTrue(settingsService.userIsAvailable());
         assertThat(settingsService.getReportMethods(), containsInAnyOrder(ReportMethods.values()));
     }
 }

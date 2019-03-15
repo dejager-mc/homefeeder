@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Optional;
 
+import static nl.dejagermc.homefeeder.util.jsoup.JsoupUtilRetryable.getDocumentRetryable;
+
 @Component
 @Slf4j
 public class JsoupUtil {
@@ -17,17 +19,17 @@ public class JsoupUtil {
 
     public Optional<Document> getDocument(final String uri) {
         try {
-            return Optional.of(Jsoup.connect(uri).timeout(5000).get());
-        } catch (Exception e) {
-            log.error(String.format(ERROR_MSG, uri), e.getMessage());
+            return getDocumentRetryable(Jsoup.connect(uri).timeout(5000));
+        } catch (IOException e) {
+            log.error(String.format(ERROR_MSG, uri), e);
             return Optional.empty();
         }
     }
 
     public Optional<Document> getDocumentIgnoreContentType(final String uri) {
         try {
-            return Optional.of(Jsoup.connect(uri).timeout(5000).ignoreContentType(true).get());
-        } catch (Exception e) {
+            return getDocumentRetryable(Jsoup.connect(uri).timeout(5000).ignoreContentType(true));
+        } catch (IOException e) {
             log.error(String.format(ERROR_MSG, uri), e.getMessage());
             return Optional.empty();
         }

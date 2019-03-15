@@ -25,6 +25,7 @@ public class OpenhabController extends AbstractController {
 
     @GetMapping("/whatHappenedWhileIWasGoneReport")
     public ResponseEntity whatHappenedWhileIWasGoneReport() {
+        log.info("UC004: report saved reports");
         summaryReportBusinessService.reportSummaryToGoogleHome();
         return new ResponseEntity(HttpStatus.OK);
     }

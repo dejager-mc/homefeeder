@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.business.AbstractBusinessService;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
@@ -26,7 +27,7 @@ import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPred
 
 @Service
 @Slf4j
-public class DotaReportBusinessService extends AbstractReportBusinessService {
+public class DotaReportBusinessService extends AbstractBusinessService {
 
     private static final String LIVE_DOTA_MATCH_TELEGRAM_MESSAGE = "<b>Live: %S versus %S</b>%n%s%n";
     private static final String TODAY_DOTA_MATCH_TELEGRAM_MESSAGE = "%S: %S versus %S%n";
@@ -46,7 +47,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
     public void reportLiveMatchesFavoriteTeams() {
         settingsService.getFavoriteDotaTeams()
                 .forEach(team -> matchService.getLiveMatchForTeam(team)
-                        .ifPresent(this::reportLiveMatch));
+                        .ifPresentOrElse(this::reportLiveMatch, () -> log.info("UC100: Reporting: no live match found for team {}", team)));
     }
 
     public void reportTodaysMatches() {
@@ -58,9 +59,11 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
     private void reportTodaysMatchsForTournamentType(TournamentType tournamentType) {
         StringBuilder sb = new StringBuilder();
         List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(tournamentType);
+        log.info("UC101: Reporting: {} active {} tournaments", tournaments.size(), tournamentType);
 
         for (Tournament tournament : tournaments) {
             List<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name());
+            log.info("UC101: Reporting: {} matches for tournament {}", matches.size(), tournament.name());
             addMatchesForTournamentToReport(matches, tournament, sb);
         }
 
@@ -72,11 +75,13 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
     private void reportTodaysFavoriteTeamMatchesForQualifierTournaments() {
         StringBuilder sb = new StringBuilder();
         List<Tournament> tournaments = tournamentService.getAllActiveTournamentsForType(QUALIFIER);
+        log.info("UC101: Reporting: {} active {} tournaments", tournaments.size(), QUALIFIER);
 
         for (Tournament tournament : tournaments) {
             List<Match> matches = matchService.getTodaysMatchesForTournament(tournament.name()).stream()
                     .filter(isMatchWithOneOfTheseTeams(settingsService.getFavoriteDotaTeams()))
                     .collect(Collectors.toList());
+            log.info("UC101: Reporting: {} favorite team matches for tournament {}", matches.size(), tournament.name());
             addMatchesForTournamentToReport(matches, tournament, sb);
         }
 
@@ -109,6 +114,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
     }
 
     private void reportLiveMatch(Match match) {
+        log.info("UC100: Reporting: reporting live match: {}", match);
         if (!reportedBusinessService.hasThisBeenReportedToThat(match, GOOGLE_HOME)) {
             reportLiveMatchToGoogleHome(match);
         }
@@ -124,18 +130,22 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
         String message = getLiveDotaMatchTelegramMessage(match);
         telegramOutput.sendMessage(message);
         reportedBusinessService.markThisReportedToThat(match, ReportMethods.TELEGRAM);
+        log.info("UC100: Reporting: reported live match to telegram");
     }
 
     private void reportLiveMatchToGoogleHome(Match match) {
         if (settingsService.surpressMessage()) {
+            log.info("UC100: Reporting: reporting live match is surpressed");
             return;
         }
-        if (settingsService.saveOutputForLater()) {
+        if (!settingsService.userIsAvailable()) {
+            log.info("UC100: Reporting: saving live match to report later");
             matchService.addMatchNotReported(match);
         } else {
             String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
             googleHomeOutput.broadcast(message);
             reportedBusinessService.markThisReportedToThat(match, GOOGLE_HOME);
+            log.info("UC100: Reporting: reported live match to google home");
         }
     }
 
@@ -153,7 +163,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
         Optional<Tournament> optionalTournament = tournamentService.getMostImportantPremierOrMajorActiveTournament();
         if (optionalTournament.isPresent()) {
             if (!reportedBusinessService.hasThisBeenReportedToThat(optionalTournament, GOOGLE_HOME)) {
-                optionalTournament.ifPresent(t -> sb.append("Active Dota tournament is: ").append(t.name()));
+                optionalTournament.ifPresent(t -> sb.append("Active Dota tournament is: ").append(t.name()).append(". "));
                 reportedBusinessService.markThisReportedToThat(optionalTournament, GOOGLE_HOME);
             }
         }
@@ -175,7 +185,7 @@ public class DotaReportBusinessService extends AbstractReportBusinessService {
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {
             for (String team : settingsService.getFavoriteDotaTeams()) {
                 if (futureMatchesOfFavoriteTeams.stream().anyMatch(match -> match.matchEitherTeam(team))) {
-                    sb.append(team).append(" will be playing later today. ");
+                    sb.append(team).append(" will be playing today. ");
                 }
             }
         }

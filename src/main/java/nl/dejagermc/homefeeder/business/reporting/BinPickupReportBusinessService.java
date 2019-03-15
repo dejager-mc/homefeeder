@@ -1,6 +1,7 @@
 package nl.dejagermc.homefeeder.business.reporting;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.dejagermc.homefeeder.business.AbstractBusinessService;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.groningen.rubbish.RubbishService;
 import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
@@ -13,14 +14,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Optional;
 
 import static nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods.GOOGLE_HOME;
 import static nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods.TELEGRAM;
 
 @Service
 @Slf4j
-public class BinPickupReportBusinessService extends AbstractReportBusinessService {
+public class BinPickupReportBusinessService extends AbstractBusinessService {
 
     private static final String TELEGRAM_MESSAGE = "<b>%s</b>%nTomorrow %s.";
     private static final String GOOGLE_HOME_MESSAGE = "%s bin, out tomorrow.";
@@ -34,14 +34,15 @@ public class BinPickupReportBusinessService extends AbstractReportBusinessServic
     }
 
     public void reportNextBinPickup() {
-        Optional<BinPickup> binPickupOptional = rubbishService.getNextBinPickup();
-        if (binPickupOptional.isPresent()) {
-            BinPickup binPickup = binPickupOptional.get();
-            // if the next pickup day is tomorrow
-            if (binPickup.getPickupDay().isEqual(LocalDate.now().plusDays(1))) {
-                reportToTelegram(binPickupOptional.get());
-                reportToGoogleHome(binPickupOptional.get());
-            }
+        rubbishService.getNextBinPickup().ifPresentOrElse(this::reportTomorrowBinPickup, () -> log.info("UC001: reporting: No bin pickup found"));
+    }
+
+    private void reportTomorrowBinPickup(BinPickup binPickup) {
+        log.info("UC001: reporting: found bin pickup: {}", binPickup);
+        // if the next pickup day is tomorrow
+        if (binPickup.getPickupDay().isEqual(LocalDate.now().plusDays(1))) {
+            reportToTelegram(binPickup);
+            reportToGoogleHome(binPickup);
         }
     }
 
@@ -53,16 +54,18 @@ public class BinPickupReportBusinessService extends AbstractReportBusinessServic
             telegramOutput.sendMessage(message);
 
             reportedBusinessService.markThisReportedToThat(binPickup, TELEGRAM);
+            log.info("UC001: reported: reported to telegram");
         }
     }
 
     private void reportToGoogleHome(BinPickup binPickup) {
         if (!reportedBusinessService.hasThisBeenReportedToThat(binPickup, GOOGLE_HOME)) {
-            if (!settingsService.saveOutputForLater()) {
+            if (settingsService.userIsAvailable()) {
                 String message = String.format(GOOGLE_HOME_MESSAGE, binPickup.getBinType());
                 googleHomeOutput.broadcast(message);
 
                 reportedBusinessService.markThisReportedToThat(binPickup, GOOGLE_HOME);
+                log.info("UC001: reported: reported to google home");
             }
         }
     }
