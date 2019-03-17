@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.homefeeder.model.DotaSettings;
 import nl.dejagermc.homefeeder.input.homefeeder.model.OpenHabSettings;
-import nl.dejagermc.homefeeder.web.dto.mapping.SettingsMapping;
+import nl.dejagermc.homefeeder.web.dto.settings.mapping.SettingsMapping;
 import nl.dejagermc.homefeeder.web.dto.settings.AllSettingsDto;
 import nl.dejagermc.homefeeder.web.dto.settings.DotaSettingsDto;
 import nl.dejagermc.homefeeder.web.dto.settings.HomeFeederSettingsDto;

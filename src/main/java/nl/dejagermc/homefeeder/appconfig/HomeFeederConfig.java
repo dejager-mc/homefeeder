@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.config;
+package nl.dejagermc.homefeeder.appconfig;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;

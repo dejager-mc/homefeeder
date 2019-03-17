@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.input.liquipedia.dota.repository;
 
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class TournamentRepositoryTest {
     private static final String URI_PREMIER = "https://liquipedia.net/dota2/Premier_Tournaments";
 
     @MockBean
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
     private TournamentRepository tournamentRepository;
@@ -44,7 +44,7 @@ public class TournamentRepositoryTest {
         premierTournaments = setDatesTournaments(premierTournaments);
         Document docPremierTournaments = Jsoup.parseBodyFragment(premierTournaments);
 
-        Mockito.when(jsoupUtil.getDocument(URI_PREMIER)).thenReturn(Optional.of(docPremierTournaments));
+        Mockito.when(httpUtil.getDocument(URI_PREMIER)).thenReturn(Optional.of(docPremierTournaments));
         Set<Tournament> premierTournamentsList = tournamentRepository.getAllPremierTournaments();
         assertEquals(2, premierTournamentsList.size());
     }

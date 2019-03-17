@@ -6,8 +6,8 @@ import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.groningen.rubbish.RubbishService;
 import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +28,8 @@ public class BinPickupReportBusinessService extends AbstractBusinessService {
     private RubbishService rubbishService;
 
     @Autowired
-    public BinPickupReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, RubbishService rubbishService) {
-        super(settingsService, reportedBusinessService, telegramOutput, googleHomeOutput);
+    public BinPickupReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, RubbishService rubbishService) {
+        super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.rubbishService = rubbishService;
     }
 
@@ -51,7 +51,7 @@ public class BinPickupReportBusinessService extends AbstractBusinessService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.US);
             String date = binPickup.getPickupDay().format(formatter);
             String message = String.format(TELEGRAM_MESSAGE, binPickup.getBinType().getName(), date);
-            telegramOutput.sendMessage(message);
+            telegramOutputService.sendMessage(message);
 
             reportedBusinessService.markThisReportedToThat(binPickup, TELEGRAM);
             log.info("UC001: reported: reported to telegram");
@@ -62,7 +62,7 @@ public class BinPickupReportBusinessService extends AbstractBusinessService {
         if (!reportedBusinessService.hasThisBeenReportedToThat(binPickup, GOOGLE_HOME)) {
             if (settingsService.userIsAvailable()) {
                 String message = String.format(GOOGLE_HOME_MESSAGE, binPickup.getBinType());
-                googleHomeOutput.broadcast(message);
+                googleHomeOutputService.broadcast(message);
 
                 reportedBusinessService.markThisReportedToThat(binPickup, GOOGLE_HOME);
                 log.info("UC001: reported: reported to google home");

@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("dialogflow")
@@ -26,11 +29,12 @@ public class DialogflowController {
 
     @GetMapping("privacy")
     public String privacy() {
-        return "What information do you collect?: none</br>How do you use the information?: I do not</br>What information do you share?: none.";
+        return "What information do you collect?: I do not collect any information.</br>How do you use the information?: I do not collect any information.</br>What information do you share?: I do not collect any information.";
     }
 
     @PostMapping("webhook")
     public GoogleCloudDialogflowV2WebhookResponse webhook(@RequestBody String rawRequest) {
+        log.info("UC400: dialogflow request.");
         handleRequest(rawRequest);
         return generateResponse();
     }
@@ -40,13 +44,19 @@ public class DialogflowController {
             GoogleCloudDialogflowV2WebhookRequest dialogRequest = request.parse(GoogleCloudDialogflowV2WebhookRequest.class);
             dialogflowBusinessService.handleRequest(dialogRequest);
         } catch (IOException e) {
-            log.info("dialogflow request error: {}", e);
+            log.info("UC400: error handling request: {}", e);
         }
     }
 
     private GoogleCloudDialogflowV2WebhookResponse generateResponse() {
+        log.info("UC400: sending response.");
         GoogleCloudDialogflowV2WebhookResponse response = new GoogleCloudDialogflowV2WebhookResponse();
-        response.setFulfillmentText("Affirmative Max");
+        response.setFulfillmentText(getRandomResponseText());
         return response;
+    }
+
+    private String getRandomResponseText() {
+        List<String> responses = Arrays.asList("F.A.B.", "Affirmative.", "It is done.", "As you will.", "As you command.", "An excellent choice.");
+        return responses.get(new Random().nextInt(responses.size()));
     }
 }

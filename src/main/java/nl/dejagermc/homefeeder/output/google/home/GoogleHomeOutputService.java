@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.output.google.home;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,18 +10,18 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class GoogleHomeOutput {
+public class GoogleHomeOutputService {
 
     private static final String BROADCAST_JSON_MESSAGE = "{\"command\":\"%s\", \"user\":\"GoogleAssistantRelay\", \"broadcast\":\"false\"}";
 
     @Value("${google.assistant.relay.uri}")
     private String uri;
 
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
-    public GoogleHomeOutput(JsoupUtil jsoupUtil) {
-        this.jsoupUtil = jsoupUtil;
+    public GoogleHomeOutputService(HttpUtil httpUtil) {
+        this.httpUtil = httpUtil;
     }
 
     public void broadcast(List<String> messages) {
@@ -48,7 +48,7 @@ public class GoogleHomeOutput {
 
     private void broadcastToGoogleHome(String json) {
         log.info("Broadcasting: {}", json);
-        String response = jsoupUtil.postJsonToGoogleRelayAssistant(uri, json);
+        String response = httpUtil.postJsonToGoogleRelayAssistant(uri, json);
         handleResponse(response);
     }
 

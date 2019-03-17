@@ -1,17 +1,18 @@
 package nl.dejagermc.homefeeder.input.openhab.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.stereotype.Component;
 
-@Component
 @Accessors
 @Getter
 @Setter
 @ToString
-public class OpenhabThing {
+@Builder
+public class OpenhabItem {
     private String link;
     private String state;
     private String label;

@@ -10,8 +10,8 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods.GOOGLE_HOME;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType.*;
-import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchThatWillTakePlaceLaterToday;
-import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchWithOneOfTheseTeams;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.*;
 
 @Service
 @Slf4j
@@ -37,9 +36,9 @@ public class DotaReportBusinessService extends AbstractBusinessService {
 
     @Autowired
     public DotaReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService,
-                                     TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput,
+                                     TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService,
                                      MatchService matchService, TournamentService tournamentService) {
-        super(settingsService, reportedBusinessService, telegramOutput, googleHomeOutput);
+        super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.matchService = matchService;
         this.tournamentService = tournamentService;
     }
@@ -47,7 +46,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
     public void reportLiveMatchesFavoriteTeams() {
         settingsService.getFavoriteDotaTeams()
                 .forEach(team -> matchService.getLiveMatchForTeam(team)
-                        .ifPresentOrElse(this::reportLiveMatch, () -> log.info("UC100: Reporting: no live match found for team {}", team)));
+                        .ifPresentOrElse(this::reportLiveMatch, () -> log.info("UC100: no live match found for team {}", team)));
     }
 
     public void reportTodaysMatches() {
@@ -68,7 +67,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
         }
 
         if (!sb.toString().isBlank()) {
-            telegramOutput.sendMessage(String.format("<b>%s matches:</b>%n", tournamentType.getName()) + sb.toString());
+            telegramOutputService.sendMessage(String.format("<b>%s matches:</b>%n", tournamentType.getName()) + sb.toString());
         }
     }
 
@@ -86,7 +85,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
         }
 
         if (!sb.toString().isBlank()) {
-            telegramOutput.sendMessage("<b>Qualifiers with favorite teams:</b>\n" + sb.toString());
+            telegramOutputService.sendMessage("<b>Qualifiers with favorite teams:</b>\n" + sb.toString());
         }
     }
 
@@ -128,7 +127,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
 
     private void reportLiveMatchToTelegram(Match match) {
         String message = getLiveDotaMatchTelegramMessage(match);
-        telegramOutput.sendMessage(message);
+        telegramOutputService.sendMessage(message);
         reportedBusinessService.markThisReportedToThat(match, ReportMethods.TELEGRAM);
         log.info("UC100: Reporting: reported live match to telegram");
     }
@@ -143,7 +142,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
             matchService.addMatchNotReported(match);
         } else {
             String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
-            googleHomeOutput.broadcast(message);
+            googleHomeOutputService.broadcast(message);
             reportedBusinessService.markThisReportedToThat(match, GOOGLE_HOME);
             log.info("UC100: Reporting: reported live match to google home");
         }
@@ -154,7 +153,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
         addMostImportantActiveTournamentToSummary(sb);
         addNotYetReportedAndFutureMatchesToSummary(sb);
         if (sb.length() > 0) {
-            googleHomeOutput.broadcast(sb.toString());
+            googleHomeOutputService.broadcast(sb.toString());
         }
         matchService.resetMatchesNotReported();
     }
@@ -181,13 +180,19 @@ public class DotaReportBusinessService extends AbstractBusinessService {
                 matchService.getTodaysMatches().stream()
                         .filter(isMatchWithOneOfTheseTeams(settingsService.getFavoriteDotaTeams()))
                         .filter(isMatchThatWillTakePlaceLaterToday())
+                        .sorted(sortMatchesOnTime())
                         .collect(Collectors.toList());
         if (!futureMatchesOfFavoriteTeams.isEmpty()) {
             for (String team : settingsService.getFavoriteDotaTeams()) {
-                if (futureMatchesOfFavoriteTeams.stream().anyMatch(match -> match.matchEitherTeam(team))) {
-                    sb.append(team).append(" will be playing today. ");
-                }
+                futureMatchesOfFavoriteTeams.stream()
+                        .filter(match -> match.matchEitherTeam(team))
+                        .forEach(match -> addFutureMatchToSummary(sb, match, team));
             }
         }
+    }
+
+    private void addFutureMatchToSummary(StringBuilder sb, Match match, String team) {
+        String futureMatchTemplate = "%s will be playing today at %s. ";
+        sb.append(String.format(futureMatchTemplate, team, match.getDateTimeFormattedTimeToday()));
     }
 }

@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.web.dto.mapping;
+package nl.dejagermc.homefeeder.web.dto.settings.mapping;
 
 import nl.dejagermc.homefeeder.input.homefeeder.model.DotaSettings;
 import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;

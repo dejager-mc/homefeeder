@@ -8,8 +8,10 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.MatchRepository;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.TournamentRepository;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
+import nl.dejagermc.homefeeder.input.openhab.model.OpenhabItem;
+import nl.dejagermc.homefeeder.input.openhab.repository.OpenhabItemRepository;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.openhab.OpenhabOutputService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,10 +19,12 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
 import java.util.Set;
 
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.builders.MatchBuilders.defaultMatch;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.builders.TournamentBuilders.defaultTournament;
+import static nl.dejagermc.homefeeder.input.openhab.builders.OpenhabItemBuilders.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -53,14 +57,24 @@ public class StreamOutputBusinessServiceTest extends TestSetup {
     private Tournament mostImportantActiveTournament = defaultTournament("tournament7", TournamentType.PREMIER, true,
             true);
 
+    private OpenhabItem tvItem = tvItem("1");
+    private OpenhabItem tvStreamItem = tvStreamItem("1");
+    private OpenhabItem tvItem2 = tvItem("2");
+    private OpenhabItem tvStreamItem2 = tvStreamItem("2");
+    private OpenhabItem switchItem = switchItem();
+    private OpenhabItem stringItem = stringItem();
+    private Set<OpenhabItem> openhabItems;
+
     @MockBean
-    private OpenhabOutput openhabOutput;
+    private OpenhabOutputService openhabOutputService;
     @MockBean
-    private GoogleHomeOutput googleHomeOutput;
+    private GoogleHomeOutputService googleHomeOutputService;
     @MockBean
     private MatchRepository matchRepository;
     @MockBean
     private TournamentRepository tournamentRepository;
+    @MockBean
+    private OpenhabItemRepository openhabItemRepository;
 
     @Autowired
     private StreamOutputBusinessService streamOutputBusinessService;
@@ -69,6 +83,8 @@ public class StreamOutputBusinessServiceTest extends TestSetup {
     private ArgumentCaptor<String> googleBroadcastCaptor;
     @Captor
     private ArgumentCaptor<String> twitchStreamUri;
+    @Captor
+    private ArgumentCaptor<OpenhabItem> openhabItem;
 
     @Before
     public void resetTestSetup() {
@@ -98,6 +114,15 @@ public class StreamOutputBusinessServiceTest extends TestSetup {
                 tournament5Active,
                 tournament6NotActive
         );
+
+        openhabItems = Set.of(
+                tvItem,
+                tvItem2,
+                tvStreamItem,
+                tvStreamItem2,
+                switchItem,
+                stringItem
+        );
     }
 
     @Test
@@ -106,18 +131,18 @@ public class StreamOutputBusinessServiceTest extends TestSetup {
         when(tournamentRepository.getAllPremierTournaments()).thenReturn(premierTournaments);
         when(tournamentRepository.getAllMajorTournaments()).thenReturn(majorTournaments);
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
+        when(openhabItemRepository.getAllOpenhabItems()).thenReturn(openhabItems);
         validateMockitoUsage();
 
-        streamOutputBusinessService.streamLiveMatch();
+        streamOutputBusinessService.streamLiveMatch(List.of());
 
-        verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
+        verify(googleHomeOutputService, times(1)).broadcast(googleBroadcastCaptor.capture());
         validateMockitoUsage();
         assertEquals("There is no match that can be streamed.", googleBroadcastCaptor.getValue());
     }
 
     @Test
     public void testWatchStreamNoFavoriteTeamResults() {
-        // 2 matches
         // second is qualifier but by valve
         // first is major
         // second match should be streamed on tv
@@ -125,15 +150,17 @@ public class StreamOutputBusinessServiceTest extends TestSetup {
         when(tournamentRepository.getAllPremierTournaments()).thenReturn(premierTournaments);
         when(tournamentRepository.getAllMajorTournaments()).thenReturn(majorTournaments);
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
+        when(openhabItemRepository.getAllOpenhabItems()).thenReturn(openhabItems);
         validateMockitoUsage();
 
-        streamOutputBusinessService.streamLiveMatch();
+        streamOutputBusinessService.streamLiveMatch(List.of(tvItem));
 
-        verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
-        verify(openhabOutput, times(1)).turnOnTv();
-        verify(openhabOutput, times(1)).streamToTv(twitchStreamUri.capture());
+        verify(googleHomeOutputService, times(1)).broadcast(googleBroadcastCaptor.capture());
+        verify(openhabOutputService, times(1)).performActionOnSwitchItem("ON", tvItem);
+        verify(openhabOutputService, times(1)).performActionOnStringItem(twitchStreamUri.capture(), openhabItem.capture());
         validateMockitoUsage();
 
+        assertEquals(tvStreamItem, openhabItem.getValue());
         assertEquals("https://www.twitch.tv/tournament5", twitchStreamUri.getValue());
         assertEquals("Streaming EG versus NAVI.", googleBroadcastCaptor.getValue());
     }
@@ -144,15 +171,39 @@ public class StreamOutputBusinessServiceTest extends TestSetup {
         when(tournamentRepository.getAllPremierTournaments()).thenReturn(premierTournaments);
         when(tournamentRepository.getAllMajorTournaments()).thenReturn(majorTournaments);
         when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
+        when(openhabItemRepository.getAllOpenhabItems()).thenReturn(openhabItems);
         validateMockitoUsage();
 
-        streamOutputBusinessService.streamLiveMatch();
+        streamOutputBusinessService.streamLiveMatch(List.of(tvItem));
 
-        verify(googleHomeOutput, times(1)).broadcast(googleBroadcastCaptor.capture());
-        verify(openhabOutput, times(1)).turnOnTv();
-        verify(openhabOutput, times(1)).streamToTv(twitchStreamUri.capture());
+        verify(googleHomeOutputService, times(1)).broadcast(googleBroadcastCaptor.capture());
+        verify(openhabOutputService, times(1)).performActionOnSwitchItem("ON", tvItem);
+        verify(openhabOutputService, times(1)).performActionOnStringItem(twitchStreamUri.capture(), openhabItem.capture());
         validateMockitoUsage();
 
+        assertEquals(tvStreamItem, openhabItem.getValue());
+        assertEquals("https://www.twitch.tv/tournament1", twitchStreamUri.getValue());
+        assertEquals("Streaming OG versus EG.", googleBroadcastCaptor.getValue());
+    }
+
+    @Test
+    public void testWatchMultipleStreams() {
+        when(matchRepository.getAllMatches()).thenReturn(allMatches);
+        when(tournamentRepository.getAllPremierTournaments()).thenReturn(premierTournaments);
+        when(tournamentRepository.getAllMajorTournaments()).thenReturn(majorTournaments);
+        when(tournamentRepository.getAllQualifierTournaments()).thenReturn(qualifierTournaments);
+        when(openhabItemRepository.getAllOpenhabItems()).thenReturn(openhabItems);
+        validateMockitoUsage();
+
+        streamOutputBusinessService.streamLiveMatch(List.of(tvItem, tvItem2));
+
+        verify(googleHomeOutputService, times(1)).broadcast(googleBroadcastCaptor.capture());
+        verify(openhabOutputService, times(1)).performActionOnSwitchItem("ON", tvItem);
+        verify(openhabOutputService, times(1)).performActionOnSwitchItem("ON", tvItem2);
+        verify(openhabOutputService, times(2)).performActionOnStringItem(twitchStreamUri.capture(), openhabItem.capture());
+        validateMockitoUsage();
+
+        assertEquals(tvStreamItem2, openhabItem.getValue());
         assertEquals("https://www.twitch.tv/tournament1", twitchStreamUri.getValue());
         assertEquals("Streaming OG versus EG.", googleBroadcastCaptor.getValue());
     }

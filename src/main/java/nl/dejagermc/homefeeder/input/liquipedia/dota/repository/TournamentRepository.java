@@ -3,7 +3,7 @@ package nl.dejagermc.homefeeder.input.liquipedia.dota.repository;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -28,11 +28,11 @@ public class TournamentRepository {
     private static final String URI_MAJOR = "https://liquipedia.net/dota2/Major_Tournaments";
     private static final String URI_QUALIFIERS = "https://liquipedia.net/dota2/Qualifier_Tournaments";
 
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
-    public TournamentRepository(JsoupUtil jsoupUtil) {
-        this.jsoupUtil = jsoupUtil;
+    public TournamentRepository(HttpUtil httpUtil) {
+        this.httpUtil = httpUtil;
     }
 
     @Cacheable(cacheNames = "getAllPremierTournaments", cacheManager = "cacheManagerCaffeine")
@@ -63,7 +63,7 @@ public class TournamentRepository {
     }
 
     private Elements getAllTournamentElements(final String uri) {
-        Optional<Document> optionalDoc = jsoupUtil.getDocument(uri);
+        Optional<Document> optionalDoc = httpUtil.getDocument(uri);
         if (optionalDoc.isPresent()) {
             return optionalDoc.get().select("div.divRow");
         }

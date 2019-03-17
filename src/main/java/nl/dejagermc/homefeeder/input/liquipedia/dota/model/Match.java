@@ -6,7 +6,9 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @Accessors(fluent = true)
@@ -43,6 +45,11 @@ public class Match {
         return (leftTeam().equals(team) || rightTeam().equals(team));
     }
 
+    public String getDateTimeFormattedTimeToday() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm", Locale.US);
+        return matchTime.format(formatter);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,6 +66,6 @@ public class Match {
 
     @Override
     public int hashCode() {
-        return Objects.hash(leftTeam, rightTeam, gameType, isLive(), tournamentName, twitchChannel, youtubeChannel);
+        return Objects.hash(leftTeam, rightTeam, gameType, tournamentName, twitchChannel, youtubeChannel);
     }
 }

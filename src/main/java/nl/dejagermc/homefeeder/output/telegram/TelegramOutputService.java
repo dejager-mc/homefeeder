@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.output.telegram;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class TelegramOutput {
+public class TelegramOutputService {
     private static final String BASE = "https://api.telegram.org";
     private static final String BOT_BASE = "/bot";
     private static final String CHANNEL_BASE = "/sendMessage?chat_id=";
@@ -25,11 +25,11 @@ public class TelegramOutput {
     @Value("${telegram.channel.name}")
     private String channelName;
 
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
-    public TelegramOutput(JsoupUtil jsoupUtil) {
-        this.jsoupUtil = jsoupUtil;
+    public TelegramOutputService(HttpUtil httpUtil) {
+        this.httpUtil = httpUtil;
     }
 
     public void sendMessage(String message) {
@@ -42,18 +42,21 @@ public class TelegramOutput {
     private void doSendMessage(String message) {
         try {
             String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
-            Optional<Document> doc = jsoupUtil.getDocumentIgnoreContentType(createUrl(botName, channelName, encodedMessage));
-            doc.ifPresent(d -> handleTelegramResponse(d.body().text()));
+            httpUtil.getDocumentIgnoreContentType(createUrl(botName, channelName, encodedMessage))
+                    .ifPresentOrElse(
+                            doc -> handleTelegramResponse(doc.body().text()),
+                            () -> log.error("Telegram: no response from server.")
+                    );
         } catch (Exception e) {
-            log.error("Error sending message to telegram: {}", e.getMessage());
+            log.error("Telegram: could not send message: {}", e.getMessage());
         }
     }
 
     private void handleTelegramResponse(String response) {
         if (response.matches(".*\"ok\":true.*")) {
-            log.info("Telegram message: ok");
+            log.info("Telegram: message send");
         } else {
-            log.error("Telegram message: not ok: {}", response);
+            log.error("Telegram: message send with message: {}", response);
         }
     }
 

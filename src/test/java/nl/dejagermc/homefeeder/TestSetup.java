@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.config.HomeFeederConfig;
+import nl.dejagermc.homefeeder.appconfig.HomeFeederConfig;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import org.junit.Before;
@@ -23,7 +23,6 @@ import static org.junit.Assert.*;
 @SpringBootTest(classes = HomeFeederConfig.class)
 @EnableConfigurationProperties
 @Slf4j
-
 public class TestSetup {
 
     @Autowired

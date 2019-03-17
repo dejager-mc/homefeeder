@@ -5,7 +5,7 @@ import com.machinepublishers.jbrowserdriver.Settings;
 import com.machinepublishers.jbrowserdriver.Timezone;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.postnl.model.Delivery;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,11 +34,11 @@ public class DeliveryRepository {
     @Value("${postnl.login.password}")
     private String password;
 
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
-    public DeliveryRepository(JsoupUtil jsoupUtil) {
-        this.jsoupUtil = jsoupUtil;
+    public DeliveryRepository(HttpUtil httpUtil) {
+        this.httpUtil = httpUtil;
     }
 
     @Cacheable(cacheNames = "getAllDeliveries", cacheManager = "cacheManagerCaffeine")
@@ -61,7 +61,7 @@ public class DeliveryRepository {
         // associated AJAX requests
         driver.get("https://jouw.postnl.nl/#!/overzicht");
 
-        // You can getAllOpenhabThings status code unlike other Selenium drivers.
+        // You can getAllOpenhabItems status code unlike other Selenium drivers.
         // It blocks for AJAX requests and page loads after clicks
         // and keyboard events.
         System.out.println(driver.getStatusCode());
@@ -75,7 +75,7 @@ public class DeliveryRepository {
     }
 
     private String getLoginUri() {
-        Optional<Document> doc = jsoupUtil.getDocument(POSTNL_LOGIN_URI);
+        Optional<Document> doc = httpUtil.getDocument(POSTNL_LOGIN_URI);
         if (doc.isPresent()) {
             return doc.get().select("a#consumer-login-link").attr("href");
         }
@@ -147,7 +147,7 @@ public class DeliveryRepository {
     // fetch data when logged in
 
     private Elements getAllDeliveryElements() {
-        Optional<Document> optionalDoc = jsoupUtil.getPostNlDeliveriesDocument(email, password);
+        Optional<Document> optionalDoc = httpUtil.getPostNlDeliveriesDocument(email, password);
         if (optionalDoc.isPresent()) {
             return optionalDoc.get().select("div");
         }

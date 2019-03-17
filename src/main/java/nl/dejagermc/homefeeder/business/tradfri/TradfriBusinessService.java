@@ -5,11 +5,11 @@ import nl.dejagermc.homefeeder.business.AbstractBusinessService;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.openhab.OpenhabInputService;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import nl.dejagermc.homefeeder.output.tradfri.TradfriException;
-import nl.dejagermc.homefeeder.output.tradfri.TradfriOutput;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.output.tradfri.TradfriService;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,26 +29,26 @@ public class TradfriBusinessService extends AbstractBusinessService {
 
     private static final String OPENHAB_ITEM_EVENT_GATEWAY_HAS_REBOOTED = "Tradfri_Gateway_Rebooted";
 
-    private TradfriOutput tradfriOutput;
+    private TradfriService tradfriService;
     private OpenhabInputService openhabInputService;
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
-    public TradfriBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, TradfriOutput tradfriOutput, OpenhabInputService openhabInputService, JsoupUtil jsoupUtil) {
-        super(settingsService, reportedBusinessService, telegramOutput, googleHomeOutput);
-        this.tradfriOutput = tradfriOutput;
+    public TradfriBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, TradfriService tradfriService, OpenhabInputService openhabInputService, HttpUtil httpUtil) {
+        super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
+        this.tradfriService = tradfriService;
         this.openhabInputService = openhabInputService;
-        this.jsoupUtil = jsoupUtil;
+        this.httpUtil = httpUtil;
     }
 
     public void rebootGateway() {
-        log.info("UC200: reboot tradfri gateway");
+        log.info("UC200: reboot tradfri gateway.");
         boolean gatewayIsUp = false;
-        telegramOutput.sendMessage(TELEGRAM_GATEWAY_REBOOT_START);
-        boolean rebootStarted = tradfriOutput.rebootGateway();
+        telegramOutputService.sendMessage(TELEGRAM_GATEWAY_REBOOT_START);
+        boolean rebootStarted = tradfriService.rebootGateway();
 
         if (!rebootStarted) {
-            telegramOutput.sendMessage(TELEGRAM_GATEWAY_REBOOT_START_FAILED);
+            telegramOutputService.sendMessage(TELEGRAM_GATEWAY_REBOOT_START_FAILED);
             return;
         }
 
@@ -56,55 +56,54 @@ public class TradfriBusinessService extends AbstractBusinessService {
             TimeUnit.SECONDS.sleep(2);
             gatewayIsUp = isGatewayUp();
         } catch (InterruptedException e) {
-            log.error("UC200: Reboot: error while waiting");
+            log.error("UC200: error while waiting for reboot.");
             Thread.currentThread().interrupt();
         }
 
         if (gatewayIsUp) {
             log.info("UC200: gateway reboot successful.");
-            telegramOutput.sendMessage(TELEGRAM_GATEWAY_REBOOT_UP);
+            telegramOutputService.sendMessage(TELEGRAM_GATEWAY_REBOOT_UP);
             sendEventToOpenhabGatewayIsUp();
         } else {
             log.info("UC200: gateway reboot failed, gateway is down.");
-            telegramOutput.sendMessage(TELEGRAM_GATEWAY_REBOOT_DOWN);
+            telegramOutputService.sendMessage(TELEGRAM_GATEWAY_REBOOT_DOWN);
         }
     }
 
     private void sendEventToOpenhabGatewayIsUp() {
-        openhabInputService.findOpenhabThing(OPENHAB_ITEM_EVENT_GATEWAY_HAS_REBOOTED)
+        openhabInputService.findOpenhabItemWithLabel(OPENHAB_ITEM_EVENT_GATEWAY_HAS_REBOOTED)
                 .ifPresentOrElse(
-                        item -> jsoupUtil.postJsonToOpenhab(item.getLink(), "ON"),
-                        () -> log.error("UC200: can not inform openhab gateway is up")
+                        item -> httpUtil.postJsonToOpenhab(item.getLink(), "ON"),
+                        () -> log.error("UC200: can not inform openhab gateway is up.")
                 );
     }
 
     public void reportGatewayStatusToGoogleHome() {
-        log.info("UC202: reporting gateway status to google home");
+        log.info("UC202: reporting gateway status to google home.");
         boolean isGatewayUp = isGatewayUp();
         if (settingsService.userIsAvailable()) {
-            log.info("UC202: reporting to google home");
             if (isGatewayUp) {
-                googleHomeOutput.broadcast(GOOGLE_HOME_GATEWAY_UP);
+                googleHomeOutputService.broadcast(GOOGLE_HOME_GATEWAY_UP);
             } else {
-                googleHomeOutput.broadcast(GOOGLE_HOME_GATEWAY_DOWN);
+                googleHomeOutputService.broadcast(GOOGLE_HOME_GATEWAY_DOWN);
             }
         }
     }
 
     private boolean isGatewayUp() {
-        log.info("UC202: checking gateway status");
+        log.info("UC202: checking gateway status.");
         boolean isUp = false;
         try {
-            isUp = tradfriOutput.isGatewayUpRetryable();
-            log.info("UC202: gateway is up");
+            isUp = tradfriService.isGatewayUpRetryable();
+            log.info("UC202: gateway is up.");
         } catch (TradfriException t) {
-            log.error("UC202: gateway is down");
+            log.error("UC202: gateway is down.");
         }
         return isUp;
     }
 
     public String getAllDevices() {
         log.info("UC201: reporting all devies");
-        return tradfriOutput.getAllDevices();
+        return tradfriService.getAllDevices();
     }
 }

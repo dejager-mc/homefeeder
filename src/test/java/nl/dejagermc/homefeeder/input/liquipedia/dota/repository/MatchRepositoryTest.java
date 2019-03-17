@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.input.liquipedia.dota.repository;
 
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class MatchRepositoryTest {
     private static final String UPCOMING_AND_ONGOING_MATCHES_URI = "https://liquipedia.net/dota2/Liquipedia:Upcoming_and_ongoing_matches";
 
     @MockBean
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
     private MatchRepository matchRepository;
@@ -54,18 +54,18 @@ public class MatchRepositoryTest {
         Document docMatches2 = Jsoup.parseBodyFragment(matches2);
         Document docMatches3 = Jsoup.parseBodyFragment(matches3);
 
-        Mockito.when(jsoupUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches1));
+        Mockito.when(httpUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches1));
         Set<Match> matches1Result = matchRepository.getAllMatches();
         assert (matches1Result.size() == 4);
         assert (matches1Result.stream().filter(Match::isLive).count() == 1L);
         assert (matches1Result.stream().anyMatch(m -> m.matchEitherTeam("WG.U")));
 
-        Mockito.when(jsoupUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches2));
+        Mockito.when(httpUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches2));
         Set<Match> matches2Result = matchRepository.getAllMatches();
         assert (matches2Result.size() == 4);
         assert (matches2Result.stream().filter(Match::isLive).count() == 2L);
 
-        Mockito.when(jsoupUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches3));
+        Mockito.when(httpUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI)).thenReturn(Optional.of(docMatches3));
         Set<Match> matches3Result = matchRepository.getAllMatches();
         assert (matches3Result.size() == 3);
         assert (matches3Result.stream().filter(Match::isLive).count() == 1L);

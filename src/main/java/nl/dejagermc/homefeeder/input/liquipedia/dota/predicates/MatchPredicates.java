@@ -36,5 +36,4 @@ public class MatchPredicates {
         return Comparator
                 .comparing(Match::matchTime);
     }
-
 }

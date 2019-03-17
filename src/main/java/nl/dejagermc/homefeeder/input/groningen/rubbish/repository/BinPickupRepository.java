@@ -3,7 +3,7 @@ package nl.dejagermc.homefeeder.input.groningen.rubbish.repository;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.groningen.rubbish.enums.BinType;
 import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -25,11 +25,11 @@ import static nl.dejagermc.homefeeder.input.groningen.rubbish.enums.BinType.*;
 public class BinPickupRepository {
 
     private static final String URI = "https://gemeente.groningen.nl/afvalwijzer/groningen/9734BB/63/%s";
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
-    public BinPickupRepository(JsoupUtil jsoupUtil) {
-        this.jsoupUtil = jsoupUtil;
+    public BinPickupRepository(HttpUtil httpUtil) {
+        this.httpUtil = httpUtil;
     }
 
     @Cacheable(cacheNames = "getAllBinPickups", cacheManager = "cacheManagerCaffeine")
@@ -43,7 +43,7 @@ public class BinPickupRepository {
     }
 
     private Elements getAllElements() {
-        Optional<Document> optionalDoc = jsoupUtil.getDocument(getUri());
+        Optional<Document> optionalDoc = httpUtil.getDocument(getUri());
         if (optionalDoc.isPresent()) {
             return optionalDoc.get().select("tbody > tr");
         }

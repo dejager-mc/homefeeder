@@ -10,8 +10,8 @@ import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.input.radarr.RadarrService;
 import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +34,8 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
     private SonarrService sonarrService;
 
     @Autowired
-    public DownloadReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutput telegramOutput, GoogleHomeOutput googleHomeOutput, RadarrService radarrService, SonarrService sonarrService) {
-        super(settingsService, reportedBusinessService, telegramOutput, googleHomeOutput);
+    public DownloadReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, RadarrService radarrService, SonarrService sonarrService) {
+        super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.radarrService = radarrService;
         this.sonarrService = sonarrService;
     }
@@ -50,7 +50,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
                 remoteMovie.getYear());
 
         log.info("UC301: telegram: reporting movie");
-        telegramOutput.sendMessage(telegramReport);
+        telegramOutputService.sendMessage(telegramReport);
 
         // google home
         reportRadarrToGoogleHome(schema);
@@ -70,7 +70,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
             String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
                     remoteMovie.getTitle());
             log.info("UC302: google home: broadcasting movie downloaded");
-            googleHomeOutput.broadcast(googleHomeReport);
+            googleHomeOutputService.broadcast(googleHomeReport);
         }
     }
 
@@ -88,7 +88,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
                     episode.getTitle(),
                     episode.getQuality());
             log.info("UC301: telegram: reporting episode");
-            telegramOutput.sendMessage(telegramReport);
+            telegramOutputService.sendMessage(telegramReport);
         }
 
         // google home
@@ -110,12 +110,12 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
                 String googleHomeReport = String.format(GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT,
                         schema.getEpisodes().size(),
                         seriesName);
-                googleHomeOutput.broadcast(googleHomeReport);
+                googleHomeOutputService.broadcast(googleHomeReport);
             } else if (schema.getEpisodes().size() == 1) {
                 String googleHomeReport = String.format(GOOGLE_HOME_SERIES_ONE_EPISODE_REPORT,
                         seriesName,
                         schema.getEpisodes().get(0).getEpisodeNumber());
-                googleHomeOutput.broadcast(googleHomeReport);
+                googleHomeOutputService.broadcast(googleHomeReport);
             }
         }
     }
@@ -128,7 +128,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
 
         if (sb.length() > 0) {
             log.info("UC303: {} google home: broadcasting saved messages");
-            googleHomeOutput.broadcast(sb.toString());
+            googleHomeOutputService.broadcast(sb.toString());
         }
 
         sonarrService.resetNotYetReported();

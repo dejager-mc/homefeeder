@@ -11,8 +11,8 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.MatchRepository;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.repository.TournamentRepository;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import nl.dejagermc.homefeeder.schudulers.DotaScheduler;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,9 +36,9 @@ public class DotaSchedulerTest extends TestSetup {
     @MockBean
     private MatchRepository matchRepository;
     @MockBean
-    private TelegramOutput telegramOutput;
+    private TelegramOutputService telegramOutputService;
     @MockBean
-    private GoogleHomeOutput googleHomeOutput;
+    private GoogleHomeOutputService googleHomeOutputService;
 
     @Autowired
     private DotaScheduler dotaScheduler;
@@ -81,23 +81,23 @@ public class DotaSchedulerTest extends TestSetup {
         // run 1
         dotaScheduler.reportLiveMatches();
 
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
         validateMockitoUsage();
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match1, ReportMethods.GOOGLE_HOME));
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match1, ReportMethods.TELEGRAM));
 
 
         // run 2
-        clearInvocations(telegramOutput, googleHomeOutput);
+        clearInvocations(telegramOutputService, googleHomeOutputService);
         Match match2 = defaultMatch(teamLeft, teamRight, tournamentName, true);
         when(matchRepository.getAllMatches()).thenReturn(Set.of(match2));
         validateMockitoUsage();
 
         dotaScheduler.reportLiveMatches();
 
-        verify(telegramOutput, times(0)).sendMessage(anyString());
-        verify(googleHomeOutput, times(0)).broadcast(anyString());
+        verify(telegramOutputService, times(0)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(0)).broadcast(anyString());
         validateMockitoUsage();
     }
 }

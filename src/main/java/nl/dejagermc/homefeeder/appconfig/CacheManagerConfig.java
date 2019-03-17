@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.config;
+package nl.dejagermc.homefeeder.appconfig;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
@@ -30,11 +30,11 @@ public class CacheManagerConfig {
 
         // never expiring caches
         CaffeineCache getReportMethods = buildNotExpiringCache("getReportMethods", ticker, 1);
-        CaffeineCache getAllOpenhabThings = buildNotExpiringCache("getAllOpenhabThings", ticker, 1);
+        CaffeineCache getAllOpenhabItems = buildNotExpiringCache("getAllOpenhabItems", ticker, 1);
 
         SimpleCacheManager manager = new SimpleCacheManager();
         manager.setCaches(Arrays.asList(getAllMatches, getAllPremierTournaments, getAllMajorTournaments,
-                getAllQualifierTournaments, getFullTournamentName, getAllDeliveries, getReportMethods, getAllOpenhabThings, getAllBinPickups));
+                getAllQualifierTournaments, getFullTournamentName, getAllDeliveries, getReportMethods, getAllOpenhabItems, getAllBinPickups));
 
         return manager;
     }

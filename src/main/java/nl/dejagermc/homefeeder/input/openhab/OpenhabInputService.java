@@ -1,8 +1,8 @@
 package nl.dejagermc.homefeeder.input.openhab;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.input.openhab.model.OpenhabThing;
-import nl.dejagermc.homefeeder.input.openhab.repository.OpenhabThingRepository;
+import nl.dejagermc.homefeeder.input.openhab.model.OpenhabItem;
+import nl.dejagermc.homefeeder.input.openhab.repository.OpenhabItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,21 +15,38 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OpenhabInputService {
 
-    private OpenhabThingRepository openhabThingRepository;
+    private OpenhabItemRepository openhabItemRepository;
 
     @Autowired
-    public OpenhabInputService(OpenhabThingRepository openhabThingRepository) {
-        this.openhabThingRepository = openhabThingRepository;
+    public OpenhabInputService(OpenhabItemRepository openhabItemRepository) {
+        this.openhabItemRepository = openhabItemRepository;
     }
 
-    public Set<OpenhabThing> getAllOpenhabThings() {
-        return openhabThingRepository.getAllOpenhabThings();
+    public Set<OpenhabItem> getAllOpenhabItems() {
+        return openhabItemRepository.getAllOpenhabItems();
     }
 
-    public Optional<OpenhabThing> findOpenhabThing(String value) {
-        List<OpenhabThing> results = getAllOpenhabThings().stream().filter(thing -> thing.getLabel().equalsIgnoreCase(value)).collect(Collectors.toList());
+    public Optional<OpenhabItem> findOpenhabItemWithName(String name) {
+        List<OpenhabItem> results = getAllOpenhabItems().stream()
+                .filter(item -> item.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
         if (results.size() > 1) {
-            log.error("More than 1 thing found for value: {}. Found is: {}", value, results);
+            log.error("More than 1 item found for name: {}. Found is: {}", name, results);
+            return Optional.empty();
+        }
+        if (results.size() == 1) {
+            return Optional.of(results.get(0));
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<OpenhabItem> findOpenhabItemWithLabel(String label) {
+        List<OpenhabItem> results = getAllOpenhabItems().stream()
+                .filter(item -> item.getLabel().equalsIgnoreCase(label))
+                .collect(Collectors.toList());
+        if (results.size() > 1) {
+            log.error("More than 1 item found for label: {}. Found is: {}", label, results);
             return Optional.empty();
         }
         if (results.size() == 1) {

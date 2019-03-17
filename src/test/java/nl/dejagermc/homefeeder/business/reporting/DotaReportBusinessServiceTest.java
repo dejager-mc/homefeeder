@@ -10,8 +10,8 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -35,9 +35,9 @@ public class DotaReportBusinessServiceTest extends TestSetup {
     @Autowired
     private ReportedBusinessService reportedBusinessService;
     @MockBean
-    private TelegramOutput telegramOutput;
+    private TelegramOutputService telegramOutputService;
     @MockBean
-    private GoogleHomeOutput googleHomeOutput;
+    private GoogleHomeOutputService googleHomeOutputService;
     @MockBean
     private MatchService matchService;
     @MockBean
@@ -81,8 +81,8 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         validateMockitoUsage();
 
         dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
 
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME));
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM));
@@ -105,21 +105,21 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         validateMockitoUsage();
 
         dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
 
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME));
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM));
 
 
         // run 2
-        clearInvocations(telegramOutput, googleHomeOutput);
+        clearInvocations(telegramOutputService, googleHomeOutputService);
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match));
         validateMockitoUsage();
 
         dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
-        verify(telegramOutput, times(0)).sendMessage(anyString());
-        verify(googleHomeOutput, times(0)).broadcast(anyString());
+        verify(telegramOutputService, times(0)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(0)).broadcast(anyString());
     }
 
     @Test
@@ -142,21 +142,21 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         validateMockitoUsage();
 
         dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
 
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.GOOGLE_HOME));
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM));
 
 
         // run 2
-        clearInvocations(telegramOutput, googleHomeOutput);
+        clearInvocations(telegramOutputService, googleHomeOutputService);
         when(matchService.getLiveMatchForTeam(favTeam)).thenReturn(Optional.of(match2));
         validateMockitoUsage();
 
         dotaReportBusinessService.reportLiveMatchesFavoriteTeams();
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
 
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match2, ReportMethods.GOOGLE_HOME));
         assertTrue(reportedBusinessService.hasThisBeenReportedToThat(match2, ReportMethods.TELEGRAM));
@@ -175,7 +175,7 @@ public class DotaReportBusinessServiceTest extends TestSetup {
         validateMockitoUsage();
 
         dotaReportBusinessService.reportTodaysMatches();
-        verify(telegramOutput, times(1)).sendMessage(telegramCaptor.capture());
+        verify(telegramOutputService, times(1)).sendMessage(telegramCaptor.capture());
 
         List<String> telegramLines = Arrays.asList(telegramCaptor.getValue().split("\n"));
         assertEquals(3, telegramLines.size());

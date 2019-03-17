@@ -3,13 +3,10 @@ package nl.dejagermc.homefeeder.web;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.TestSetup;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
-import nl.dejagermc.homefeeder.domain.generated.radarr.Movie;
 import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
-import nl.dejagermc.homefeeder.domain.generated.radarr.RemoteMovie;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
 import nl.dejagermc.homefeeder.input.radarr.RadarrService;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,9 +33,9 @@ public class RadarrControllerTest extends TestSetup {
     private RadarrService radarrService;
 
     @MockBean
-    private TelegramOutput telegramOutput;
+    private TelegramOutputService telegramOutputService;
     @MockBean
-    private GoogleHomeOutput googleHomeOutput;
+    private GoogleHomeOutputService googleHomeOutputService;
 
     @Captor
     private ArgumentCaptor<String> telegramCaptor;
@@ -58,8 +55,8 @@ public class RadarrControllerTest extends TestSetup {
 
         validateMockitoUsage();
 
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
     }
 
     @Test
@@ -71,8 +68,8 @@ public class RadarrControllerTest extends TestSetup {
 
         validateMockitoUsage();
 
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(0)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(0)).broadcast(anyString());
 
         Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
         assertEquals(schemas.size(), 1);
@@ -88,8 +85,8 @@ public class RadarrControllerTest extends TestSetup {
 
         validateMockitoUsage();
 
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(0)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(0)).broadcast(anyString());
 
         Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
         assertEquals(schemas.size(), 1);
@@ -105,8 +102,8 @@ public class RadarrControllerTest extends TestSetup {
 
         validateMockitoUsage();
 
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(0)).broadcast(anyString());
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(0)).broadcast(anyString());
 
         Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
         assertEquals(schemas.size(), 1);

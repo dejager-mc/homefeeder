@@ -7,8 +7,10 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.util.MatchUtil;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.openhab.OpenhabOutput;
+import nl.dejagermc.homefeeder.input.openhab.OpenhabInputService;
+import nl.dejagermc.homefeeder.input.openhab.model.OpenhabItem;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.openhab.OpenhabOutputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.isMatchWithStream;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.TournamentPredicates.sortTournamentsByImportanceMostToLeast;
+import static nl.dejagermc.homefeeder.input.liquipedia.dota.util.MatchUtil.getStreamUri;
 
 @Service
 @Slf4j
@@ -27,31 +30,45 @@ public class StreamOutputBusinessService {
     private static final String NO_MATCH_FOUND_MESSAGE = "There is no match that can be streamed.";
     private static final String MATCH_FOUND_MESSAGE = "Streaming %s versus %s.";
 
-    private OpenhabOutput openhabOutput;
+    private OpenhabOutputService openhabOutputService;
+    private OpenhabInputService openhabInputService;
     private MatchService matchService;
     private TournamentService tournamentService;
-    private GoogleHomeOutput googleHomeOutput;
+    private GoogleHomeOutputService googleHomeOutputService;
     private SettingsService settingsService;
 
     @Autowired
-    public StreamOutputBusinessService(OpenhabOutput openhabOutput, SettingsService settingsService, MatchService matchService, TournamentService tournamentService, GoogleHomeOutput googleHomeOutput) {
-        this.openhabOutput = openhabOutput;
+    public StreamOutputBusinessService(OpenhabOutputService openhabOutputService, SettingsService settingsService, MatchService matchService, TournamentService tournamentService, GoogleHomeOutputService googleHomeOutputService, OpenhabInputService openhabInputService) {
+        this.openhabOutputService = openhabOutputService;
         this.settingsService = settingsService;
         this.matchService = matchService;
         this.tournamentService = tournamentService;
-        this.googleHomeOutput = googleHomeOutput;
+        this.googleHomeOutputService = googleHomeOutputService;
+        this.openhabInputService = openhabInputService;
     }
 
-    public void streamLiveMatch() {
+    public void streamLiveMatch(List<OpenhabItem> devices) {
         Optional<Match> match = getMostImportantLiveMatch();
 
         if (match.isPresent()) {
             Match liveMatch = match.get();
-            googleHomeOutput.broadcast(String.format(MATCH_FOUND_MESSAGE, liveMatch.leftTeam(), liveMatch.rightTeam()));
-            openhabOutput.turnOnTv();
-            openhabOutput.streamToTv(MatchUtil.getStreamUri(match.get()));
+            googleHomeOutputService.broadcast(String.format(MATCH_FOUND_MESSAGE, liveMatch.leftTeam(), liveMatch.rightTeam()));
+            devices.forEach(device -> turnOnDeviceAndStartStream(device, getStreamUri(liveMatch)));
         } else {
-            googleHomeOutput.broadcast(NO_MATCH_FOUND_MESSAGE);
+            googleHomeOutputService.broadcast(NO_MATCH_FOUND_MESSAGE);
+        }
+    }
+
+    private void turnOnDeviceAndStartStream(OpenhabItem device, String streamUri) {
+        Optional<OpenhabItem> steamItem = openhabInputService.findOpenhabItemWithLabel(device.getLabel() + " stream");
+        if (steamItem.isPresent()) {
+            log.info("UC400: starting stream on {}", device.getLabel());
+            // turn on device
+            openhabOutputService.performActionOnSwitchItem("ON", device);
+            // start stream
+            openhabOutputService.performActionOnStringItem(streamUri, steamItem.get());
+        } else {
+            log.error("UC400: could not find openhab stream item for {}", device);
         }
     }
 

@@ -2,7 +2,7 @@ package nl.dejagermc.homefeeder.input.liquipedia.dota.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -24,11 +24,11 @@ public class MatchRepository {
 
     private Set<Match> oldMatches = new HashSet<>();
 
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
 
     @Autowired
-    public MatchRepository(JsoupUtil jsoupUtil) {
-        this.jsoupUtil = jsoupUtil;
+    public MatchRepository(HttpUtil httpUtil) {
+        this.httpUtil = httpUtil;
     }
 
     @Cacheable(cacheNames = "getAllMatches", cacheManager = "cacheManagerCaffeine")
@@ -60,7 +60,7 @@ public class MatchRepository {
     @Cacheable(cacheNames = "getFullTournamentName", cacheManager = "cacheManagerCaffeine")
     public String getFullTournamentName(Element element) {
         String url = BASE_URI + element.select("td.match-filler").select("div").select("div").select("a").attr("href");
-        Optional<Document> optionalDoc = jsoupUtil.getDocument(url);
+        Optional<Document> optionalDoc = httpUtil.getDocument(url);
         if (optionalDoc.isPresent()) {
             return optionalDoc.get().select("h1.firstHeading").select("span").text();
         }
@@ -87,7 +87,7 @@ public class MatchRepository {
     }
 
     private Elements getAllMatchElements() {
-        Optional<Document> optionalDoc = jsoupUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI);
+        Optional<Document> optionalDoc = httpUtil.getDocument(UPCOMING_AND_ONGOING_MATCHES_URI);
         if (optionalDoc.isPresent()) {
             return optionalDoc.get().select("div > table");
         }

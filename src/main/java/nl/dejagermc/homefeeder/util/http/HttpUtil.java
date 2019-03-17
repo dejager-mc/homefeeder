@@ -1,25 +1,31 @@
-package nl.dejagermc.homefeeder.util.jsoup;
+package nl.dejagermc.homefeeder.util.http;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import static nl.dejagermc.homefeeder.util.jsoup.JsoupUtilRetryable.getDocumentRetryable;
-
 @Component
 @Slf4j
-public class JsoupUtil {
+public class HttpUtil {
+
+    private HttpUtilRetryable httpUtilRetryable;
+
+    @Autowired
+    public HttpUtil(HttpUtilRetryable httpUtilRetryable) {
+        this.httpUtilRetryable = httpUtilRetryable;
+    }
 
     private static final String ERROR_MSG = "Error connecting to uri: %s";
 
     public Optional<Document> getDocument(final String uri) {
         try {
-            return getDocumentRetryable(Jsoup.connect(uri).timeout(5000));
+            return httpUtilRetryable.getDocumentRetryable(Jsoup.connect(uri).timeout(5000));
         } catch (IOException e) {
             log.error(String.format(ERROR_MSG, uri), e);
             return Optional.empty();
@@ -28,7 +34,7 @@ public class JsoupUtil {
 
     public Optional<Document> getDocumentIgnoreContentType(final String uri) {
         try {
-            return getDocumentRetryable(Jsoup.connect(uri).timeout(5000).ignoreContentType(true));
+            return httpUtilRetryable.getDocumentRetryable(Jsoup.connect(uri).timeout(5000).ignoreContentType(true));
         } catch (IOException e) {
             log.error(String.format(ERROR_MSG, uri), e.getMessage());
             return Optional.empty();

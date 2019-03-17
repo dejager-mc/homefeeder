@@ -1,9 +1,7 @@
-package nl.dejagermc.homefeeder.config;
+package nl.dejagermc.homefeeder.appconfig;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
-import org.springframework.retry.annotation.EnableRetry;
 
 @SpringBootApplication
 //@EnableEurekaServer

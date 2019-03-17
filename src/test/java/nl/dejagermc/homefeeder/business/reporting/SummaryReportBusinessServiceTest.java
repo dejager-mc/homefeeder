@@ -7,10 +7,10 @@ import nl.dejagermc.homefeeder.domain.generated.radarr.RadarrWebhookSchema;
 import nl.dejagermc.homefeeder.domain.generated.sonarr.SonarrWebhookSchema;
 import nl.dejagermc.homefeeder.input.radarr.RadarrService;
 import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
-import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutput;
-import nl.dejagermc.homefeeder.output.telegram.TelegramOutput;
+import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
+import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import nl.dejagermc.homefeeder.startup.StartupCheck;
-import nl.dejagermc.homefeeder.util.jsoup.JsoupUtil;
+import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import nl.dejagermc.homefeeder.web.RadarrController;
 import nl.dejagermc.homefeeder.web.SonarrController;
 import org.junit.Before;
@@ -34,11 +34,11 @@ import static org.mockito.Mockito.*;
 public class SummaryReportBusinessServiceTest extends TestSetup {
 
     @MockBean
-    private TelegramOutput telegramOutput;
+    private TelegramOutputService telegramOutputService;
     @MockBean
-    private GoogleHomeOutput googleHomeOutput;
+    private GoogleHomeOutputService googleHomeOutputService;
     @MockBean
-    private JsoupUtil jsoupUtil;
+    private HttpUtil httpUtil;
     @MockBean
     private StartupCheck startupCheck;
 
@@ -83,29 +83,29 @@ public class SummaryReportBusinessServiceTest extends TestSetup {
         // When user is sleeping and sonarr message is received
         settingsService.getOpenHabSettings().setSleeping(true);
         sonarrController.addSonarr(schema);
-        doNothing().when(telegramOutput).sendMessage(anyString());
+        doNothing().when(telegramOutputService).sendMessage(anyString());
 
         // Then telegram is send but not google home
         validateMockitoUsage();
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(0)).broadcast(anyString());
-        clearInvocations(telegramOutput, googleHomeOutput);
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(0)).broadcast(anyString());
+        clearInvocations(telegramOutputService, googleHomeOutputService);
 
         Set<SonarrWebhookSchema> schemas = sonarrService.getNotYetReported();
         assertEquals(schemas.size(), 1);
         assertTrue(schemas.contains(schema));
 
         // mock google home output
-        when(jsoupUtil.getDocument(anyString())).thenReturn(Optional.empty());
-        doNothing().when(googleHomeOutput).broadcast(anyString());
+        when(httpUtil.getDocument(anyString())).thenReturn(Optional.empty());
+        doNothing().when(googleHomeOutputService).broadcast(anyString());
 
         // when reporting saved messages
         summaryReportBusinessService.reportSummaryToGoogleHome();
 
         // then google home message is send
-        verify(telegramOutput, times(0)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
-        clearInvocations(telegramOutput, googleHomeOutput);
+        verify(telegramOutputService, times(0)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
+        clearInvocations(telegramOutputService, googleHomeOutputService);
 
         schemas = sonarrService.getNotYetReported();
         assertEquals(schemas.size(), 0);
@@ -130,25 +130,25 @@ public class SummaryReportBusinessServiceTest extends TestSetup {
 
         // Then telegram is send but not google home
         validateMockitoUsage();
-        verify(telegramOutput, times(1)).sendMessage(anyString());
-        verify(googleHomeOutput, times(0)).broadcast(anyString());
-        clearInvocations(telegramOutput, googleHomeOutput);
+        verify(telegramOutputService, times(1)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(0)).broadcast(anyString());
+        clearInvocations(telegramOutputService, googleHomeOutputService);
 
         Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
         assertEquals(schemas.size(), 1);
         assertTrue(schemas.contains(schema));
 
         // mock google home output
-        when(jsoupUtil.getDocument(anyString())).thenReturn(Optional.empty());
-        doNothing().when(googleHomeOutput).broadcast(anyString());
+        when(httpUtil.getDocument(anyString())).thenReturn(Optional.empty());
+        doNothing().when(googleHomeOutputService).broadcast(anyString());
 
         // when reporting saved messages
         summaryReportBusinessService.reportSummaryToGoogleHome();
 
         // then google home message is send
-        verify(telegramOutput, times(0)).sendMessage(anyString());
-        verify(googleHomeOutput, times(1)).broadcast(anyString());
-        clearInvocations(telegramOutput, googleHomeOutput);
+        verify(telegramOutputService, times(0)).sendMessage(anyString());
+        verify(googleHomeOutputService, times(1)).broadcast(anyString());
+        clearInvocations(telegramOutputService, googleHomeOutputService);
 
         schemas = radarrService.getNotYetReported();
         assertEquals(schemas.size(), 0);
