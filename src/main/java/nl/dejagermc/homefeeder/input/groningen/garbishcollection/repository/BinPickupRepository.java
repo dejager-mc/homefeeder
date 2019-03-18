@@ -1,8 +1,8 @@
-package nl.dejagermc.homefeeder.input.groningen.rubbish.repository;
+package nl.dejagermc.homefeeder.input.groningen.garbishcollection.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.enums.BinType;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.enums.BinType;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.model.BinPickup;
 import nl.dejagermc.homefeeder.util.http.HttpUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.input.groningen.rubbish.enums.BinType.*;
+import static nl.dejagermc.homefeeder.input.groningen.garbishcollection.enums.BinType.*;
 
 @Component
 @Slf4j

@@ -44,7 +44,7 @@ public class DialogflowController {
             GoogleCloudDialogflowV2WebhookRequest dialogRequest = request.parse(GoogleCloudDialogflowV2WebhookRequest.class);
             dialogflowBusinessService.handleRequest(dialogRequest);
         } catch (IOException e) {
-            log.info("UC400: error handling request: {}", e);
+            log.error("UC400: error handling request: {}", e.getMessage());
         }
     }
 

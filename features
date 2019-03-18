@@ -34,6 +34,8 @@ Features:
 [ ] Add use cases to logging
 [ ] Implement Direct Action to Google Actions
 [X] Automatically update openhab items when items are added / changed in openhab. Openhab will call homefeeder to reload items.
+[X] Add spring security and use basic authentication on every rest endpoint.
+[X] Secure dialogflow endpoint with different user and only this user can access this endpoint
 
 Improvements:
 [X] Reset caches / reported list daily at 02:00

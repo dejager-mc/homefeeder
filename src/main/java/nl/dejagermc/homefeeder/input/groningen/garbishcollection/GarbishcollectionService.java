@@ -1,9 +1,9 @@
-package nl.dejagermc.homefeeder.input.groningen.rubbish;
+package nl.dejagermc.homefeeder.input.groningen.garbishcollection;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.enums.BinType;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.repository.BinPickupRepository;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.enums.BinType;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.model.BinPickup;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.repository.BinPickupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +11,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static nl.dejagermc.homefeeder.input.groningen.rubbish.predicates.BinPickupPredicates.sortBinPickups;
+import static nl.dejagermc.homefeeder.input.groningen.garbishcollection.predicates.BinPickupPredicates.sortBinPickups;
 
 @Service
 @Slf4j
-public class RubbishService {
+public class GarbishcollectionService {
 
     private BinPickupRepository binPickupRepository;
 
     @Autowired
-    public RubbishService(BinPickupRepository binPickupRepository) {
+    public GarbishcollectionService(BinPickupRepository binPickupRepository) {
         this.binPickupRepository = binPickupRepository;
     }
 

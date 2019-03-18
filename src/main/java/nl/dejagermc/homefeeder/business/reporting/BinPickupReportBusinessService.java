@@ -3,8 +3,8 @@ package nl.dejagermc.homefeeder.business.reporting;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.business.AbstractBusinessService;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.RubbishService;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.GarbishcollectionService;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.model.BinPickup;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
@@ -25,16 +25,16 @@ public class BinPickupReportBusinessService extends AbstractBusinessService {
     private static final String TELEGRAM_MESSAGE = "<b>%s</b>%nTomorrow %s.";
     private static final String GOOGLE_HOME_MESSAGE = "%s bin, out tomorrow.";
 
-    private RubbishService rubbishService;
+    private GarbishcollectionService garbishcollectionService;
 
     @Autowired
-    public BinPickupReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, RubbishService rubbishService) {
+    public BinPickupReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, GarbishcollectionService garbishcollectionService) {
         super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
-        this.rubbishService = rubbishService;
+        this.garbishcollectionService = garbishcollectionService;
     }
 
     public void reportNextBinPickup() {
-        rubbishService.getNextBinPickup().ifPresentOrElse(this::reportTomorrowBinPickup, () -> log.info("UC001: reporting: No bin pickup found"));
+        garbishcollectionService.getNextBinPickup().ifPresentOrElse(this::reportTomorrowBinPickup, () -> log.info("UC001: reporting: No bin pickup found"));
     }
 
     private void reportTomorrowBinPickup(BinPickup binPickup) {
@@ -60,7 +60,7 @@ public class BinPickupReportBusinessService extends AbstractBusinessService {
 
     private void reportToGoogleHome(BinPickup binPickup) {
         if (!reportedBusinessService.hasThisBeenReportedToThat(binPickup, GOOGLE_HOME)) {
-            if (settingsService.userIsAvailable()) {
+            if (settingsService.userIsListening()) {
                 String message = String.format(GOOGLE_HOME_MESSAGE, binPickup.getBinType());
                 googleHomeOutputService.broadcast(message);
 

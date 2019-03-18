@@ -1,6 +1,6 @@
-package nl.dejagermc.homefeeder.input.groningen.rubbish.predicates;
+package nl.dejagermc.homefeeder.input.groningen.garbishcollection.predicates;
 
-import nl.dejagermc.homefeeder.input.groningen.rubbish.model.BinPickup;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.model.BinPickup;
 
 import java.util.Comparator;
 

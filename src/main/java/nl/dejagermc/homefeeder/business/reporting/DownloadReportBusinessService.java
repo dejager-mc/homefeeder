@@ -63,7 +63,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
 
         RemoteMovie remoteMovie = schema.getRemoteMovie();
 
-        if (!settingsService.userIsAvailable()) {
+        if (!settingsService.userIsListening()) {
             log.info("UC302: google home: not reporting movie, user is not available");
             radarrService.addNotYetReported(schema);
         } else {
@@ -100,7 +100,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
             return;
         }
 
-        if (!settingsService.userIsAvailable()) {
+        if (!settingsService.userIsListening()) {
             log.info("UC301: google home: not reporting series, user is not available");
             sonarrService.addNotYetReported(schema);
         } else {

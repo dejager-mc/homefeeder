@@ -60,25 +60,8 @@ public class RadarrControllerTest extends TestSetup {
     }
 
     @Test
-    public void testSaveRadarrMessageNotAtHome() {
-        settingsService.getOpenHabSettings().setHome(false);
-        RadarrWebhookSchema schema = getDefaultRadarrSchema();
-
-        radarrController.addRadarr(schema);
-
-        validateMockitoUsage();
-
-        verify(telegramOutputService, times(1)).sendMessage(anyString());
-        verify(googleHomeOutputService, times(0)).broadcast(anyString());
-
-        Set<RadarrWebhookSchema> schemas = radarrService.getNotYetReported();
-        assertEquals(schemas.size(), 1);
-        assertTrue(schemas.contains(schema));
-    }
-
-    @Test
-    public void testSaveRadarrMessageSleeping() {
-        settingsService.getOpenHabSettings().setSleeping(true);
+    public void testSaveRadarrMessageNotListening() {
+        settingsService.getOpenHabSettings().setListening(false);
         RadarrWebhookSchema schema = getDefaultRadarrSchema();
 
         radarrController.addRadarr(schema);

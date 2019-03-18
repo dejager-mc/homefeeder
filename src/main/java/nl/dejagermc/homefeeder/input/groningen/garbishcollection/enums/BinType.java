@@ -1,4 +1,4 @@
-package nl.dejagermc.homefeeder.input.groningen.rubbish.enums;
+package nl.dejagermc.homefeeder.input.groningen.garbishcollection.enums;
 
 public enum BinType {
     GRAY("Grijze container"),

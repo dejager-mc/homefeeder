@@ -26,8 +26,8 @@ public class SettingsService {
         this.dotaSettings = dotaSettings;
     }
 
-    public boolean userIsAvailable() {
-        return openHabSettings.isHome() && !openHabSettings.isSleeping();
+    public boolean userIsListening() {
+        return openHabSettings.isListening();
     }
 
     public boolean surpressMessage() {

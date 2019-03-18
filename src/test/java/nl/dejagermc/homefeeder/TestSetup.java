@@ -36,9 +36,8 @@ public class TestSetup {
         log.info("Loading default test setup...");
 
         settingsService.getDotaSettings().setFavoriteTeams(Arrays.asList("OG"));
-        settingsService.getOpenHabSettings().setHome(true);
         settingsService.getOpenHabSettings().setMute(false);
-        settingsService.getOpenHabSettings().setSleeping(false);
+        settingsService.getOpenHabSettings().setListening(true);
 
         cacheManager.getCacheNames().forEach(name -> cacheManager.getCache(name).clear());
     }
@@ -46,7 +45,7 @@ public class TestSetup {
     @Test
     public void testSettings() {
         assertFalse(settingsService.surpressMessage());
-        assertTrue(settingsService.userIsAvailable());
+        assertTrue(settingsService.userIsListening());
         assertThat(settingsService.getReportMethods(), containsInAnyOrder(ReportMethods.values()));
     }
 }

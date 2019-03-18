@@ -1,6 +1,10 @@
 UC001: reporting bin pickup
 UC004: report saved reports
 
+# Homefeeder
+UC010: Update openhab settings
+UC011: Update dota settings
+
 # dota
 UC100: report dota live match
 UC101: report todays matches

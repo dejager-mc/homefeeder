@@ -137,7 +137,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
             log.info("UC100: Reporting: reporting live match is surpressed");
             return;
         }
-        if (!settingsService.userIsAvailable()) {
+        if (!settingsService.userIsListening()) {
             log.info("UC100: Reporting: saving live match to report later");
             matchService.addMatchNotReported(match);
         } else {

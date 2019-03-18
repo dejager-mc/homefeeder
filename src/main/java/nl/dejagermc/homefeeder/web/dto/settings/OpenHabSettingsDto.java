@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
 @Setter
 @ToString
 public class OpenHabSettingsDto {
-    private boolean isHome;
-    private boolean isSleeping;
     private boolean isMute;
+    private boolean isListening;
 }

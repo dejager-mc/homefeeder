@@ -1,10 +1,11 @@
-package nl.dejagermc.homefeeder.input.groningen.rubbish.model;
+package nl.dejagermc.homefeeder.input.groningen.garbishcollection.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import nl.dejagermc.homefeeder.input.groningen.rubbish.enums.BinType;
+import nl.dejagermc.homefeeder.input.groningen.garbishcollection.enums.BinType;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 public class BinPickup {
     private LocalDate pickupDay;
     private BinType binType;

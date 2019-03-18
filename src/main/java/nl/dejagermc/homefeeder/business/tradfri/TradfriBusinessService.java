@@ -81,7 +81,7 @@ public class TradfriBusinessService extends AbstractBusinessService {
     public void reportGatewayStatusToGoogleHome() {
         log.info("UC202: reporting gateway status to google home.");
         boolean isGatewayUp = isGatewayUp();
-        if (settingsService.userIsAvailable()) {
+        if (settingsService.userIsListening()) {
             if (isGatewayUp) {
                 googleHomeOutputService.broadcast(GOOGLE_HOME_GATEWAY_UP);
             } else {

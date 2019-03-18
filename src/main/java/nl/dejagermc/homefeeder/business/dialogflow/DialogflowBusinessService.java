@@ -44,7 +44,7 @@ public class DialogflowBusinessService {
     public void handleRequest(GoogleCloudDialogflowV2WebhookRequest request) {
         DialogflowEntity entity = dialogflowInputService.convertRequestToEntity(request);
 
-        if(!isRequestMadeByHomeFeederAction(entity)) {
+        if(!entity.getSession().matches(".*" + projectId + ".*")) {
             log.info("UC400: request was not made by the correct google actions project.");
             return;
         }
@@ -70,16 +70,19 @@ public class DialogflowBusinessService {
 
     private void performActionSwitch(DialogflowEntity entity) {
         List<OpenhabItem> items = getAllOpenhabItemsForRequest(entity);
+        items.forEach(item -> log.info("UC402: switching {} {}", item.getLabel(), entity.getActionType()));
         items.forEach(item -> openhabOutputService.performActionOnSwitchItem(entity.getActionType(), item));
     }
 
     private void performActionStream(DialogflowEntity entity) {
         List<OpenhabItem> items = getAllOpenhabItemsForRequest(entity);
+        log.info("UC402: streaming dota to {} device(s)", items.size());
         streamOutputBusinessService.streamLiveMatch(items);
     }
 
     private void performActionReboot(DialogflowEntity entity) {
         List<OpenhabItem> items = getAllOpenhabItemsForRequest(entity, " reboot");
+        items.forEach(item -> log.info("UC402: rebooting {}", item.getLabel()));
         items.forEach(item -> openhabOutputService.performActionOnSwitchItem("ON", item));
     }
 
@@ -98,9 +101,5 @@ public class DialogflowBusinessService {
             return Collections.emptyList();
         }
         return items;
-    }
-
-    private boolean isRequestMadeByHomeFeederAction(DialogflowEntity entity) {
-        return entity.getSession().matches(".*" + projectId + ".*");
     }
 }

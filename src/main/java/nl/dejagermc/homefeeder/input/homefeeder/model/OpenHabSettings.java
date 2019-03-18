@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Setter
 @ToString
 public class OpenHabSettings {
-    private boolean isHome;
-    private boolean isSleeping;
     private boolean isMute;
+    private boolean isListening;
 }

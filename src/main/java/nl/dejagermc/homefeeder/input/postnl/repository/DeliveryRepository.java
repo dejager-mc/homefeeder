@@ -54,8 +54,8 @@ public class DeliveryRepository {
     }
 
     private void getPageWithJBrowser() {
-        JBrowserDriver driver = new JBrowserDriver(Settings.builder().
-                timezone(Timezone.AMERICA_NEWYORK).build());
+        JBrowserDriver driver = new JBrowserDriver(Settings.builder().headless(true).
+                build());
 
         // This will block for the page load and any
         // associated AJAX requests
