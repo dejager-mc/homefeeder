@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.google.api.client.util.Preconditions.checkState;
+
 @Service
 @Slf4j
 public class DialogflowBusinessService {
@@ -42,7 +44,12 @@ public class DialogflowBusinessService {
     }
 
     public void handleRequest(GoogleCloudDialogflowV2WebhookRequest request) {
+        log.info(request.toString());
         DialogflowEntity entity = dialogflowInputService.convertRequestToEntity(request);
+        checkState(!entity.getActionType().isBlank(), "No actiontype in request");
+        checkState(!entity.getAction().isBlank(), "No action in request");
+        checkState(!entity.getSession().isBlank(), "No session in request");
+        checkState(!entity.getItems().isEmpty(), "No items in request");
 
         if(!entity.getSession().matches(".*" + projectId + ".*")) {
             log.info("UC400: request was not made by the correct google actions project.");
@@ -76,7 +83,6 @@ public class DialogflowBusinessService {
 
     private void performActionStream(DialogflowEntity entity) {
         List<OpenhabItem> items = getAllOpenhabItemsForRequest(entity);
-        log.info("UC402: streaming dota to {} device(s)", items.size());
         streamOutputBusinessService.streamLiveMatch(items);
     }
 
