@@ -3,6 +3,7 @@ package nl.dejagermc.homefeeder.input.postnl;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.postnl.model.Delivery;
 import nl.dejagermc.homefeeder.input.postnl.repository.DeliveryRepository;
+import nl.dejagermc.homefeeder.util.selenium.HeadlessChrome;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ import static nl.dejagermc.homefeeder.input.postnl.predicates.DeliveryPredicates
 @Service
 public class PostNLService {
     private DeliveryRepository deliveryRepository;
+
+    @Autowired
+    private HeadlessChrome headlessChrome;
 
     @Autowired
     public PostNLService(DeliveryRepository deliveryRepository) {
@@ -32,27 +36,6 @@ public class PostNLService {
     }
 
     public void test() {
-        deliveryRepository.test();
+        deliveryRepository.getAllDeliveries();
     }
-
-//    public void test() {
-//        try {
-//            //With this you login and a session is created
-//            Connection.Response res = Jsoup.connect("https://jouw.postnl.nl/?pst=k-pnl_f-f_p-pnl_u-txt_s-pwb_r-pnlinlogopties_v-jouwpost#!/inloggen")
-//                    .data("email", email, "password", password)
-//                    .method(Connection.Method.POST)
-//                    .execute();
-//
-//            //This will getAllOpenhabItems you cookies
-//            Map<String, String> loginCookies = res.cookies();
-//
-//            //Here you parse the page that you want. Put the url that you see when you have logged in
-//            Document doc = Jsoup.connect("https://jouw.postnl.nl/?pst=k-pnl_f-f_p-pnl_u-txt_s-pwb_r-pnlinlogopties_v-jouwpost#!/overzicht")
-//                    .cookies(loginCookies)
-//                    .getAllOpenhabItems();
-//            log.info(doc.toString());
-//        } catch (Exception e) {
-//            log.error("Exception postnl: ", e);
-//        }
-//    }
 }

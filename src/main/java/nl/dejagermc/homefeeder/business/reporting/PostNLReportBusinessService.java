@@ -10,13 +10,15 @@ import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+
 @Service
 @Slf4j
 public class PostNLReportBusinessService extends AbstractBusinessService {
 
     private PostNLService postNLService;
 
-    @Autowired
+    @Inject
     public PostNLReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, PostNLService postNLService) {
         super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.postNLService = postNLService;

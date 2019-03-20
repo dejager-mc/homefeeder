@@ -32,7 +32,7 @@ public class TradfriController {
     @ResponseStatus(HttpStatus.OK)
     public void reportStatus() {
         log.info("UC202: received request to report gateway status");
-        tradfriBusinessService.reportGatewayStatusToGoogleHome();
+        tradfriBusinessService.reportGatewayStatus();
     }
 
     @GetMapping(value = "devices")

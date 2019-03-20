@@ -81,7 +81,7 @@ public class SummaryReportBusinessServiceTest extends TestSetup {
         SonarrWebhookSchema schema = getDefaultSonarrSchema();
 
         // When user is not listening and sonarr message is received
-        settingsService.getOpenHabSettings().setListening(false);
+        settingsService.getOpenHabSettings().setHomeMuted(true);
         sonarrController.addSonarr(schema);
         doNothing().when(telegramOutputService).sendMessage(anyString());
 
@@ -100,7 +100,8 @@ public class SummaryReportBusinessServiceTest extends TestSetup {
         doNothing().when(googleHomeOutputService).broadcast(anyString());
 
         // when reporting saved messages
-        summaryReportBusinessService.reportSummaryToGoogleHome();
+        settingsService.getOpenHabSettings().setHomeMuted(false);
+        summaryReportBusinessService.reportSummary();
 
         // then google home message is send
         verify(telegramOutputService, times(0)).sendMessage(anyString());
@@ -125,7 +126,7 @@ public class SummaryReportBusinessServiceTest extends TestSetup {
         RadarrWebhookSchema schema = getDefaultRadarrSchema();
 
         // When user is not listening and radarr message is received
-        settingsService.getOpenHabSettings().setListening(false);
+        settingsService.getOpenHabSettings().setHomeMuted(true);
         radarrController.addRadarr(schema);
 
         // Then telegram is send but not google home
@@ -143,7 +144,8 @@ public class SummaryReportBusinessServiceTest extends TestSetup {
         doNothing().when(googleHomeOutputService).broadcast(anyString());
 
         // when reporting saved messages
-        summaryReportBusinessService.reportSummaryToGoogleHome();
+        settingsService.getOpenHabSettings().setHomeMuted(false);
+        summaryReportBusinessService.reportSummary();
 
         // then google home message is send
         verify(telegramOutputService, times(0)).sendMessage(anyString());

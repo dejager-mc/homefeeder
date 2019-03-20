@@ -34,7 +34,7 @@ public class DialogflowController {
 
     @PostMapping("webhook")
     public GoogleCloudDialogflowV2WebhookResponse webhook(@RequestBody String rawRequest) {
-        log.info("UC400: dialogflow request.");
+        log.info("UC400: recieving dialogflow request.");
         handleRequest(rawRequest);
         return generateResponse();
     }
@@ -56,7 +56,7 @@ public class DialogflowController {
     }
 
     private String getRandomResponseText() {
-        List<String> responses = Arrays.asList("F.A.B.", "Affirmative.", "It is done.", "As you will.", "As you command.", "An excellent choice.");
+        List<String> responses = Arrays.asList("F.A.B.", "Affirmative.", "It is done.", "As you will.", "As you command.", "An excellent choice.", "Yes sir!", "Alright");
         return responses.get(new Random().nextInt(responses.size()));
     }
 }

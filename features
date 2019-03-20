@@ -54,3 +54,4 @@ Bugs:
 [X] Movie download reporting to telegram was broken because of uri to IMDB. Removed it.
 [X] Reporting breaklines to google home broadcast causes errors.
 [X] When reporting live match make sure that same match is not in the saved-for-later list
+[ ] Daily report not mentioning dota tournament: cache reset not done? Also report too early? Openhab not reporting state right?

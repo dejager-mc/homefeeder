@@ -61,7 +61,7 @@ public class RadarrControllerTest extends TestSetup {
 
     @Test
     public void testSaveRadarrMessageNotListening() {
-        settingsService.getOpenHabSettings().setListening(false);
+        settingsService.getOpenHabSettings().setHomeMuted(true);
         RadarrWebhookSchema schema = getDefaultRadarrSchema();
 
         radarrController.addRadarr(schema);
@@ -78,7 +78,7 @@ public class RadarrControllerTest extends TestSetup {
 
     @Test
     public void testSaveRadarrMessageMuted() {
-        settingsService.getOpenHabSettings().setMute(true);
+        settingsService.getOpenHabSettings().setHomeMuted(true);
         RadarrWebhookSchema schema = getDefaultRadarrSchema();
 
         radarrController.addRadarr(schema);

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethod;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -15,6 +15,5 @@ import java.util.Set;
 @Setter
 @ToString
 public class HomeFeederSettings {
-    Set<ReportMethods> reportMethods = Set.of(ReportMethods.GOOGLE_HOME, ReportMethods.TELEGRAM);
-    // nothing yet
+    Set<ReportMethod> reportMethods = Set.of(ReportMethod.GOOGLE_HOME, ReportMethod.TELEGRAM);
 }

@@ -5,6 +5,9 @@ UC004: report saved reports
 UC010: Update openhab settings
 UC011: Update dota settings
 
+# Reported cache
+UC020: Reset reported items cache
+
 # dota
 UC100: report dota live match
 UC101: report todays matches
@@ -23,9 +26,13 @@ UC303: summary report
 # Dialogflow
 UC400: dialogflow incoming request
 UC401: switch on / off item
+UC402: rebooting device
 UC402: start stream on device
 
 # Openhab
 UC500: Mark home feeder as online in openhab
 UC501: Send command to openhab item
 UC502: refresh openhab items list
+
+# postnl
+UC600: Get all deliveries

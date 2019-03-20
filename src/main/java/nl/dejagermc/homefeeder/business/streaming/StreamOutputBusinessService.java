@@ -14,6 +14,7 @@ import nl.dejagermc.homefeeder.output.openhab.OpenhabOutputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class StreamOutputBusinessService {
     private GoogleHomeOutputService googleHomeOutputService;
     private SettingsService settingsService;
 
-    @Autowired
+    @Inject
     public StreamOutputBusinessService(OpenhabOutputService openhabOutputService, SettingsService settingsService, MatchService matchService, TournamentService tournamentService, GoogleHomeOutputService googleHomeOutputService, OpenhabInputService openhabInputService) {
         this.openhabOutputService = openhabOutputService;
         this.settingsService = settingsService;
@@ -62,13 +63,13 @@ public class StreamOutputBusinessService {
     private void turnOnDeviceAndStartStream(OpenhabItem device, String streamUri) {
         Optional<OpenhabItem> steamItem = openhabInputService.findOpenhabItemWithLabel(device.getLabel() + " stream");
         if (steamItem.isPresent()) {
-            log.info("UC400: starting stream on {}", device.getLabel());
+            log.info("UC403: starting stream on {}", device.getLabel());
             // turn on device
             openhabOutputService.performActionOnSwitchItem("ON", device);
             // start stream
             openhabOutputService.performActionOnStringItem(streamUri, steamItem.get());
         } else {
-            log.error("UC400: could not find openhab stream item for {}", device);
+            log.error("UC403: could not find openhab stream item for {}", device);
         }
     }
 

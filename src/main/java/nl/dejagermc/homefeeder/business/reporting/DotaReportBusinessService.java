@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.business.AbstractBusinessService;
 import nl.dejagermc.homefeeder.business.reported.ReportedBusinessService;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethod;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.MatchService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.TournamentService;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Match;
@@ -12,15 +12,15 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods.GOOGLE_HOME;
+import static nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethod.GOOGLE_HOME;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType.*;
 import static nl.dejagermc.homefeeder.input.liquipedia.dota.predicates.MatchPredicates.*;
 
@@ -34,7 +34,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
     private MatchService matchService;
     private TournamentService tournamentService;
 
-    @Autowired
+    @Inject
     public DotaReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService,
                                      TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService,
                                      MatchService matchService, TournamentService tournamentService) {
@@ -118,7 +118,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
             reportLiveMatchToGoogleHome(match);
         }
 
-        if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethods.TELEGRAM)) {
+        if (!reportedBusinessService.hasThisBeenReportedToThat(match, ReportMethod.TELEGRAM)) {
             reportLiveMatchToTelegram(match);
         }
 
@@ -128,17 +128,13 @@ public class DotaReportBusinessService extends AbstractBusinessService {
     private void reportLiveMatchToTelegram(Match match) {
         String message = getLiveDotaMatchTelegramMessage(match);
         telegramOutputService.sendMessage(message);
-        reportedBusinessService.markThisReportedToThat(match, ReportMethods.TELEGRAM);
+        reportedBusinessService.markThisReportedToThat(match, ReportMethod.TELEGRAM);
         log.info("UC100: Reporting: reported live match to telegram");
     }
 
     private void reportLiveMatchToGoogleHome(Match match) {
-        if (settingsService.surpressMessage()) {
-            log.info("UC100: Reporting: reporting live match is surpressed");
-            return;
-        }
-        if (!settingsService.userIsListening()) {
-            log.info("UC100: Reporting: saving live match to report later");
+        if (settingsService.isHomeMuted()) {
+            log.info("UC100: Home muted, saving live match to report later");
             matchService.addMatchNotReported(match);
         } else {
             String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
@@ -148,7 +144,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
         }
     }
 
-    public void reportSummary() {
+    void reportSummary() {
         StringBuilder sb = new StringBuilder();
         addMostImportantActiveTournamentToSummary(sb);
         addNotYetReportedAndFutureMatchesToSummary(sb);

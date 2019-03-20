@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethod;
 
 import java.util.Set;
 
@@ -13,5 +13,5 @@ import java.util.Set;
 @Setter
 @ToString
 public class HomeFeederSettingsDto {
-    private Set<ReportMethods> reportMethods;
+    private Set<ReportMethod> reportMethods;
 }

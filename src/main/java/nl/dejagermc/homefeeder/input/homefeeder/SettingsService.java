@@ -1,7 +1,7 @@
 package nl.dejagermc.homefeeder.input.homefeeder;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethod;
 import nl.dejagermc.homefeeder.input.homefeeder.model.DotaSettings;
 import nl.dejagermc.homefeeder.input.homefeeder.model.HomeFeederSettings;
 import nl.dejagermc.homefeeder.input.homefeeder.model.OpenHabSettings;
@@ -26,12 +26,8 @@ public class SettingsService {
         this.dotaSettings = dotaSettings;
     }
 
-    public boolean userIsListening() {
-        return openHabSettings.isListening();
-    }
-
-    public boolean surpressMessage() {
-        return openHabSettings.isMute();
+    public boolean isHomeMuted() {
+        return openHabSettings.isHomeMuted();
     }
 
     public List<String> getFavoriteDotaTeams() {
@@ -39,7 +35,7 @@ public class SettingsService {
     }
 
     @Cacheable(cacheNames = "getReportMethods", cacheManager = "cacheManagerCaffeine")
-    public Set<ReportMethods> getReportMethods() {
+    public Set<ReportMethod> getReportMethods() {
         return homeFeederSettings.getReportMethods();
     }
 

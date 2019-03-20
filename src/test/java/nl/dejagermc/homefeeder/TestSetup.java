@@ -3,7 +3,7 @@ package nl.dejagermc.homefeeder;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.appconfig.HomeFeederConfig;
 import nl.dejagermc.homefeeder.input.homefeeder.SettingsService;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethods;
+import nl.dejagermc.homefeeder.input.homefeeder.enums.ReportMethod;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = HomeFeederConfig.class)
@@ -35,17 +35,15 @@ public class TestSetup {
     public void basicResetTestSetup() {
         log.info("Loading default test setup...");
 
-        settingsService.getDotaSettings().setFavoriteTeams(Arrays.asList("OG"));
-        settingsService.getOpenHabSettings().setMute(false);
-        settingsService.getOpenHabSettings().setListening(true);
+        settingsService.getDotaSettings().setFavoriteTeams(List.of("OG"));
+        settingsService.getOpenHabSettings().setHomeMuted(false);
 
         cacheManager.getCacheNames().forEach(name -> cacheManager.getCache(name).clear());
     }
 
     @Test
     public void testSettings() {
-        assertFalse(settingsService.surpressMessage());
-        assertTrue(settingsService.userIsListening());
-        assertThat(settingsService.getReportMethods(), containsInAnyOrder(ReportMethods.values()));
+        assertFalse(settingsService.isHomeMuted());
+        assertThat(settingsService.getReportMethods(), containsInAnyOrder(ReportMethod.values()));
     }
 }

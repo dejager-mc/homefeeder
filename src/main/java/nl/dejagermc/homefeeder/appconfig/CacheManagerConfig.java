@@ -26,7 +26,7 @@ public class CacheManagerConfig {
 
         // short caches
         CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 15, 1);
-        CaffeineCache getAllDeliveries = buildCache("getAllDeliveries", ticker, 15, 1);
+        CaffeineCache getAllDeliveries = buildCache("getAllDeliveries", ticker, 60, 1);
 
         // never expiring caches
         CaffeineCache getReportMethods = buildNotExpiringCache("getReportMethods", ticker, 1);

@@ -106,6 +106,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--coap client-->
         <dependency>
             <groupId>org.eclipse.californium</groupId>
             <artifactId>californium-core</artifactId>
@@ -121,17 +122,34 @@
             <artifactId>element-connector</artifactId>
             <version>2.0.0-M12</version>
         </dependency>
-
+        <!--/coap client-->
+        <!--dto mapper-->
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>2.3.2</version>
         </dependency>
+
+        <!--headless browser-->
+        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
         <dependency>
-            <groupId>com.machinepublishers</groupId>
-            <artifactId>jbrowserdriver</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.141.59</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-chrome-driver</artifactId>
+            <version>3.141.59</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>27.1-jre</version>
+        </dependency>
+        <!--/headless browser-->
+
 
 
         <!--Google-->
@@ -162,12 +180,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-security-test</artifactId>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-junit</artifactId>

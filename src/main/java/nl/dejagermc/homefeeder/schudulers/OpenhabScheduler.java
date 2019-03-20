@@ -31,8 +31,4 @@ public class OpenhabScheduler {
         log.info("UC502: scheduler: refresh items.");
         openhabBusinessService.refreshItems();
     }
-
-    public void giveReportWhenUserStartsListening() {
-
-    }
 }

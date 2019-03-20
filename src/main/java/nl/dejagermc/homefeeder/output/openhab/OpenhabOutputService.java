@@ -1,12 +1,9 @@
 package nl.dejagermc.homefeeder.output.openhab;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.dejagermc.homefeeder.input.dialogflow.model.DialogflowEntity;
-import nl.dejagermc.homefeeder.input.homefeeder.enums.StreamTarget;
 import nl.dejagermc.homefeeder.input.openhab.OpenhabInputService;
 import nl.dejagermc.homefeeder.input.openhab.model.OpenhabItem;
 import nl.dejagermc.homefeeder.util.http.HttpUtil;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -53,7 +50,7 @@ public class OpenhabOutputService {
         if (response.isBlank()) {
             return true;
         } else {
-            log.error("openhab response not ok: {}", response);
+            log.error("UC501: Error sending command to openhab: {}", response);
             return false;
         }
     }

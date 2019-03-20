@@ -12,9 +12,9 @@ import nl.dejagermc.homefeeder.input.radarr.RadarrService;
 import nl.dejagermc.homefeeder.input.sonarr.SonarrService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.Set;
 
 @Service
@@ -33,7 +33,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
     private RadarrService radarrService;
     private SonarrService sonarrService;
 
-    @Autowired
+    @Inject
     public DownloadReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, RadarrService radarrService, SonarrService sonarrService) {
         super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.radarrService = radarrService;
@@ -49,7 +49,6 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
                 remoteMovie.getTitle(),
                 remoteMovie.getYear());
 
-        log.info("UC301: telegram: reporting movie");
         telegramOutputService.sendMessage(telegramReport);
 
         // google home
@@ -57,19 +56,14 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
     }
 
     private void reportRadarrToGoogleHome(RadarrWebhookSchema schema) {
-        if (settingsService.surpressMessage()) {
-            return;
-        }
-
         RemoteMovie remoteMovie = schema.getRemoteMovie();
 
-        if (!settingsService.userIsListening()) {
-            log.info("UC302: google home: not reporting movie, user is not available");
+        if (settingsService.isHomeMuted()) {
+            log.info("UC302: Home muted, saving movie voice report.");
             radarrService.addNotYetReported(schema);
         } else {
             String googleHomeReport = String.format(GOOGLE_HOME_MOVIE_REPORT,
                     remoteMovie.getTitle());
-            log.info("UC302: google home: broadcasting movie downloaded");
             googleHomeOutputService.broadcast(googleHomeReport);
         }
     }
@@ -87,7 +81,6 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
                     episode.getEpisodeNumber(),
                     episode.getTitle(),
                     episode.getQuality());
-            log.info("UC301: telegram: reporting episode");
             telegramOutputService.sendMessage(telegramReport);
         }
 
@@ -96,16 +89,11 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
     }
 
     private void reportSonarrToGoogleHome(SonarrWebhookSchema schema) {
-        if (settingsService.surpressMessage()) {
-            return;
-        }
-
-        if (!settingsService.userIsListening()) {
-            log.info("UC301: google home: not reporting series, user is not available");
+        if (settingsService.isHomeMuted()) {
+            log.info("UC301: Home mutes, saving series voice report.");
             sonarrService.addNotYetReported(schema);
         } else {
             String seriesName = schema.getSeries().getTitle();
-            log.info("UC301: google home: broadcasting series downloaded");
             if (schema.getEpisodes().size() > 1) {
                 String googleHomeReport = String.format(GOOGLE_HOME_SERIES_MULTIPLE_EPISODES_REPORT,
                         schema.getEpisodes().size(),

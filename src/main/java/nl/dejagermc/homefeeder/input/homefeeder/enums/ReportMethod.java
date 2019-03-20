@@ -1,6 +1,6 @@
 package nl.dejagermc.homefeeder.input.homefeeder.enums;
 
-public enum ReportMethods {
+public enum ReportMethod {
     TELEGRAM,
     GOOGLE_HOME
 }

@@ -10,9 +10,9 @@ import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
 import nl.dejagermc.homefeeder.output.tradfri.TradfriException;
 import nl.dejagermc.homefeeder.output.tradfri.TradfriService;
 import nl.dejagermc.homefeeder.util.http.HttpUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -33,7 +33,7 @@ public class TradfriBusinessService extends AbstractBusinessService {
     private OpenhabInputService openhabInputService;
     private HttpUtil httpUtil;
 
-    @Autowired
+    @Inject
     public TradfriBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, TradfriService tradfriService, OpenhabInputService openhabInputService, HttpUtil httpUtil) {
         super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.tradfriService = tradfriService;
@@ -78,10 +78,16 @@ public class TradfriBusinessService extends AbstractBusinessService {
                 );
     }
 
-    public void reportGatewayStatusToGoogleHome() {
-        log.info("UC202: reporting gateway status to google home.");
+    public void reportGatewayStatus() {
         boolean isGatewayUp = isGatewayUp();
-        if (settingsService.userIsListening()) {
+
+        if (isGatewayUp) {
+            telegramOutputService.sendMessage(TELEGRAM_GATEWAY_REBOOT_UP);
+        } else {
+            telegramOutputService.sendMessage(TELEGRAM_GATEWAY_REBOOT_DOWN);
+        }
+
+        if (!settingsService.isHomeMuted()) {
             if (isGatewayUp) {
                 googleHomeOutputService.broadcast(GOOGLE_HOME_GATEWAY_UP);
             } else {
@@ -103,7 +109,7 @@ public class TradfriBusinessService extends AbstractBusinessService {
     }
 
     public String getAllDevices() {
-        log.info("UC201: reporting all devies");
+        log.info("UC201: reporting all deviecs");
         return tradfriService.getAllDevices();
     }
 }

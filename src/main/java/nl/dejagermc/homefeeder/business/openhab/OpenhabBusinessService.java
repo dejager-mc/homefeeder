@@ -8,9 +8,10 @@ import nl.dejagermc.homefeeder.input.openhab.OpenhabInputService;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
 import nl.dejagermc.homefeeder.output.openhab.OpenhabOutputService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 @Service
 @Slf4j
@@ -20,7 +21,7 @@ public class OpenhabBusinessService extends AbstractBusinessService {
     private OpenhabOutputService openhabOutputService;
     private CacheManager cacheManager;
 
-    @Autowired
+    @Inject
     public OpenhabBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService, TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService, OpenhabInputService openhabInputService, OpenhabOutputService openhabOutputService, CacheManager cacheManager) {
         super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.openhabInputService = openhabInputService;

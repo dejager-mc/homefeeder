@@ -1,26 +1,20 @@
 package nl.dejagermc.homefeeder.input.postnl.repository;
 
-import com.machinepublishers.jbrowserdriver.JBrowserDriver;
-import com.machinepublishers.jbrowserdriver.Settings;
-import com.machinepublishers.jbrowserdriver.Timezone;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.postnl.model.Delivery;
 import nl.dejagermc.homefeeder.util.http.HttpUtil;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import nl.dejagermc.homefeeder.util.selenium.HeadlessChrome;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,163 +22,97 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DeliveryRepository {
     private static final String POSTNL_LOGIN_URI = "https://jouw.postnl.nl/?pst=k-pnl_f-f_p-pnl_u-txt_s-pwb_r-pnlinlogopties_v-jouwpost#!/inloggen?returnUrl=https:%2F%2Fwww.postnl.nl%2F";
+    private static final String POSTNL_DELIVERIES_LIST = "https://jouw.postnl.nl/#!/overzicht";
+    private static final int PAGE_LOAD_WAIT_TIMEOUT = 3;
 
     @Value("${postnl.login.email}")
     private String email;
     @Value("${postnl.login.password}")
     private String password;
 
-    private HttpUtil httpUtil;
+    private HeadlessChrome headlessChrome;
 
     @Autowired
-    public DeliveryRepository(HttpUtil httpUtil) {
-        this.httpUtil = httpUtil;
+    public DeliveryRepository(HeadlessChrome headlessChrome) {
+        this.headlessChrome = headlessChrome;
     }
 
     @Cacheable(cacheNames = "getAllDeliveries", cacheManager = "cacheManagerCaffeine")
     public Set<Delivery> getAllDeliveries() {
-        Elements elements = getAllDeliveryElements();
-        return convertElementsToDeliveries(elements);
+        log.info("UC600: get all deliveries");
+
+        // get webdriver
+        WebDriver webDriver = headlessChrome.getChromeWebdriver();
+
+        // log in to postnl
+        loginPostnl(webDriver);
+
+        // open deliveries page and expand it
+        openDeliveriesPage(webDriver);
+
+        // get deliveries from page
+        log.info("UC600: getting list of deliveries");
+        List<WebElement> deliveres =  webDriver.findElements(By.className("list-item-receiver"));
+
+        // convert to delivery objects
+        Set<Delivery> results = deliveres.stream().map(this::buildDelivery).collect(Collectors.toSet());
+
+        // close driver
+        webDriver.close();
+
+        log.info("UC600: returning {} deliveries", results.size());
+        return results;
     }
 
-    // login to postnl
-    public void test() {
-        log.info("Attempting to log in to postnl website");
-        getPageWithJBrowser();
+    private void loginPostnl(WebDriver driver) {
+        log.info("UC600: loging in to postnl");
+        driver.get(POSTNL_LOGIN_URI);
+        waitForPageLoading(driver);
+
+        // accept cookies if requested
+        WebElement cookies = driver.findElement(By.xpath("//*[@id=\"grantPermissionButton\"]"));
+        if (cookies != null) {
+            cookies.click();
+        }
+
+        // login
+        driver.findElement(By.id("email")).sendKeys(email);
+        driver.findElement(By.id("password")).sendKeys(password);
+        driver.findElement(By.xpath("/html/body/div[3]/div/main/div[2]/ui-view/ui-view/ui-view/section/div/article/div/form/div/div[1]/div[5]/span/button")).click();
+        waitForPageLoading(driver);
     }
 
-    private void getPageWithJBrowser() {
-        JBrowserDriver driver = new JBrowserDriver(Settings.builder().headless(true).
-                build());
-
-        // This will block for the page load and any
-        // associated AJAX requests
+    private void openDeliveriesPage(WebDriver driver) {
+        log.info("UC600: opening page with deliveries");
+        // open page
         driver.get("https://jouw.postnl.nl/#!/overzicht");
+        waitForPageLoading(driver);
+        waitForPageLoading(driver);
 
-        // You can getAllOpenhabItems status code unlike other Selenium drivers.
-        // It blocks for AJAX requests and page loads after clicks
-        // and keyboard events.
-        System.out.println(driver.getStatusCode());
-
-        // Returns the page source in its current state, including
-        // any DOM updates that occurred after page load
-        System.out.println(driver.getPageSource());
-
-        // Close the browser. Allows this thread to terminate.
-        driver.quit();
+        // expand
+        driver.findElement(By.xpath("/html/body/div[3]/div/main/div[2]/ui-view/ui-view/ui-view/section/div/article/div[2]/div/div[1]/div[2]/div[1]/div[2]/a")).click();
+        waitForPageLoading(driver);
     }
 
-    private String getLoginUri() {
-        Optional<Document> doc = httpUtil.getDocument(POSTNL_LOGIN_URI);
-        if (doc.isPresent()) {
-            return doc.get().select("a#consumer-login-link").attr("href");
-        }
-        log.info("No uri found");
-        return "";
-    }
-
-    private void login() {
+    private void waitForPageLoading(WebDriver driver) {
         try {
-//            grant_type	password
-//            client_id	pwWebApp
-//            username	onlineshopping.maxhunt@gmail.com
-//            password	154411mc
-            Connection.Response res = Jsoup.connect("https://jouw.postnl.nl/web/token")
-                    .data("grant_type", "password")
-                    .data("client_id", "pwWebApp")
-                    .data("username", email)
-                    .data("password", password)
-                    .method(Connection.Method.POST)
-                    .header("Accept","application/json, text/plain, */*")
-                    .header("Accept-Encoding","gzip, deflate, br")
-                    .header("Connection","keepl-alive")
-                    .header("Content-Type","application/x-www-form-urlencoded")
-                    .header("Cookie","Language=nl; ely_cc_answ={\"pri…2ZXJ6aWNodDojIS9vdmVyemljaHQ=")
-                    .header("Host","jouw.postnl.nl")
-                    .header("Referer","https://jouw.postnl.nl/?pst=k-…wb_r-pnlinlogopties_v-jouwpost")
-                    .header("User-Agent","Mozilla/5.0 (Windows NT 10.0; …) Gecko/20100101 Firefox/65.0")
-                    .execute();
-            // https://stackoverflow.com/questions/30406264/cannot-login-to-website-by-using-jsoup-with-x-www-form-urlencoded-parameters
-
-//            Accept
-//            application/json, text/plain, */*
-//Accept-Encoding
-//gzip, deflate, br
-//Accept-Language
-//nl,en-US;q=0.7,en;q=0.3
-//Connection
-//keep-alive
-//Content-Length
-//100
-//Content-Type
-//application/x-www-form-urlencoded
-//Cookie
-//Language=nl; ely_cc_answ={"pri…2ZXJ6aWNodDojIS9vdmVyemljaHQ=
-//DNT
-//1
-//Host
-//jouw.postnl.nl
-//Referer
-//https://jouw.postnl.nl/?pst=k-…wb_r-pnlinlogopties_v-jouwpost
-//TE
-//Trailers
-//User-Agent
-//Mozilla/5.0 (Windows NT 10.0; …) Gecko/20100101 Firefox/65.0
-
-            Map<String, String> loginCookies = res.cookies();
-
-            //Here you parse the page that you want. Put the url that you see when you have logged in
-            Document doc = Jsoup.connect("https://jouw.postnl.nl/#!/overzicht")
-                    .cookies(loginCookies)
-                    .get();
-            log.info(doc.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            new WebDriverWait(driver, PAGE_LOAD_WAIT_TIMEOUT)
+                    .until(ExpectedConditions.presenceOfElementLocated(By.xpath("testetefdgfgdhhfgfghfghdfgghfgd")));
+        } catch (Exception e) {}
     }
 
-
-    // fetch data when logged in
-
-    private Elements getAllDeliveryElements() {
-        Optional<Document> optionalDoc = httpUtil.getPostNlDeliveriesDocument(email, password);
-        if (optionalDoc.isPresent()) {
-            return optionalDoc.get().select("div");
-        }
-
-        return new Elements();
-    }
-
-    private Set<Delivery> convertElementsToDeliveries(Elements elements) {
-        return elements.stream()
-                .filter(Objects::nonNull)
-                .map(this::buildDelivery)
-                .collect(Collectors.toSet());
-    }
-
-    private Delivery buildDelivery(Element element) {
+    private Delivery buildDelivery(WebElement webElement) {
+        List<String> infoLines = List.of(webElement.getText().split("\n"));
         return Delivery.builder()
-                .sender(getSender(element))
-                .weightInGrams(getWeightInGrams(element))
-                .startTime(getStartTime(element))
-                .endTime(getEndTime(element))
+                .sender(infoLines.get(0))
+                .hasBeenDelivered(setHasBeenDelivered(infoLines.get(1)))
                 .build();
     }
 
-    private String getSender(Element element) {
-        return "";
-    }
-
-    private int getWeightInGrams(Element element) {
-        return 0;
-    }
-
-    private LocalDateTime getStartTime(Element element) {
-        return LocalDateTime.now();
-    }
-
-
-    private LocalDateTime getEndTime(Element element) {
-        return LocalDateTime.now();
+    public boolean setHasBeenDelivered(String string) {
+        if (string.matches("Bezorgd op.*")) {
+            return true;
+        }
+        return false;
     }
 }
