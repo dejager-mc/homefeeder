@@ -10,8 +10,8 @@ Features:
 [X] Daily reports dota, matches and tournaments
 [X] Download report
 [X] Stream to tv
-[ ] Stream to chosen device
-[ ] Postnl integration
+[X] Stream to chosen device
+[/] Postnl integration
 [X] Update matches without losing reported information
 [X] Tradfri coap connectivity
 [X] Access Google Home directly instead of through a third party relay
@@ -31,8 +31,8 @@ Features:
     [ ] Google Home
     [ ] Google Assistant Relay
 [X] Retry for Jsoup get requests
-[ ] Add use cases to logging
-[ ] Implement Direct Action to Google Actions
+[/] Add use cases to logging
+[-] Implement Direct Action to Google Actions.
 [X] Automatically update openhab items when items are added / changed in openhab. Openhab will call homefeeder to reload items.
 [X] Add spring security and use basic authentication on every rest endpoint.
 [X] Secure dialogflow endpoint with different user and only this user can access this endpoint
@@ -54,4 +54,4 @@ Bugs:
 [X] Movie download reporting to telegram was broken because of uri to IMDB. Removed it.
 [X] Reporting breaklines to google home broadcast causes errors.
 [X] When reporting live match make sure that same match is not in the saved-for-later list
-[ ] Daily report not mentioning dota tournament: cache reset not done? Also report too early? Openhab not reporting state right?
+[X] Daily report not mentioning dota tournament: cache reset not done? Also report too early? Openhab not reporting state right?

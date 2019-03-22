@@ -42,7 +42,7 @@ public class GarbageCollectionBusinessService extends AbstractBusinessService {
     private void reportTomorrowBinPickup(BinPickup binPickup) {
         // if the next pickup day is tomorrow
         if (binPickup.getPickupDay().isEqual(LocalDate.now().plusDays(1))) {
-            log.info("UC001: Reporting bin pickup scheduled for tomorrow: {}", binPickup);
+            log.info("UC030: Reporting bin pickup scheduled for tomorrow: {}", binPickup);
             reportToTelegram(binPickup);
             reportToGoogleHome(binPickup);
         }

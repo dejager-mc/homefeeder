@@ -3,10 +3,11 @@ package nl.dejagermc.homefeeder.input.postnl;
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.input.postnl.model.Delivery;
 import nl.dejagermc.homefeeder.input.postnl.repository.DeliveryRepository;
-import nl.dejagermc.homefeeder.util.selenium.HeadlessChrome;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,12 +16,10 @@ import static nl.dejagermc.homefeeder.input.postnl.predicates.DeliveryPredicates
 @Slf4j
 @Service
 public class PostNLService {
+
     private DeliveryRepository deliveryRepository;
 
-    @Autowired
-    private HeadlessChrome headlessChrome;
-
-    @Autowired
+    @Inject
     public PostNLService(DeliveryRepository deliveryRepository) {
         this.deliveryRepository = deliveryRepository;
     }
@@ -35,7 +34,15 @@ public class PostNLService {
                 .collect(Collectors.toSet());
     }
 
-    public void test() {
-        deliveryRepository.getAllDeliveries();
+    public void addSavedDelivery(Delivery delivery) {
+        deliveryRepository.addSavedDelivery(delivery);
+    }
+
+    public List<Delivery> getAllSavedDeliveries() {
+        return deliveryRepository.getSavedDeliveries();
+    }
+
+    public void resetSavedDeliveries() {
+        deliveryRepository.resetSavedDeliveries();
     }
 }

@@ -45,7 +45,7 @@ public class SettingsController extends AbstractController {
         settingsService.getOpenHabSettings().setHomeMuted(openHabSettings.isHomeMuted());
 
         if (wasHomeMuted && !settingsService.getOpenHabSettings().isHomeMuted()) {
-            log.info("UC004: user is now listening, report saved messages.");
+            log.info("UC003: user is now listening, report saved messages.");
             summaryReportBusinessService.reportSummary();
         }
     }

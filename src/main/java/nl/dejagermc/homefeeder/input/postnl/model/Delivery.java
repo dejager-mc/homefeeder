@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -18,6 +19,17 @@ public class Delivery {
     private String sender;
     private int weightInGrams;
     private boolean hasBeenDelivered;
+
+    public String getFormattedDeliveryTime() {
+        final String deliveryTime = "%s between %s and %s";
+        final String dateFormatter = "d MMM yyyy";
+        final String timeFormatter = "h:mm";
+        if (startTime != null) {
+            LocalDate day = startTime.toLocalDate();
+
+        }
+        return "unknown delivery time.";
+    }
 
     @Override
     public boolean equals(Object o) {

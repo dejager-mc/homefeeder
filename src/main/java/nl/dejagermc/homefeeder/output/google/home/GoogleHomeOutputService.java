@@ -33,6 +33,8 @@ public class GoogleHomeOutputService {
             return;
         }
 
+        log.info("UC002: report to google home.");
+
         String optimisedMessage = optimiseNamesForSpeech(message);
         String json = String.format(BROADCAST_JSON_MESSAGE, optimisedMessage);
         broadcastToGoogleHome(json);
@@ -47,16 +49,15 @@ public class GoogleHomeOutputService {
     }
 
     private void broadcastToGoogleHome(String json) {
-        log.info("Broadcasting: {}", json);
         String response = httpUtil.postJsonToGoogleRelayAssistant(uri, json);
         handleResponse(response);
     }
 
     private void handleResponse(String response) {
         if (response.matches(".*\"success\":true.*")) {
-            log.info("Google home broadcast: ok");
+            log.info("UC002: successful.");
         } else {
-            log.error("Google home broadcast: not ok: {}", response);
+            log.error("UC002: Error: {}", response);
         }
     }
 }

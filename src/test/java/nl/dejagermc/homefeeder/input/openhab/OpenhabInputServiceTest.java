@@ -44,7 +44,7 @@ public class OpenhabInputServiceTest {
 
     @Before
     public void setup() {
-        log.info("Loading specific test setup for {}...", this.getClass().getSimpleName());
+        log.info("Loading specific getAllDeliveries setup for {}...", this.getClass().getSimpleName());
 
         openhabItems = Set.of(
                 tvItem,

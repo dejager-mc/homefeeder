@@ -38,9 +38,9 @@ public class TelegramOutputServiceTest {
         when(httpUtil.getDocumentIgnoreContentType(anyString())).thenReturn(Optional.empty());
         telegramOutputService.sendMessage("Test");
         validateMockitoUsage();
-        assertThat(loggerRule.getFormattedMessages().size()).isEqualTo(1);
-        assertThat(loggerRule.getFormattedMessages().get(0)).isEqualTo("Telegram: no response from server.");
-        assertThat(loggerRule.getLoggingEvents().get(0).getLevel()).isEqualTo(Level.ERROR);
+        assertThat(loggerRule.getFormattedMessages().size()).isEqualTo(2);
+        assertThat(loggerRule.getFormattedMessages().get(1)).isEqualTo("UC001: Error: no response from server.");
+        assertThat(loggerRule.getLoggingEvents().get(1).getLevel()).isEqualTo(Level.ERROR);
     }
 
     @Test
@@ -50,9 +50,9 @@ public class TelegramOutputServiceTest {
         when(httpUtil.getDocumentIgnoreContentType(anyString())).thenReturn(Optional.of(document));
         telegramOutputService.sendMessage("Test");
         validateMockitoUsage();
-        assertThat(loggerRule.getFormattedMessages().size()).isEqualTo(1);
-        assertThat(loggerRule.getFormattedMessages().get(0)).isEqualTo("Telegram: message send");
-        assertThat(loggerRule.getLoggingEvents().get(0).getLevel()).isEqualTo(Level.INFO);
+        assertThat(loggerRule.getFormattedMessages().size()).isEqualTo(2);
+        assertThat(loggerRule.getFormattedMessages().get(1)).isEqualTo("UC001: successful.");
+        assertThat(loggerRule.getLoggingEvents().get(1).getLevel()).isEqualTo(Level.INFO);
     }
 
     @Test
@@ -62,9 +62,9 @@ public class TelegramOutputServiceTest {
         when(httpUtil.getDocumentIgnoreContentType(anyString())).thenReturn(Optional.of(document));
         telegramOutputService.sendMessage("Test");
         validateMockitoUsage();
-        assertThat(loggerRule.getFormattedMessages().size()).isEqualTo(1);
-        assertThat(loggerRule.getFormattedMessages().get(0)).isEqualTo("Telegram: message send with message: \"ok\":false");
-        assertThat(loggerRule.getLoggingEvents().get(0).getLevel()).isEqualTo(Level.ERROR);
+        assertThat(loggerRule.getFormattedMessages().size()).isEqualTo(2);
+        assertThat(loggerRule.getFormattedMessages().get(1)).isEqualTo("UC001: Error: \"ok\":false");
+        assertThat(loggerRule.getLoggingEvents().get(1).getLevel()).isEqualTo(Level.ERROR);
     }
 
     @Test

@@ -33,7 +33,7 @@ public class TestSetup {
 
     @Before
     public void basicResetTestSetup() {
-        log.info("Loading default test setup...");
+        log.info("Loading default getAllDeliveries setup...");
 
         settingsService.getDotaSettings().setFavoriteTeams(List.of("OG"));
         settingsService.getOpenHabSettings().setHomeMuted(false);

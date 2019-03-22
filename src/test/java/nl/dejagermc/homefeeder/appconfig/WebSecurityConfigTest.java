@@ -60,7 +60,7 @@ public class WebSecurityConfigTest {
     @WithMockUser(value = "google", roles = "GOOGLE")
     @Test
     public void testGetSettingsWithCorrectGoogleUser_shouldSucceedWith200() throws Exception {
-        // http 500 because this test does not handle the response object
+        // http 500 because this getAllDeliveries does not handle the response object
         mockMvc.perform(post("/dialogflow/webhook").content("body"))
                 .andExpect(status().isInternalServerError());
     }
@@ -81,7 +81,7 @@ public class WebSecurityConfigTest {
     @WithMockUser(value = "maxhunt", roles = "ADMIN")
     @Test
     public void testGetSettingsWithCorrectUser_shouldSucceedWith200() throws Exception {
-        when(tradfriBusinessService.getAllDevices()).thenReturn("[test]");
+        when(tradfriBusinessService.getAllDevices()).thenReturn("[getAllDeliveries]");
         mockMvc.perform(get("/tradfri/devices", ""))
                 .andExpect(status().isOk());
     }

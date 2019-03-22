@@ -18,7 +18,7 @@ public class BinPickupScheduler {
 
     @Scheduled(cron = "0 2 12-22 ? * *")
     public void scheduleBinPickupReporting() {
-        log.info("UC001: Scheduler: reporting bin pickup next day");
+        log.info("UC030: Scheduler: reporting bin pickup next day");
         garbageCollectionBusinessService.reportNextBinPickup();
     }
 }

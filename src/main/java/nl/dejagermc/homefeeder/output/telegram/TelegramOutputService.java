@@ -2,14 +2,12 @@ package nl.dejagermc.homefeeder.output.telegram;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.dejagermc.homefeeder.util.http.HttpUtil;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -36,6 +34,7 @@ public class TelegramOutputService {
         if (message.isBlank()) {
             return;
         }
+        log.info("UC001: report to telegram.");
         doSendMessage(message);
     }
 
@@ -45,18 +44,18 @@ public class TelegramOutputService {
             httpUtil.getDocumentIgnoreContentType(createUrl(botName, channelName, encodedMessage))
                     .ifPresentOrElse(
                             doc -> handleTelegramResponse(doc.body().text()),
-                            () -> log.error("Telegram: no response from server.")
+                            () -> log.error("UC001: Error: no response from server.")
                     );
         } catch (Exception e) {
-            log.error("Telegram: could not send message: {}", e.getMessage());
+            log.error("UC001: Error: could not send message: {}", e.getMessage());
         }
     }
 
     private void handleTelegramResponse(String response) {
         if (response.matches(".*\"ok\":true.*")) {
-            log.info("Telegram: message send");
+            log.info("UC001: successful.");
         } else {
-            log.error("Telegram: message send with message: {}", response);
+            log.error("UC001: Error: {}", response);
         }
     }
 

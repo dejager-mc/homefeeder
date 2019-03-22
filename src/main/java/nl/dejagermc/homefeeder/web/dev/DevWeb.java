@@ -21,7 +21,7 @@ public class DevWeb {
 
     @GetMapping("/postnl")
     public String postnl() {
-        postNLService.test();
+        postNLService.getAllDeliveries();
 
         return "postnl";
     }

@@ -33,12 +33,13 @@ public class MatchRepository {
 
     @Cacheable(cacheNames = "getAllMatches", cacheManager = "cacheManagerCaffeine")
     public Set<Match> getAllMatches() {
+        log.info("UC110: get all matches.");
         Elements elements = getAllMatchElements();
         Set<Match> newMatches = convertElementsToMatches(elements);
-        return mergeNewMatchesWithExcistingMatches(newMatches);
+        return mergeNewMatchesWithExistingMatches(newMatches);
     }
 
-    private Set<Match> mergeNewMatchesWithExcistingMatches(Set<Match> newMatches) {
+    private Set<Match> mergeNewMatchesWithExistingMatches(Set<Match> newMatches) {
         // remove TBD matches
         // remove old matches not in new matches
         Set<Match> oldMatchesExpiredMatchesRemoved = oldMatches.stream()
@@ -59,6 +60,7 @@ public class MatchRepository {
 
     @Cacheable(cacheNames = "getFullTournamentName", cacheManager = "cacheManagerCaffeine")
     public String getFullTournamentName(Element element) {
+        log.info("UC111: get full tournament name.");
         String url = BASE_URI + element.select("td.match-filler").select("div").select("div").select("a").attr("href");
         Optional<Document> optionalDoc = httpUtil.getDocument(url);
         if (optionalDoc.isPresent()) {

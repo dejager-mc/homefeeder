@@ -13,8 +13,10 @@ public abstract class MatchUtil {
     public static String getStreamUri(Match match) {
         if (!match.twitchChannel().isBlank()) {
             return TWITCH_BASE_URI + match.twitchChannel();
-        } else {
+        }
+        if (!match.youtubeChannel().isBlank()) {
             return YOUTUBE_BASE_URI + match.youtubeChannel();
         }
+        return "";
     }
 }

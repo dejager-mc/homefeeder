@@ -37,6 +37,7 @@ public class TournamentRepository {
 
     @Cacheable(cacheNames = "getAllPremierTournaments", cacheManager = "cacheManagerCaffeine")
     public Set<Tournament> getAllPremierTournaments() {
+        log.info("UC120: get all premier tournaments.");
         return getAllTournamentElements(URI_PREMIER).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.PREMIER))
                 .filter(Optional::isPresent)
@@ -46,6 +47,7 @@ public class TournamentRepository {
 
     @Cacheable(cacheNames = "getAllMajorTournaments", cacheManager = "cacheManagerCaffeine")
     public Set<Tournament> getAllMajorTournaments() {
+        log.info("UC120: get all major tournaments.");
         return getAllTournamentElements(URI_MAJOR).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.MAJOR))
                 .filter(Optional::isPresent)
@@ -55,6 +57,7 @@ public class TournamentRepository {
 
     @Cacheable(cacheNames = "getAllQualifierTournaments", cacheManager = "cacheManagerCaffeine")
     public Set<Tournament> getAllQualifierTournaments() {
+        log.info("UC120: get all qualifier tournaments.");
         return getAllTournamentElements(URI_QUALIFIERS).stream()
                 .map(e -> convertElementToTournament(e, TournamentType.QUALIFIER))
                 .filter(Optional::isPresent)
@@ -132,7 +135,6 @@ public class TournamentRepository {
         Matcher matcherDifferentMonth = patternDifferentMonth.matcher(date);
         Matcher matcherDifferentYear = patternDifferentYear.matcher(date);
 
-
         if (matcherSameDay.matches()) {
             year1 = matcherSameDay.group(3);
             year2 = year1;
@@ -162,7 +164,7 @@ public class TournamentRepository {
             day1 = matcherDifferentYear.group(2);
             day2 = matcherDifferentYear.group(5);
         } else {
-            Assert.notNull(null, "Geen formatter gevonden voor date: " + date);
+            Assert.isTrue(!year1.isBlank(), "Geen formatter gevonden voor date: " + date);
         }
 
         LocalDateTime start = parseDate(month1, day1, year1).atStartOfDay();

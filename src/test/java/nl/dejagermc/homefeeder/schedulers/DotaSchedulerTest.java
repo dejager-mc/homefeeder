@@ -58,7 +58,7 @@ public class DotaSchedulerTest extends TestSetup {
 
     @Before
     public void resetTestSetup() {
-        log.info("resetting test setup");
+        log.info("resetting getAllDeliveries setup");
         reportedBusinessService.resetAll();
     }
 

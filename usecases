@@ -1,4 +1,6 @@
-UC001: reporting bin pickup
+# Reporting
+UC001: report to telegram
+UC002: report to google home
 UC004: report saved reports
 
 # Homefeeder
@@ -8,10 +10,24 @@ UC011: Update dota settings
 # Reported cache
 UC020: Reset reported items cache
 
+# bin pickup
+UC030: reporting bin pickup
+
 # dota
 UC100: report dota live match
 UC101: report todays matches
 UC102: report active tournament
+UC103: save match report because user is not home
+UC104: reporting saved match reports
+UC105: summary report
+UC106: refresh tournament information daily
+
+    # matches
+    UC110: get all matches from liquidpedia
+    UC111: get full tournament name for match from liquidpedia
+
+    # tournaments
+    UC120: get all tournaments from liquidpedia
 
 # Tradfri
 UC200: reboot gateway request

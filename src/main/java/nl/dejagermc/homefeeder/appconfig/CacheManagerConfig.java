@@ -13,16 +13,16 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class CacheManagerConfig {
-    private static final int MINUTES_25_HOURS = 60 * 25;
+    private static final int HOURS_25 = 60 * 25;
 
     @Bean
     public CacheManager cacheManagerCaffeine(final Ticker ticker) {
         // daily caches
-        CaffeineCache getAllPremierTournaments = buildCache("getAllPremierTournaments", ticker, MINUTES_25_HOURS, 1);
-        CaffeineCache getAllMajorTournaments = buildCache("getAllMajorTournaments", ticker, MINUTES_25_HOURS, 1);
-        CaffeineCache getAllQualifierTournaments = buildCache("getAllQualifierTournaments", ticker, MINUTES_25_HOURS, 1);
-        CaffeineCache getFullTournamentName = buildCache("getFullTournamentName", ticker, MINUTES_25_HOURS, 100);
-        CaffeineCache getAllBinPickups = buildCache("getAllBinPickups", ticker, MINUTES_25_HOURS, 1);
+        CaffeineCache getAllPremierTournaments = buildCache("getAllPremierTournaments", ticker, HOURS_25, 1);
+        CaffeineCache getAllMajorTournaments = buildCache("getAllMajorTournaments", ticker, HOURS_25, 1);
+        CaffeineCache getAllQualifierTournaments = buildCache("getAllQualifierTournaments", ticker, HOURS_25, 1);
+        CaffeineCache getFullTournamentName = buildCache("getFullTournamentName", ticker, HOURS_25, 100);
+        CaffeineCache getAllBinPickups = buildCache("getAllBinPickups", ticker, HOURS_25, 1);
 
         // short caches
         CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 15, 1);

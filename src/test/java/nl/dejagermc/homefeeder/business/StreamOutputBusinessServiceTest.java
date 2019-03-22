@@ -88,7 +88,7 @@ public class StreamOutputBusinessServiceTest extends TestSetup {
 
     @Before
     public void resetTestSetup() {
-        log.info("Loading specific test setup for {}...", this.getClass().getSimpleName());
+        log.info("Loading specific getAllDeliveries setup for {}...", this.getClass().getSimpleName());
 
         allMatches = Set.of(
                 liveMatchFavTeamTourn1,

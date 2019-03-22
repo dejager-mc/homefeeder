@@ -90,7 +90,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
 
     private void reportSonarrToGoogleHome(SonarrWebhookSchema schema) {
         if (settingsService.isHomeMuted()) {
-            log.info("UC301: Home mutes, saving series voice report.");
+            log.info("UC301: Home is muted, saving series voice report.");
             sonarrService.addNotYetReported(schema);
         } else {
             String seriesName = schema.getSeries().getTitle();
@@ -131,7 +131,7 @@ public class DownloadReportBusinessService extends AbstractBusinessService {
             sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, 1, "epsiode is"));
         } else
         if (schemas.size() > 1) {
-            sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, schemas.size(), "epsiodes are"));
+            sb.append(String.format(SUMMARY_MESSAGE_TEMPLATE, schemas.size(), "episodes are"));
         }
     }
 

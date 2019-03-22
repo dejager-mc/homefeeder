@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,6 +23,8 @@ public class DeliveryRepository {
     private static final String POSTNL_LOGIN_URI = "https://jouw.postnl.nl/?pst=k-pnl_f-f_p-pnl_u-txt_s-pwb_r-pnlinlogopties_v-jouwpost#!/inloggen?returnUrl=https:%2F%2Fwww.postnl.nl%2F";
     private static final String POSTNL_DELIVERIES_LIST = "https://jouw.postnl.nl/#!/overzicht";
     private static final int PAGE_LOAD_WAIT_TIMEOUT = 3;
+
+    private Set<Delivery> savedDeliveries = new HashSet<>();
 
     @Value("${postnl.login.email}")
     private String email;
@@ -37,9 +38,21 @@ public class DeliveryRepository {
         this.headlessChrome = headlessChrome;
     }
 
+    public void addSavedDelivery(Delivery delivery) {
+        this.savedDeliveries.add(delivery);
+    }
+
+    public List<Delivery> getSavedDeliveries() {
+        return new ArrayList<>(savedDeliveries);
+    }
+
+    public void resetSavedDeliveries() {
+        savedDeliveries = new HashSet<>();
+    }
+
     @Cacheable(cacheNames = "getAllDeliveries", cacheManager = "cacheManagerCaffeine")
     public Set<Delivery> getAllDeliveries() {
-        log.info("UC600: get all deliveries");
+        log.info("UC600: get all deliveries.");
 
         // get webdriver
         WebDriver webDriver = headlessChrome.getChromeWebdriver();
@@ -60,12 +73,12 @@ public class DeliveryRepository {
         // close driver
         webDriver.close();
 
-        log.info("UC600: returning {} deliveries", results.size());
+        log.info("UC600: returning {} deliveries.", results.size());
         return results;
     }
 
     private void loginPostnl(WebDriver driver) {
-        log.info("UC600: loging in to postnl");
+        log.info("UC600: loging in to postnl.");
         driver.get(POSTNL_LOGIN_URI);
         waitForPageLoading(driver);
 
@@ -83,9 +96,9 @@ public class DeliveryRepository {
     }
 
     private void openDeliveriesPage(WebDriver driver) {
-        log.info("UC600: opening page with deliveries");
+        log.info("UC600: opening page with deliveries.");
         // open page
-        driver.get("https://jouw.postnl.nl/#!/overzicht");
+        driver.get(POSTNL_DELIVERIES_LIST);
         waitForPageLoading(driver);
         waitForPageLoading(driver);
 

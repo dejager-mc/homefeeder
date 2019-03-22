@@ -12,6 +12,7 @@ import nl.dejagermc.homefeeder.input.liquipedia.dota.model.Tournament;
 import nl.dejagermc.homefeeder.input.liquipedia.dota.model.TournamentType;
 import nl.dejagermc.homefeeder.output.google.home.GoogleHomeOutputService;
 import nl.dejagermc.homefeeder.output.telegram.TelegramOutputService;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -31,22 +32,31 @@ public class DotaReportBusinessService extends AbstractBusinessService {
     private static final String LIVE_DOTA_MATCH_TELEGRAM_MESSAGE = "<b>Live: %S versus %S</b>%n%s%n";
     private static final String TODAY_DOTA_MATCH_TELEGRAM_MESSAGE = "%S: %S versus %S%n";
 
+    private static final String TOURNAMENT_CACHE = "";
+
     private MatchService matchService;
     private TournamentService tournamentService;
+    private CacheManager cacheManager;
 
     @Inject
     public DotaReportBusinessService(SettingsService settingsService, ReportedBusinessService reportedBusinessService,
                                      TelegramOutputService telegramOutputService, GoogleHomeOutputService googleHomeOutputService,
-                                     MatchService matchService, TournamentService tournamentService) {
+                                     MatchService matchService, TournamentService tournamentService, CacheManager cacheManager) {
         super(settingsService, reportedBusinessService, telegramOutputService, googleHomeOutputService);
         this.matchService = matchService;
         this.tournamentService = tournamentService;
+        this.cacheManager = cacheManager;
+    }
+
+    public void refreshTournamentInformation() {
+        cacheManager.getCache(TOURNAMENT_CACHE).clear();
+        tournamentService.getAllTournaments();
     }
 
     public void reportLiveMatchesFavoriteTeams() {
         settingsService.getFavoriteDotaTeams()
                 .forEach(team -> matchService.getLiveMatchForTeam(team)
-                        .ifPresentOrElse(this::reportLiveMatch, () -> log.info("UC100: no live match found for team {}", team)));
+                        .ifPresent(this::reportLiveMatch));
     }
 
     public void reportTodaysMatches() {
@@ -113,7 +123,7 @@ public class DotaReportBusinessService extends AbstractBusinessService {
     }
 
     private void reportLiveMatch(Match match) {
-        log.info("UC100: Reporting: reporting live match: {}", match);
+        log.info("UC100: Reporting live match: {}", match);
         if (!reportedBusinessService.hasThisBeenReportedToThat(match, GOOGLE_HOME)) {
             reportLiveMatchToGoogleHome(match);
         }
@@ -129,26 +139,26 @@ public class DotaReportBusinessService extends AbstractBusinessService {
         String message = getLiveDotaMatchTelegramMessage(match);
         telegramOutputService.sendMessage(message);
         reportedBusinessService.markThisReportedToThat(match, ReportMethod.TELEGRAM);
-        log.info("UC100: Reporting: reported live match to telegram");
     }
 
     private void reportLiveMatchToGoogleHome(Match match) {
         if (settingsService.isHomeMuted()) {
-            log.info("UC100: Home muted, saving live match to report later");
+            log.info("UC103: Home muted, save match report");
             matchService.addMatchNotReported(match);
         } else {
             String message = String.format("Playing live is %S versus %S.", match.leftTeam(), match.rightTeam());
             googleHomeOutputService.broadcast(message);
             reportedBusinessService.markThisReportedToThat(match, GOOGLE_HOME);
-            log.info("UC100: Reporting: reported live match to google home");
         }
     }
 
     void reportSummary() {
+        log.info("UC105: dota report summary");
         StringBuilder sb = new StringBuilder();
         addMostImportantActiveTournamentToSummary(sb);
-        addNotYetReportedAndFutureMatchesToSummary(sb);
-        if (sb.length() > 0) {
+        addNotYetReportedMatchesToSummary(sb);
+        addMatchesLaterTodayToSummary(sb);
+        if (!sb.toString().isBlank()) {
             googleHomeOutputService.broadcast(sb.toString());
         }
         matchService.resetMatchesNotReported();
@@ -164,14 +174,15 @@ public class DotaReportBusinessService extends AbstractBusinessService {
         }
     }
 
-    private void addNotYetReportedAndFutureMatchesToSummary(StringBuilder sb) {
-        // matches earlier
-        List<Match> favTeamMissedMatches = matchService.getMatchesNotReported();
-        if (!favTeamMissedMatches.isEmpty()) {
-            sb.append("Your favorite teams have played ").append(favTeamMissedMatches.size()).append(" games today. ");
+    private void addNotYetReportedMatchesToSummary(StringBuilder sb) {
+        List<Match> matchesNotReported = matchService.getMatchesNotReported();
+        if (!matchesNotReported.isEmpty()) {
+            log.info("UC104: reporting {} saved match reports", matchesNotReported.size());
+            sb.append("Your favorite teams have played ").append(matchesNotReported.size()).append(" games today. ");
         }
+    }
 
-        // matchers later today
+    private void addMatchesLaterTodayToSummary(StringBuilder sb) {
         List<Match> futureMatchesOfFavoriteTeams =
                 matchService.getTodaysMatches().stream()
                         .filter(isMatchWithOneOfTheseTeams(settingsService.getFavoriteDotaTeams()))

@@ -23,7 +23,7 @@ public class TournamentService {
         this.tournamentRepository = tournamentRepository;
     }
 
-    Set<Tournament> getAllTournaments() {
+    public Set<Tournament> getAllTournaments() {
         Set<Tournament> allTournaments = new HashSet<>();
 
         final Set<Tournament> premiumTournaments = tournamentRepository.getAllPremierTournaments();
