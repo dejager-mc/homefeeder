@@ -5,6 +5,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,7 +24,14 @@ public class HttpUtil {
 
     private static final String ERROR_MSG = "Error connecting to uri: %s";
 
+    @Cacheable(cacheNames = "getCachedDocument", cacheManager = "cacheManagerCaffeine")
+    public Optional<Document> getCachedDocument(final String uri) {
+        log.info("UC999: getCachedDocument: {}", uri);
+        return getDocument(uri);
+    }
+
     public Optional<Document> getDocument(final String uri) {
+        log.info("UC999: getDocument: {}", uri);
         try {
             return httpUtilRetryable.getDocumentRetryable(Jsoup.connect(uri).timeout(5000));
         } catch (IOException e) {
@@ -33,6 +41,7 @@ public class HttpUtil {
     }
 
     public Optional<Document> getDocumentIgnoreContentType(final String uri) {
+        log.info("UC999: getDocumentIgnoreContentType: {}", uri);
         try {
             return httpUtilRetryable.getDocumentRetryable(Jsoup.connect(uri).timeout(5000).ignoreContentType(true));
         } catch (IOException e) {
@@ -73,10 +82,5 @@ public class HttpUtil {
             log.error(String.format(ERROR_MSG, uri), e.getMessage());
             return "ERROR";
         }
-    }
-
-    public Optional<Document> getPostNlDeliveriesDocument(String user, String password) {
-
-        return Optional.empty();
     }
 }

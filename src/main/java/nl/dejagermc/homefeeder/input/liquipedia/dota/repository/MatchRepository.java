@@ -58,11 +58,9 @@ public class MatchRepository {
         return oldMatches;
     }
 
-    @Cacheable(cacheNames = "getFullTournamentName", cacheManager = "cacheManagerCaffeine")
-    public String getFullTournamentName(Element element) {
-        log.info("UC111: get full tournament name.");
+    private String getFullTournamentName(Element element) {
         String url = BASE_URI + element.select("td.match-filler").select("div").select("div").select("a").attr("href");
-        Optional<Document> optionalDoc = httpUtil.getDocument(url);
+        Optional<Document> optionalDoc = httpUtil.getCachedDocument(url);
         if (optionalDoc.isPresent()) {
             return optionalDoc.get().select("h1.firstHeading").select("span").text();
         }

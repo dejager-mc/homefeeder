@@ -7,8 +7,9 @@ UC004: report saved reports
 UC010: Update openhab settings
 UC011: Update dota settings
 
-# Reported cache
+# Reported saved
 UC020: Reset reported items cache
+UC021: Report saved items
 
 # bin pickup
 UC030: reporting bin pickup

@@ -21,11 +21,11 @@ public class CacheManagerConfig {
         CaffeineCache getAllPremierTournaments = buildCache("getAllPremierTournaments", ticker, HOURS_25, 1);
         CaffeineCache getAllMajorTournaments = buildCache("getAllMajorTournaments", ticker, HOURS_25, 1);
         CaffeineCache getAllQualifierTournaments = buildCache("getAllQualifierTournaments", ticker, HOURS_25, 1);
-        CaffeineCache getFullTournamentName = buildCache("getFullTournamentName", ticker, HOURS_25, 100);
+        CaffeineCache getCachedDocument = buildCache("getCachedDocument", ticker, HOURS_25, 200);
         CaffeineCache getAllBinPickups = buildCache("getAllBinPickups", ticker, HOURS_25, 1);
 
         // short caches
-        CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 15, 1);
+        CaffeineCache getAllMatches = buildCache("getAllMatches", ticker, 10, 1);
         CaffeineCache getAllDeliveries = buildCache("getAllDeliveries", ticker, 60, 1);
 
         // never expiring caches
@@ -34,7 +34,7 @@ public class CacheManagerConfig {
 
         SimpleCacheManager manager = new SimpleCacheManager();
         manager.setCaches(Arrays.asList(getAllMatches, getAllPremierTournaments, getAllMajorTournaments,
-                getAllQualifierTournaments, getFullTournamentName, getAllDeliveries, getReportMethods, getAllOpenhabItems, getAllBinPickups));
+                getAllQualifierTournaments, getCachedDocument, getAllDeliveries, getReportMethods, getAllOpenhabItems, getAllBinPickups));
 
         return manager;
     }

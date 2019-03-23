@@ -39,14 +39,16 @@ public class SettingsController extends AbstractController {
     @PutMapping(value = "openhab", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void updateOpenhabSettings(@RequestBody final OpenHabSettingsDto openHabStateDto) {
-        log.info("UC010: update openhab settings to {}.", openHabStateDto);
         boolean wasHomeMuted = settingsService.getOpenHabSettings().isHomeMuted();
         OpenHabSettings openHabSettings = settingsMapping.convertToEntity(openHabStateDto);
         settingsService.getOpenHabSettings().setHomeMuted(openHabSettings.isHomeMuted());
 
         if (wasHomeMuted && !settingsService.getOpenHabSettings().isHomeMuted()) {
-            log.info("UC003: user is now listening, report saved messages.");
+            log.info("UC010: User started listening.");
             summaryReportBusinessService.reportSummary();
+        }
+        if (!wasHomeMuted && settingsService.getOpenHabSettings().isHomeMuted()) {
+            log.info("UC010: User stopped listening.");
         }
     }
 

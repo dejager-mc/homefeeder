@@ -28,10 +28,11 @@ public class SummaryReportBusinessService extends AbstractBusinessService {
 
     public void reportSummary() {
         if (settingsService.isHomeMuted()) {
-            log.info("UC004: Home muted, saving summary voice report.");
+            log.info("UC021: Home muted, not reporting saved messages.");
             return;
         }
 
+        log.info("UC021: Report saved messages.");
         downloadReportBusinessService.reportSummary();
         dotaReportBusinessService.reportSummary();
         garbageCollectionBusinessService.reportSummary();
